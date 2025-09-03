@@ -23,13 +23,16 @@ public class ReportFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_report, container, false);
-
         reportTextView = root.findViewById(R.id.reportTextView);
         reportTextView.setMovementMethod(new ScrollingMovementMethod());
-
         displayDetailedReport();
-
         return root;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        displayDetailedReport();
     }
 
     private void displayDetailedReport() {
