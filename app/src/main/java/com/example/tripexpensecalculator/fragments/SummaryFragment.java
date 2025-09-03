@@ -23,12 +23,15 @@ public class SummaryFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_summary, container, false);
-
         summaryTextView = root.findViewById(R.id.summaryTextView);
-
         displaySummary();
-
         return root;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        displaySummary();
     }
 
     private void displaySummary() {
