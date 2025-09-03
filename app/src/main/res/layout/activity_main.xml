@@ -1,110 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android" 
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" 
+    android:layout_width="match_parent" 
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:padding="16dp"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        app:tabIndicatorFullWidth="false"/>
 
-        <!-- Add Friend -->
-        <TextView
-            android:text="Add Friend and Contribution"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingTop="8dp" />
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 
-        <EditText
-            android:id="@+id/inputName"
-            android:hint="Friend's Name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPersonName" />
-
-        <EditText
-            android:id="@+id/inputContribution"
-            android:hint="Contribution Amount (₹)"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal" />
-
-        <Button
-            android:id="@+id/btnAddFriend"
-            android:text="Add Friend"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Add Expense -->
-        <TextView
-            android:text="Add Expense"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingBottom="8dp" />
-
-        <EditText
-            android:id="@+id/inputCategory"
-            android:hint="Expense Category"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text" />
-
-        <EditText
-            android:id="@+id/inputExpense"
-            android:hint="Expense Amount (₹)"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal" />
-
-        <Button
-            android:id="@+id/btnAddExpense"
-            android:text="Add Expense"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Show Summary -->
-        <Button
-            android:id="@+id/btnShowSummary"
-            android:text="Show Summary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp" />
-
-        <TextView
-            android:id="@+id/outputSummary"
-            android:text=""
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:background="#EEEEEE"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:scrollbars="vertical" />
-
-        <!-- Show Detailed Report -->
-        <Button
-            android:id="@+id/btnShowReport"
-            android:text="Show Detailed Report"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="8dp" />
-
-        <TextView
-            android:id="@+id/outputReport"
-            android:text=""
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:background="#DDDDDD"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:scrollbars="vertical" />
-
-    </LinearLayout>
-</ScrollView>
+</LinearLayout>
