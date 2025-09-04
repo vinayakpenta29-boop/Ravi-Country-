@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -97,30 +96,18 @@ public class FriendsFragment extends Fragment {
             row.setOrientation(LinearLayout.HORIZONTAL);
             row.setPadding(0, 0, 0, 16);
 
-            // Curved box for friend name
-            TextView nameBox = new TextView(getContext());
-            nameBox.setText(friendName);
-            nameBox.setTextSize(18);
-            nameBox.setTextColor(getResources().getColor(R.color.input_text));
-            nameBox.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
-            nameBox.setPadding(28, 12, 28, 12);
-            nameBox.setBackgroundResource(R.drawable.curved_box);
-            LinearLayout.LayoutParams nameParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.9f);
-            nameParams.setMargins(0, 0, 8, 0);
-            nameBox.setLayoutParams(nameParams);
-            row.addView(nameBox);
-
-            // Amount box showing current friend's contribution
-            TextView amtBox = new TextView(getContext());
-            amtBox.setText("₹" + String.format("%.2f", entry.getValue()));
-            amtBox.setTextSize(16);
-            amtBox.setTextColor(getResources().getColor(R.color.input_text));
-            amtBox.setPadding(18, 8, 18, 8);
-            amtBox.setBackgroundResource(R.drawable.curved_box);
-            LinearLayout.LayoutParams amtParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.8f);
-            amtParams.setMargins(0, 0, 8, 0);
-            amtBox.setLayoutParams(amtParams);
-            row.addView(amtBox);
+            // Friend name and amount in a single wide curved box
+            TextView nameAmtBox = new TextView(getContext());
+            nameAmtBox.setText(friendName + "    ₹" + String.format("%.2f", entry.getValue()));
+            nameAmtBox.setTextSize(18);
+            nameAmtBox.setTextColor(getResources().getColor(R.color.input_text));
+            nameAmtBox.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+            nameAmtBox.setPadding(28, 12, 28, 12);
+            nameAmtBox.setBackgroundResource(R.drawable.curved_box);
+            LinearLayout.LayoutParams boxParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.5f);
+            boxParams.setMargins(0, 0, 8, 0);
+            nameAmtBox.setLayoutParams(boxParams);
+            row.addView(nameAmtBox);
 
             // Amount Entry (input box)
             EditText inputAmt = new EditText(getContext());
@@ -130,22 +117,23 @@ public class FriendsFragment extends Fragment {
             inputAmt.setTextColor(getResources().getColor(R.color.input_text));
             inputAmt.setHintTextColor(getResources().getColor(R.color.grey_hint));
             inputAmt.setTextSize(16);
-            inputAmt.setPadding(12, 8, 12, 8);
+            inputAmt.setPadding(10, 8, 10, 8);
             LinearLayout.LayoutParams inputAmtParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f);
             inputAmtParams.setMargins(0, 0, 8, 0);
             inputAmt.setLayoutParams(inputAmtParams);
             row.addView(inputAmt);
 
-            // Add Amount Button
+            // Smaller orange "ADD AMOUNT" button
             Button addAmtBtn = new Button(getContext());
-            addAmtBtn.setText("Add Amount");
+            addAmtBtn.setText("ADD AMOUNT");
             addAmtBtn.setTextColor(getResources().getColor(R.color.input_text));
-            addAmtBtn.setTextSize(16);
+            addAmtBtn.setTextSize(13);
             addAmtBtn.setBackgroundResource(R.drawable.curved_orange_button);
             addAmtBtn.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
             LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            btnParams.setMargins(0, 0, 0, 0);
             addAmtBtn.setLayoutParams(btnParams);
-            addAmtBtn.setPadding(20, 8, 20, 8);
+            addAmtBtn.setPadding(16, 8, 16, 8);
             addAmtBtn.setOnClickListener(v -> {
                 String amtStr = inputAmt.getText().toString().trim();
                 if (!amtStr.isEmpty()) {
