@@ -2,6 +2,9 @@ package com.example.tripexpensecalculator.fragments;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,13 +48,11 @@ public class SummaryFragment extends Fragment {
         double perPerson = (people > 0) ? (totalExpense / people) : 0.0;
         double overallBalance = totalContribution - totalExpense;
 
-        // Show summary totals
         addSimpleText("Total Contributions: ₹" + String.format("%.2f", totalContribution), Color.BLACK);
         addSimpleText("Total Expenses:      ₹" + String.format("%.2f", totalExpense), Color.BLACK);
         addSimpleText("Each Person's Share: ₹" + String.format("%.2f", perPerson), Color.BLACK);
         addSimpleText("", Color.BLACK);
 
-        // Show member balances and collect negatives
         List<String> negativeMembers = new ArrayList<>();
         List<Double> negativeBalances = new ArrayList<>();
 
@@ -71,16 +72,25 @@ public class SummaryFragment extends Fragment {
 
         addSimpleText("", Color.BLACK);
 
-        // Show overall balance
-        if (overallBalance > 0) {
-            addSimpleText("Overall Balance: Extra money left: ₹" + String.format("%.2f", overallBalance), Color.parseColor("#117c00"));
-        } else if (overallBalance < 0) {
-            addSimpleText("Overall Balance: More money needed: ₹" + String.format("%.2f", Math.abs(overallBalance)), Color.RED);
+        // Show overall balance line with red amount if negative only
+        String text = "Overall Balance: Extra money left: ";
+        SpannableStringBuilder spanBuilder = new SpannableStringBuilder(text);
+        String amountText;
+        if (overallBalance >= 0) {
+            amountText = "₹" + String.format("%.2f", overallBalance);
+            spanBuilder.append(amountText);
         } else {
-            addSimpleText("Overall Balance: Settled (0)", Color.BLACK);
+            amountText = "-₹" + String.format("%.2f", Math.abs(overallBalance));
+            spanBuilder.append(amountText);
+            spanBuilder.setSpan(new ForegroundColorSpan(Color.RED),
+                    text.length(), text.length() + amountText.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
+        TextView overallBalanceLine = new TextView(getContext());
+        overallBalanceLine.setText(spanBuilder);
+        overallBalanceLine.setTextSize(16);
+        summaryRootLayout.addView(overallBalanceLine);
 
-        // Title and list for negative balances
         if (!negativeMembers.isEmpty()) {
             addSimpleText("", Color.BLACK);
             addSimpleText("Take Cash from this Members who has a Negative Balance.", Color.BLUE);
