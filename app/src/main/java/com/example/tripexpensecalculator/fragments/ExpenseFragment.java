@@ -3,7 +3,6 @@ package com.example.tripexpensecalculator.fragments;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.example.tripexpensecalculator.R;
@@ -98,82 +96,11 @@ public class ExpenseFragment extends Fragment {
     private void refreshExpensesList() {
         expensesListLayout.removeAllViews();
         for (int i = 0; i < expenseTypes.size(); i++) {
-            final int idx = i;
-
-            LinearLayout row = new LinearLayout(getContext());
-            row.setOrientation(LinearLayout.HORIZONTAL);
-            row.setPadding(0, 0, 0, 8);
-
             TextView tv = new TextView(getContext());
-            tv.setText(expenseTypes.get(idx) + ": ₹" + String.format("%.2f", expenseAmounts.get(idx)));
+            tv.setText(expenseTypes.get(i) + ": ₹" + String.format("%.2f", expenseAmounts.get(i)));
             tv.setTextSize(16);
-            tv.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-            row.addView(tv);
-
-            Button editBtn = new Button(getContext());
-            editBtn.setText("Edit");
-            editBtn.setTextSize(14);
-            editBtn.setOnClickListener(v -> showEditExpenseDialog(idx));
-            row.addView(editBtn);
-
-            Button deleteBtn = new Button(getContext());
-            deleteBtn.setText("Delete");
-            deleteBtn.setTextSize(14);
-            deleteBtn.setOnClickListener(v -> {
-                new AlertDialog.Builder(requireContext())
-                    .setTitle("Delete Expense")
-                    .setMessage("Are you sure you want to delete this expense?")
-                    .setPositiveButton("Delete", (dialog, which) -> {
-                        expenseTypes.remove(idx);
-                        expenseAmounts.remove(idx);
-                        saveExpensesData();
-                        refreshExpensesList();
-                        Toast.makeText(getContext(), "Expense deleted!", Toast.LENGTH_SHORT).show();
-                    })
-                    .setNegativeButton("Cancel", null)
-                    .show();
-            });
-            row.addView(deleteBtn);
-
-            expensesListLayout.addView(row);
+            expensesListLayout.addView(tv);
         }
-    }
-
-    private void showEditExpenseDialog(int idx) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Edit Expense");
-
-        LinearLayout layout = new LinearLayout(requireContext());
-        layout.setOrientation(LinearLayout.VERTICAL);
-        final EditText editCategory = new EditText(requireContext());
-        final EditText editAmount = new EditText(requireContext());
-        editCategory.setInputType(InputType.TYPE_CLASS_TEXT);
-        editAmount.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        editCategory.setText(expenseTypes.get(idx));
-        editAmount.setText(String.format("%.2f", expenseAmounts.get(idx)));
-        layout.addView(editCategory);
-        layout.addView(editAmount);
-
-        builder.setView(layout);
-
-        builder.setPositiveButton("Update", (dialog, which) -> {
-            String newCategory = editCategory.getText().toString().trim();
-            String newAmtStr = editAmount.getText().toString().trim();
-            if (!newCategory.isEmpty() && !newAmtStr.isEmpty()) {
-                try {
-                    double newAmt = Double.parseDouble(newAmtStr);
-                    expenseTypes.set(idx, newCategory);
-                    expenseAmounts.set(idx, newAmt);
-                    saveExpensesData();
-                    refreshExpensesList();
-                    Toast.makeText(getContext(), "Updated expense!", Toast.LENGTH_SHORT).show();
-                } catch (NumberFormatException e) {
-                    Toast.makeText(getContext(), "Invalid data.", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        builder.setNegativeButton("Cancel", null);
-        builder.show();
     }
 
     private void saveExpensesData() {
@@ -188,7 +115,7 @@ public class ExpenseFragment extends Fragment {
         try {
             data.put("types", typesArr);
             data.put("amounts", amtsArr);
-        } catch (Exception e) { }
+        } catch (Exception ignored) { }
         prefs.edit().putString(EXPENSES_KEY, data.toString()).apply();
     }
 
@@ -206,7 +133,7 @@ public class ExpenseFragment extends Fragment {
                     expenseTypes.add(typesArr.getString(i));
                     expenseAmounts.add(amtsArr.getDouble(i));
                 }
-            } catch (Exception e) { }
+            } catch (Exception ignored) { }
         }
     }
 }
