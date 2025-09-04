@@ -128,7 +128,7 @@ public class FriendsFragment extends Fragment {
             inputAmt.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
             inputAmt.setBackgroundResource(R.drawable.curved_box);
             inputAmt.setTextColor(getResources().getColor(R.color.input_text));
-            inputAmt.setTextColorHint(getResources().getColor(R.color.grey_hint));
+            inputAmt.setHintTextColor(getResources().getColor(R.color.grey_hint));
             inputAmt.setTextSize(16);
             inputAmt.setPadding(12, 8, 12, 8);
             LinearLayout.LayoutParams inputAmtParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f);
