@@ -6,7 +6,6 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Add Friend Section -->
     <EditText
         android:id="@+id/inputName"
         android:layout_width="match_parent"
@@ -21,7 +20,6 @@
         android:textColorHint="@color/grey_hint"
         />
 
-    <!-- Add Friend Button (dynamically moved below list if there are friends) -->
     <Button
         android:id="@+id/btnAddFriend"
         android:layout_width="match_parent"
@@ -39,6 +37,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
+
         <LinearLayout
             android:id="@+id/friendsListLayout"
             android:orientation="vertical"
