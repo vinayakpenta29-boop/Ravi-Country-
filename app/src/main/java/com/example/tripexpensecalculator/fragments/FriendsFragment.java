@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -22,10 +23,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class FriendsFragment extends Fragment {
-
-    private EditText inputName, inputContribution;
+    private EditText inputName;
     private Button btnAddFriend;
     private LinearLayout friendsListLayout;
+    private ViewGroup rootLayout;
 
     private static final Map<String, Double> contributions = new LinkedHashMap<>();
     private static final String PREFS_NAME = "TripExpensePrefs";
@@ -42,112 +43,138 @@ public class FriendsFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_friends, container, false);
 
         inputName = root.findViewById(R.id.inputName);
-        inputContribution = root.findViewById(R.id.inputContribution);
         btnAddFriend = root.findViewById(R.id.btnAddFriend);
         friendsListLayout = root.findViewById(R.id.friendsListLayout);
+        rootLayout = (ViewGroup) root;
 
         btnAddFriend.setOnClickListener(v -> addFriend());
 
         loadFriendsData();
-        refreshFriendsList();
+        refreshUI();
         return root;
     }
 
     private void addFriend() {
         String name = inputName.getText().toString().trim();
-        String contributionStr = inputContribution.getText().toString().trim();
 
         if (TextUtils.isEmpty(name)) {
             Toast.makeText(getContext(), "Friend's name cannot be empty.", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (TextUtils.isEmpty(contributionStr)) {
-            Toast.makeText(getContext(), "Contribution cannot be empty.", Toast.LENGTH_SHORT).show();
+        if (contributions.containsKey(name)) {
+            Toast.makeText(getContext(), "Friend already exists.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        double contribution;
-        try {
-            contribution = Double.parseDouble(contributionStr);
-            if (contribution < 0) {
-                Toast.makeText(getContext(), "Contribution cannot be negative.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-        } catch (NumberFormatException e) {
-            Toast.makeText(getContext(), "Invalid contribution amount.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        contributions.put(name, contribution);
+        contributions.put(name, 0.0);
 
         inputName.setText("");
-        inputContribution.setText("");
         saveFriendsData();
-        refreshFriendsList();
-        Toast.makeText(getContext(), "Friend added/updated.", Toast.LENGTH_SHORT).show();
+        refreshUI();
+        Toast.makeText(getContext(), "Friend added.", Toast.LENGTH_SHORT).show();
     }
 
-    private void refreshFriendsList() {
+    // Dynamically manages the ADD FRIEND btn location and friend cards
+    private void refreshUI() {
         friendsListLayout.removeAllViews();
-        for (Map.Entry<String, Double> entry : contributions.entrySet()) {
-            final String friendName = entry.getKey();
 
-            LinearLayout row = new LinearLayout(getContext());
-            row.setOrientation(LinearLayout.HORIZONTAL);
-            row.setPadding(0, 0, 0, 16);
+        // Remove ADD FRIEND from old spot if needed
+        if (btnAddFriend.getParent() != null) ((ViewGroup)btnAddFriend.getParent()).removeView(btnAddFriend);
 
-            // Friend name and amount in a single wide curved box
-            TextView nameAmtBox = new TextView(getContext());
-            nameAmtBox.setText(friendName + "    ₹" + String.format("%.2f", entry.getValue()));
-            nameAmtBox.setTextSize(18);
-            nameAmtBox.setTextColor(getResources().getColor(R.color.input_text));
-            nameAmtBox.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
-            nameAmtBox.setPadding(28, 12, 28, 12);
-            nameAmtBox.setBackgroundResource(R.drawable.curved_box);
-            LinearLayout.LayoutParams boxParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.5f);
-            boxParams.setMargins(0, 0, 8, 0);
-            nameAmtBox.setLayoutParams(boxParams);
-            row.addView(nameAmtBox);
+        if (contributions.isEmpty()) {
+            // Show after the name field (i.e., at the top)
+            int inputNameIndex = rootLayout.indexOfChild(inputName);
+            rootLayout.addView(btnAddFriend, inputNameIndex + 1);
+        } else {
+            // Show all friends as cards
+            for (Map.Entry<String, Double> entry : contributions.entrySet()) {
+                final String friendName = entry.getKey();
 
-            // Amount Entry (input box)
-            EditText inputAmt = new EditText(getContext());
-            inputAmt.setHint("Enter Amount");
-            inputAmt.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-            inputAmt.setBackgroundResource(R.drawable.curved_box);
-            inputAmt.setTextColor(getResources().getColor(R.color.input_text));
-            inputAmt.setHintTextColor(getResources().getColor(R.color.grey_hint));
-            inputAmt.setTextSize(16);
-            inputAmt.setPadding(10, 8, 10, 8);
-            LinearLayout.LayoutParams inputAmtParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f);
-            inputAmtParams.setMargins(0, 0, 8, 0);
-            inputAmt.setLayoutParams(inputAmtParams);
-            row.addView(inputAmt);
+                // Outer card (curved background) for this friend
+                LinearLayout cardBox = new LinearLayout(getContext());
+                cardBox.setOrientation(LinearLayout.VERTICAL);
+                cardBox.setBackgroundResource(R.drawable.curved_box);
+                cardBox.setPadding(16, 20, 16, 20);
 
-            // Smaller orange "ADD AMOUNT" button
-            Button addAmtBtn = new Button(getContext());
-            addAmtBtn.setText("ADD AMOUNT");
-            addAmtBtn.setTextColor(getResources().getColor(R.color.input_text));
-            addAmtBtn.setTextSize(13);
-            addAmtBtn.setBackgroundResource(R.drawable.curved_orange_button);
-            addAmtBtn.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
-            LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            btnParams.setMargins(0, 0, 0, 0);
-            addAmtBtn.setLayoutParams(btnParams);
-            addAmtBtn.setPadding(16, 8, 16, 8);
-            addAmtBtn.setOnClickListener(v -> {
-                String amtStr = inputAmt.getText().toString().trim();
-                if (!amtStr.isEmpty()) {
-                    try {
-                        double addVal = Double.parseDouble(amtStr);
-                        contributions.put(friendName, entry.getValue() + addVal);
-                        saveFriendsData();
-                        refreshFriendsList();
-                    } catch (NumberFormatException ignored) { }
-                }
-            });
-            row.addView(addAmtBtn);
+                LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                cardParams.setMargins(0, 0, 0, 24);
+                cardBox.setLayoutParams(cardParams);
 
-            friendsListLayout.addView(row);
+                // Row 1: Name && Amount
+                LinearLayout row1 = new LinearLayout(getContext());
+                row1.setOrientation(LinearLayout.HORIZONTAL);
+
+                TextView nameView = new TextView(getContext());
+                nameView.setText(friendName);
+                nameView.setTextSize(18);
+                nameView.setTextColor(getResources().getColor(R.color.input_text));
+                nameView.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+                LinearLayout.LayoutParams leftParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+                nameView.setLayoutParams(leftParams);
+
+                TextView amtView = new TextView(getContext());
+                amtView.setText("₹" + String.format("%.2f", entry.getValue()));
+                amtView.setTextSize(18);
+                amtView.setTextColor(getResources().getColor(R.color.input_text));
+                amtView.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+
+                row1.addView(nameView);
+                row1.addView(amtView);
+
+                // Row 2: Enter Amount + Small Add Amount
+                LinearLayout row2 = new LinearLayout(getContext());
+                row2.setOrientation(LinearLayout.HORIZONTAL);
+                row2.setPadding(0, 16, 0, 0);
+
+                EditText inputAmt = new EditText(getContext());
+                inputAmt.setHint("Enter Amount");
+                inputAmt.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                inputAmt.setBackgroundResource(R.drawable.curved_box);
+                inputAmt.setTextColor(getResources().getColor(R.color.input_text));
+                inputAmt.setHintTextColor(getResources().getColor(R.color.grey_hint));
+                inputAmt.setTextSize(16);
+                inputAmt.setPadding(14, 10, 14, 10);
+                LinearLayout.LayoutParams inputAmtParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+                inputAmt.setLayoutParams(inputAmtParams);
+
+                Button addAmtBtn = new Button(getContext());
+                addAmtBtn.setText("ADD AMOUNT");
+                addAmtBtn.setTextColor(getResources().getColor(R.color.input_text));
+                addAmtBtn.setTextSize(14);
+                addAmtBtn.setBackgroundResource(R.drawable.curved_orange_button);
+                addAmtBtn.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+                LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                btnParams.setMargins(24, 0, 0, 0);
+                addAmtBtn.setLayoutParams(btnParams);
+                addAmtBtn.setPadding(22, 10, 22, 10);
+
+                addAmtBtn.setOnClickListener(v -> {
+                    String amtStr = inputAmt.getText().toString().trim();
+                    if (!amtStr.isEmpty()) {
+                        try {
+                            double addVal = Double.parseDouble(amtStr);
+                            contributions.put(friendName, entry.getValue() + addVal);
+                            saveFriendsData();
+                            refreshUI();
+                        } catch (NumberFormatException ignored) { }
+                    }
+                });
+
+                row2.addView(inputAmt);
+                row2.addView(addAmtBtn);
+
+                cardBox.addView(row1);
+                cardBox.addView(row2);
+
+                friendsListLayout.addView(cardBox);
+            }
+
+            // Show ADD FRIEND button below the last friend card
+            if (btnAddFriend.getParent() != null) ((ViewGroup)btnAddFriend.getParent()).removeView(btnAddFriend);
+            rootLayout.addView(btnAddFriend);
         }
     }
 
