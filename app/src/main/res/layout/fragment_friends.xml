@@ -21,21 +21,7 @@
         android:textColorHint="@color/grey_hint"
         />
 
-    <EditText
-        android:id="@+id/inputContribution"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/curved_box"
-        android:textColor="@color/input_text"
-        android:hint="Contribution Amount (₹)"
-        android:textSize="18sp"
-        android:fontFamily="@font/poppins_bold"
-        android:padding="14dp"
-        android:inputType="numberDecimal"
-        android:layout_marginBottom="12dp"
-        android:textColorHint="@color/grey_hint"
-        />
-
+    <!-- Add Friend Button (dynamically moved below list if there are friends) -->
     <Button
         android:id="@+id/btnAddFriend"
         android:layout_width="match_parent"
@@ -52,9 +38,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="@color/background_dark"
-        >
+        android:layout_weight="1">
         <LinearLayout
             android:id="@+id/friendsListLayout"
             android:orientation="vertical"
