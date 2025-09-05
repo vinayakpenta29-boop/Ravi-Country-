@@ -74,38 +74,41 @@ public class FriendsFragment extends Fragment {
         Toast.makeText(getContext(), "Friend added.", Toast.LENGTH_SHORT).show();
     }
 
-    // Dynamically manages the ADD FRIEND btn location and friend cards
     private void refreshUI() {
         friendsListLayout.removeAllViews();
 
         // Remove ADD FRIEND from old spot if needed
-        if (btnAddFriend.getParent() != null) ((ViewGroup)btnAddFriend.getParent()).removeView(btnAddFriend);
+        if (btnAddFriend.getParent() != null) ((ViewGroup) btnAddFriend.getParent()).removeView(btnAddFriend);
 
         if (contributions.isEmpty()) {
-            // Show after the name field (i.e., at the top)
             int inputNameIndex = rootLayout.indexOfChild(inputName);
             rootLayout.addView(btnAddFriend, inputNameIndex + 1);
         } else {
-            // Show all friends as cards
+            int friendCount = 0;
             for (Map.Entry<String, Double> entry : contributions.entrySet()) {
                 final String friendName = entry.getKey();
 
-                // Outer card (curved background) for this friend
+                // OUTER CARD
                 LinearLayout cardBox = new LinearLayout(getContext());
                 cardBox.setOrientation(LinearLayout.VERTICAL);
                 cardBox.setBackgroundResource(R.drawable.curved_box);
-                cardBox.setPadding(16, 20, 16, 20);
+                cardBox.setPadding(20, 28, 20, 28);
 
                 LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
-                cardParams.setMargins(0, 0, 0, 24);
+                cardParams.setMargins(0, 0, 0, 32);
                 cardBox.setLayoutParams(cardParams);
 
-                // Row 1: Name && Amount
-                LinearLayout row1 = new LinearLayout(getContext());
-                row1.setOrientation(LinearLayout.HORIZONTAL);
+                // TOP INNER BOX
+                LinearLayout topInner = new LinearLayout(getContext());
+                topInner.setOrientation(LinearLayout.HORIZONTAL);
+                topInner.setBackgroundResource(R.drawable.curved_light_box);
+                topInner.setPadding(24, 20, 24, 20);
+                LinearLayout.LayoutParams topParams = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                topInner.setLayoutParams(topParams);
 
                 TextView nameView = new TextView(getContext());
                 nameView.setText(friendName);
@@ -117,17 +120,29 @@ public class FriendsFragment extends Fragment {
 
                 TextView amtView = new TextView(getContext());
                 amtView.setText("₹" + String.format("%.2f", entry.getValue()));
-                amtView.setTextSize(18);
+                amtView.setTextSize(17);
                 amtView.setTextColor(getResources().getColor(R.color.input_text));
                 amtView.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
 
-                row1.addView(nameView);
-                row1.addView(amtView);
+                topInner.addView(nameView);
+                topInner.addView(amtView);
 
-                // Row 2: Enter Amount + Small Add Amount
-                LinearLayout row2 = new LinearLayout(getContext());
-                row2.setOrientation(LinearLayout.HORIZONTAL);
-                row2.setPadding(0, 16, 0, 0);
+                // DIVIDER
+                View divider = new View(getContext());
+                divider.setBackgroundColor(getResources().getColor(R.color.divider));
+                LinearLayout.LayoutParams dividerParams = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, 2);
+                dividerParams.setMargins(0,16,0,16);
+                divider.setLayoutParams(dividerParams);
+
+                // BOTTOM INNER BOX
+                LinearLayout botInner = new LinearLayout(getContext());
+                botInner.setOrientation(LinearLayout.HORIZONTAL);
+                botInner.setBackgroundResource(R.drawable.curved_light_box);
+                botInner.setPadding(24, 20, 24, 20);
+                LinearLayout.LayoutParams botParams = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                botInner.setLayoutParams(botParams);
 
                 EditText inputAmt = new EditText(getContext());
                 inputAmt.setHint("Enter Amount");
@@ -149,7 +164,7 @@ public class FriendsFragment extends Fragment {
                 LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 btnParams.setMargins(24, 0, 0, 0);
                 addAmtBtn.setLayoutParams(btnParams);
-                addAmtBtn.setPadding(22, 10, 22, 10);
+                addAmtBtn.setPadding(24, 12, 24, 12);
 
                 addAmtBtn.setOnClickListener(v -> {
                     String amtStr = inputAmt.getText().toString().trim();
@@ -163,17 +178,19 @@ public class FriendsFragment extends Fragment {
                     }
                 });
 
-                row2.addView(inputAmt);
-                row2.addView(addAmtBtn);
+                botInner.addView(inputAmt);
+                botInner.addView(addAmtBtn);
 
-                cardBox.addView(row1);
-                cardBox.addView(row2);
+                // BUILD CARD
+                cardBox.addView(topInner);
+                cardBox.addView(divider);
+                cardBox.addView(botInner);
 
                 friendsListLayout.addView(cardBox);
+                friendCount++;
             }
 
-            // Show ADD FRIEND button below the last friend card
-            if (btnAddFriend.getParent() != null) ((ViewGroup)btnAddFriend.getParent()).removeView(btnAddFriend);
+            if (btnAddFriend.getParent() != null) ((ViewGroup) btnAddFriend.getParent()).removeView(btnAddFriend);
             rootLayout.addView(btnAddFriend);
         }
     }
