@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -156,15 +157,17 @@ public class FriendsFragment extends Fragment {
                 inputAmt.setLayoutParams(inputAmtParams);
 
                 Button addAmtBtn = new Button(getContext());
-                addAmtBtn.setText("ADD AMOUNT");
+                addAmtBtn.setText("ADD\nAMOUNT"); // Center-aligned, stacked
                 addAmtBtn.setTextColor(getResources().getColor(R.color.input_text));
                 addAmtBtn.setTextSize(14);
                 addAmtBtn.setBackgroundResource(R.drawable.curved_orange_button);
                 addAmtBtn.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
-                LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                addAmtBtn.setGravity(Gravity.CENTER); // Center text both vertically and horizontally
+                LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 btnParams.setMargins(24, 0, 0, 0);
                 addAmtBtn.setLayoutParams(btnParams);
-                addAmtBtn.setPadding(24, 12, 24, 12);
+                addAmtBtn.setPadding(32, 22, 32, 22);
 
                 addAmtBtn.setOnClickListener(v -> {
                     String amtStr = inputAmt.getText().toString().trim();
