@@ -62,7 +62,7 @@ public class SummaryFragment extends Fragment {
         for (Map.Entry<String, Double> entry : contributions.entrySet()) {
             double bal = entry.getValue() - perPerson;
             String sign = (bal >= 0) ? "+" : "-";
-            int color = (bal >= 0) ? Color.parseColor("#117c00") : Color.RED; // Green if positive/zero, red if negative
+            int color = (bal >= 0) ? Color.parseColor("#117c00") : Color.RED;
             String balanceLabel = entry.getKey() + " paid";
             String balanceValue = "₹" + String.format("%.2f", entry.getValue()) + "  |  " +
                     "Balance: " + sign + "₹" + String.format("%.2f", Math.abs(bal));
@@ -88,9 +88,9 @@ public class SummaryFragment extends Fragment {
             summaryRootLayout.addView(negativeBox);
         }
 
-        // ---- Overall Balance (Big Orange Box) ----
+        // ---- Overall Balance (Big Orange Box with two/three lines) ----
         LinearLayout orangeBox = new LinearLayout(getContext());
-        orangeBox.setOrientation(LinearLayout.HORIZONTAL);
+        orangeBox.setOrientation(LinearLayout.VERTICAL);
         orangeBox.setBackgroundResource(R.drawable.curved_orange_button);
         orangeBox.setPadding(32, 21, 32, 21);
         orangeBox.setGravity(android.view.Gravity.CENTER);
@@ -98,15 +98,39 @@ public class SummaryFragment extends Fragment {
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         orangeParams.setMargins(0, 18, 0, 18);
         orangeBox.setLayoutParams(orangeParams);
-        String text = (overallBalance >= 0) ? "Extra Money Left: ₹" : "Overall Deficit: -₹";
-        text += String.format("%.2f", Math.abs(overallBalance));
-        TextView ov = new TextView(getContext());
-        ov.setText(text);
-        ov.setTextColor(Color.BLACK);
-        ov.setTextSize(18);
-        ov.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
-        ov.setGravity(android.view.Gravity.CENTER);
-        orangeBox.addView(ov);
+
+        // Top: label line
+        TextView labelTv = new TextView(getContext());
+        labelTv.setText("Extra Money Left:");
+        labelTv.setTextColor(Color.WHITE);
+        labelTv.setTextSize(20);
+        labelTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+        labelTv.setGravity(android.view.Gravity.CENTER);
+
+        // Middle: amount, large, bold, minus sign if negative
+        TextView amtTv = new TextView(getContext());
+        String amtStr = "₹" + String.format("%.2f", Math.abs(overallBalance));
+        if (overallBalance < 0) amtStr = "₹-" + String.format("%.2f", Math.abs(overallBalance));
+        amtTv.setText(amtStr);
+        amtTv.setTextColor(Color.WHITE);
+        amtTv.setTextSize(32);
+        amtTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+        amtTv.setGravity(android.view.Gravity.CENTER);
+
+        orangeBox.addView(labelTv);
+        orangeBox.addView(amtTv);
+
+        // Bottom: (You Need More Money) - only if balance is negative
+        if (overallBalance < 0) {
+            TextView warningTv = new TextView(getContext());
+            warningTv.setText("(You Need More Money)");
+            warningTv.setTextColor(Color.WHITE);
+            warningTv.setTextSize(16);
+            warningTv.setGravity(android.view.Gravity.CENTER);
+            warningTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+            orangeBox.addView(warningTv);
+        }
+
         summaryRootLayout.addView(orangeBox);
     }
 
@@ -114,7 +138,7 @@ public class SummaryFragment extends Fragment {
         LinearLayout box = new LinearLayout(getContext());
         box.setOrientation(LinearLayout.VERTICAL);
         box.setBackgroundResource(R.drawable.curved_box_white_with_border);
-        box.setPadding(32,22,32,22); // Left,Top,Right,Bottom
+        box.setPadding(32,22,32,22);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         params.setMargins(0,0,0,20);
@@ -136,7 +160,7 @@ public class SummaryFragment extends Fragment {
 
         TextView valueTv = new TextView(getContext());
         valueTv.setText(value);
-        valueTv.setTextColor(valueColor); // <-- Color passed per-balance!
+        valueTv.setTextColor(valueColor);
         valueTv.setTextSize(16);
         valueTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
 
@@ -167,7 +191,7 @@ public class SummaryFragment extends Fragment {
         divider.setBackgroundColor(getResources().getColor(R.color.divider));
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, 1);
-        params.setMargins(0, 10, 0, 10); // vertical space
+        params.setMargins(0, 10, 0, 10);
         divider.setLayoutParams(params);
         return divider;
     }
