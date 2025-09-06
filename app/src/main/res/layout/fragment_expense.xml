@@ -1,41 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_dark"
+    android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- Big Curved Box with Two Sub-boxes -->
     <LinearLayout
+        android:id="@+id/expenseInputCard"
         android:orientation="vertical"
+        android:background="@drawable/curved_box"
+        android:padding="6dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="18dp">
 
+        <!-- Sub-box 1: Category -->
         <EditText
             android:id="@+id/inputCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Expense Category"
-            android:inputType="text"
-            android:layout_marginBottom="8dp" />
+            android:minHeight="54dp"
+            android:background="@drawable/curved_light_box"
+            android:textColor="@color/input_text"
+            android:hint="Expenses Category"
+            android:textSize="17sp"
+            android:fontFamily="@font/poppins_bold"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:layout_marginBottom="12dp"
+            android:textColorHint="@color/grey_hint" />
 
+        <!-- Sub-box 2: Amount -->
         <EditText
             android:id="@+id/inputAmount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Expense Amount (₹)"
+            android:minHeight="54dp"
+            android:background="@drawable/curved_light_box"
+            android:textColor="@color/input_text"
+            android:hint="Expense Amount"
+            android:textSize="17sp"
+            android:fontFamily="@font/poppins_bold"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:inputType="numberDecimal"
-            android:layout_marginBottom="8dp" />
-
-        <Button
-            android:id="@+id/btnAddExpense"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Add Expense"
-            android:layout_marginBottom="16dp" />
-
-        <LinearLayout
-            android:id="@+id/expensesListLayout"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:textColorHint="@color/grey_hint" />
     </LinearLayout>
-</ScrollView>
+
+    <!-- Add Expense Button: initially below inputCard, but move dynamically if expenses exist -->
+    <Button
+        android:id="@+id/btnAddExpense"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="ADD EXPENSE"
+        android:textAllCaps="true"
+        android:textColor="@color/input_text"
+        android:textSize="18sp"
+        android:fontFamily="@font/poppins_bold"
+        android:background="@drawable/curved_orange_button"
+        android:layout_marginBottom="18dp"/>
+
+    <!-- Expenses List (big curved box) -->
+    <LinearLayout
+        android:id="@+id/expensesListLayout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</LinearLayout>
