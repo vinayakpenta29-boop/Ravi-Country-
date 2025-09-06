@@ -6,6 +6,7 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- Friend Name Input -->
     <EditText
         android:id="@+id/inputName"
         android:layout_width="match_parent"
@@ -20,6 +21,7 @@
         android:textColorHint="@color/grey_hint"
         />
 
+    <!-- ORANGE ADD FRIEND Button -->
     <Button
         android:id="@+id/btnAddFriend"
         android:layout_width="match_parent"
