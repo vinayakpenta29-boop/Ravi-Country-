@@ -109,7 +109,7 @@ public class ExpenseFragment extends Fragment {
             LinearLayout outerBox = new LinearLayout(getContext());
             outerBox.setOrientation(LinearLayout.VERTICAL);
             outerBox.setBackgroundResource(R.drawable.curved_box_with_border);
-            outerBox.setPadding(18, 22, 18, 22);
+            outerBox.setPadding(32, 22, 32, 22);
 
             LinearLayout.LayoutParams outerParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
