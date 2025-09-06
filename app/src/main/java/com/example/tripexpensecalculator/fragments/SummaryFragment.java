@@ -78,7 +78,30 @@ public class SummaryFragment extends Fragment {
         // ---- Negative Balance Box ----
         if (!negativeMembers.isEmpty()) {
             LinearLayout negativeBox = getCurvedBox();
-            negativeBox.addView(getSimpleRow("Take Cash from members with Negative Balance", Color.BLUE));
+
+            // Orange sub-box for section title
+            LinearLayout subBox = new LinearLayout(getContext());
+            subBox.setOrientation(LinearLayout.HORIZONTAL);
+            subBox.setBackgroundResource(R.drawable.curved_orange_button);
+            subBox.setPadding(16, 12, 16, 12);
+            LinearLayout.LayoutParams subBoxParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            subBoxParams.setMargins(0, 0, 0, 16);
+            subBox.setLayoutParams(subBoxParams);
+
+            TextView titleTv = new TextView(getContext());
+            titleTv.setText("Take The Balance Amount in This Friends This has a Nagative(-) Balance:");
+            titleTv.setTextColor(Color.WHITE);
+            titleTv.setTextSize(18);
+            titleTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+            titleTv.setGravity(android.view.Gravity.CENTER);
+            titleTv.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            subBox.addView(titleTv);
+
+            negativeBox.addView(subBox);
+
+            // Negative friends list
             for (int i = 0; i < negativeMembers.size(); i++) {
                 String label = negativeMembers.get(i);
                 String val = "-₹" + String.format("%.2f", Math.abs(negativeBalances.get(i)));
