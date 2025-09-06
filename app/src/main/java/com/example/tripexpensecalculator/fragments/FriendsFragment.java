@@ -212,7 +212,6 @@ public class FriendsFragment extends Fragment {
                 cardBox.addView(botInner);
 
                 friendsListLayout.addView(cardBox);
-                friendCount++;
             }
 
             // Place ADD FRIEND and DELETE FRIEND buttons after the list
