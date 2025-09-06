@@ -119,7 +119,7 @@ public class SummaryFragment extends Fragment {
         orangeBox.setGravity(android.view.Gravity.CENTER);
         LinearLayout.LayoutParams orangeParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        orangeParams.setMargins(0, 18, 0, 18);
+        orangeParams.setMargins(24, 18, 24, 18); // more side margin for orange box too
         orangeBox.setLayoutParams(orangeParams);
 
         // Top: label line
@@ -143,7 +143,6 @@ public class SummaryFragment extends Fragment {
         orangeBox.addView(labelTv);
         orangeBox.addView(amtTv);
 
-        // Bottom: (You Need More Money) - only if balance is negative
         if (overallBalance < 0) {
             TextView warningTv = new TextView(getContext());
             warningTv.setText("(You Need More Money)");
@@ -160,11 +159,11 @@ public class SummaryFragment extends Fragment {
     private LinearLayout getCurvedBox() {
         LinearLayout box = new LinearLayout(getContext());
         box.setOrientation(LinearLayout.VERTICAL);
-        box.setBackgroundResource(R.drawable.curved_box_white_with_border);
+        box.setBackgroundResource(R.drawable.curved_box_white_with_orange_border); // new drawable
         box.setPadding(32,22,32,22);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        params.setMargins(0,0,0,20);
+        params.setMargins(24,0,24,20); // more margin left-right
         box.setLayoutParams(params);
         return box;
     }
