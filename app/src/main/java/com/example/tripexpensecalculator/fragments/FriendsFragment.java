@@ -110,13 +110,16 @@ public class FriendsFragment extends Fragment {
                             .setMessage("Are you sure you want to delete " + namesToDelete + "?")
                             .setNegativeButton("Cancel", null)
                             .setPositiveButton("Delete", (d, w) -> {
-                                // Remove all selected friends
-                                for (int i = 0; i < checkedItems.length; i++)
-                                    if (checkedItems[i])
+                                int deletedCount = 0;
+                                for (int i = 0; i < checkedItems.length; i++) {
+                                    if (checkedItems[i]) {
                                         contributions.remove(friendNames[i]);
+                                        deletedCount++;
+                                    }
+                                }
                                 saveFriendsData();
                                 refreshUI();
-                                Toast.makeText(getContext(), count + " friend(s) deleted.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), deletedCount + " friend(s) deleted.", Toast.LENGTH_SHORT).show();
                             })
                             .show();
                 })
