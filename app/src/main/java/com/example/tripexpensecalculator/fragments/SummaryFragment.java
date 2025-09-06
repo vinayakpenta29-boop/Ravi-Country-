@@ -160,7 +160,7 @@ public class SummaryFragment extends Fragment {
         LinearLayout box = new LinearLayout(getContext());
         box.setOrientation(LinearLayout.VERTICAL);
         box.setBackgroundResource(R.drawable.curved_box_white_with_orange_border); // new drawable
-        box.setPadding(32,22,32,22);
+        box.setPadding(38,28,38,28);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         params.setMargins(32,0,32,20); // more margin left-right
