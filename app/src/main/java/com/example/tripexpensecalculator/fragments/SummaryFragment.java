@@ -116,10 +116,10 @@ public class SummaryFragment extends Fragment {
     private LinearLayout getCurvedBox() {
         LinearLayout box = new LinearLayout(getContext());
         box.setOrientation(LinearLayout.VERTICAL);
-        box.setBackgroundResource(R.drawable.curved_box_with_border);
+        box.setBackgroundResource(R.drawable.curved_box_white_with_border);
         box.setPadding(32,22,32,22); // Left,Top,Right,Bottom
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         params.setMargins(0,0,0,20);
         box.setLayoutParams(params);
         return box;
@@ -131,7 +131,7 @@ public class SummaryFragment extends Fragment {
 
         TextView labelTv = new TextView(getContext());
         labelTv.setText(label);
-        labelTv.setTextColor(getResources().getColor(R.color.input_text));
+        labelTv.setTextColor(Color.BLACK);
         labelTv.setTextSize(16);
         labelTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
         LinearLayout.LayoutParams labelParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
@@ -139,7 +139,7 @@ public class SummaryFragment extends Fragment {
 
         TextView valueTv = new TextView(getContext());
         valueTv.setText(value);
-        valueTv.setTextColor(valueColor);
+        valueTv.setTextColor(Color.BLACK);
         valueTv.setTextSize(16);
         valueTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
 
