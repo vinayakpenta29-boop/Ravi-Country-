@@ -2,9 +2,6 @@ package com.example.tripexpensecalculator.fragments;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,11 +47,11 @@ public class SummaryFragment extends Fragment {
 
         // ---- Main Summary Box ----
         LinearLayout mainBox = getCurvedBox();
-        mainBox.addView(getRow("Total Contributions", "₹" + String.format("%.2f", totalContribution), Color.WHITE));
+        mainBox.addView(getRow("Total Contributions", "₹" + String.format("%.2f", totalContribution), Color.BLACK));
         mainBox.addView(getDivider());
-        mainBox.addView(getRow("Total Expenses",     "₹" + String.format("%.2f", totalExpense), Color.WHITE));
+        mainBox.addView(getRow("Total Expenses",     "₹" + String.format("%.2f", totalExpense), Color.BLACK));
         mainBox.addView(getDivider());
-        mainBox.addView(getRow("Each Person Share",  "₹" + String.format("%.2f", perPerson), Color.WHITE));
+        mainBox.addView(getRow("Each Person Share",  "₹" + String.format("%.2f", perPerson), Color.BLACK));
         summaryRootLayout.addView(mainBox);
 
         // ---- Friends Balance Box ----
@@ -65,7 +62,7 @@ public class SummaryFragment extends Fragment {
         for (Map.Entry<String, Double> entry : contributions.entrySet()) {
             double bal = entry.getValue() - perPerson;
             String sign = (bal >= 0) ? "+" : "-";
-            int color = (bal >= 0) ? Color.parseColor("#117c00") : Color.RED;
+            int color = (bal >= 0) ? Color.parseColor("#117c00") : Color.RED; // Green if positive/zero, red if negative
             String balanceLabel = entry.getKey() + " paid";
             String balanceValue = "₹" + String.format("%.2f", entry.getValue()) + "  |  " +
                     "Balance: " + sign + "₹" + String.format("%.2f", Math.abs(bal));
@@ -105,7 +102,7 @@ public class SummaryFragment extends Fragment {
         text += String.format("%.2f", Math.abs(overallBalance));
         TextView ov = new TextView(getContext());
         ov.setText(text);
-        ov.setTextColor(getResources().getColor(R.color.input_text));
+        ov.setTextColor(Color.BLACK);
         ov.setTextSize(18);
         ov.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
         ov.setGravity(android.view.Gravity.CENTER);
@@ -119,7 +116,7 @@ public class SummaryFragment extends Fragment {
         box.setBackgroundResource(R.drawable.curved_box_white_with_border);
         box.setPadding(32,22,32,22); // Left,Top,Right,Bottom
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         params.setMargins(0,0,0,20);
         box.setLayoutParams(params);
         return box;
@@ -139,7 +136,7 @@ public class SummaryFragment extends Fragment {
 
         TextView valueTv = new TextView(getContext());
         valueTv.setText(value);
-        valueTv.setTextColor(Color.BLACK);
+        valueTv.setTextColor(valueColor); // <-- Color passed per-balance!
         valueTv.setTextSize(16);
         valueTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
 
