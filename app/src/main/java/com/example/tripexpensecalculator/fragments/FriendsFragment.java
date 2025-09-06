@@ -25,7 +25,7 @@ import java.util.Map;
 
 public class FriendsFragment extends Fragment {
     private EditText inputName;
-    private Button btnAddFriend;
+    private Button btnAddFriend, btnDeleteFriend;
     private LinearLayout friendsListLayout;
     private ViewGroup rootLayout;
 
@@ -45,10 +45,12 @@ public class FriendsFragment extends Fragment {
 
         inputName = root.findViewById(R.id.inputName);
         btnAddFriend = root.findViewById(R.id.btnAddFriend);
+        btnDeleteFriend = root.findViewById(R.id.btnDeleteFriend);
         friendsListLayout = root.findViewById(R.id.friendsListLayout);
         rootLayout = (ViewGroup) root;
 
         btnAddFriend.setOnClickListener(v -> addFriend());
+        btnDeleteFriend.setOnClickListener(v -> showDeleteFriendDialog());
 
         loadFriendsData();
         refreshUI();
@@ -75,27 +77,45 @@ public class FriendsFragment extends Fragment {
         Toast.makeText(getContext(), "Friend added.", Toast.LENGTH_SHORT).show();
     }
 
+    private void showDeleteFriendDialog() {
+        if (contributions.isEmpty()) {
+            Toast.makeText(getContext(), "No friends to delete.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        final String[] friendNames = contributions.keySet().toArray(new String[0]);
+        new android.app.AlertDialog.Builder(requireContext())
+            .setTitle("Delete Friend")
+            .setItems(friendNames, (dialog, which) -> {
+                String nameToDelete = friendNames[which];
+                contributions.remove(nameToDelete);
+                saveFriendsData();
+                refreshUI();
+                Toast.makeText(getContext(), nameToDelete + " deleted.", Toast.LENGTH_SHORT).show();
+            })
+            .setNegativeButton("Cancel", null)
+            .show();
+    }
+
     private void refreshUI() {
         friendsListLayout.removeAllViews();
 
-        // Remove ADD FRIEND from old spot if needed
+        // Remove ADD FRIEND and DELETE FRIEND from old spot if needed
         if (btnAddFriend.getParent() != null) ((ViewGroup) btnAddFriend.getParent()).removeView(btnAddFriend);
+        if (btnDeleteFriend.getParent() != null) ((ViewGroup) btnDeleteFriend.getParent()).removeView(btnDeleteFriend);
 
         if (contributions.isEmpty()) {
             int inputNameIndex = rootLayout.indexOfChild(inputName);
             rootLayout.addView(btnAddFriend, inputNameIndex + 1);
+            rootLayout.addView(btnDeleteFriend, inputNameIndex + 2);
         } else {
-            int friendCount = 0;
             for (Map.Entry<String, Double> entry : contributions.entrySet()) {
                 final String friendName = entry.getKey();
 
                 // OUTER CARD
                 LinearLayout cardBox = new LinearLayout(getContext());
                 cardBox.setOrientation(LinearLayout.VERTICAL);
-                cardBox.setBackgroundResource(R.drawable.curved_box);
-                cardBox.setPadding(20, 28, 20, 28);
                 cardBox.setBackgroundResource(R.drawable.curved_box_with_border);
-
+                cardBox.setPadding(20, 28, 20, 28);
 
                 LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
@@ -159,12 +179,12 @@ public class FriendsFragment extends Fragment {
                 inputAmt.setLayoutParams(inputAmtParams);
 
                 Button addAmtBtn = new Button(getContext());
-                addAmtBtn.setText("ADD\nAMOUNT"); // Center-aligned, stacked
+                addAmtBtn.setText("ADD\nAMOUNT");
                 addAmtBtn.setTextColor(getResources().getColor(R.color.input_text));
                 addAmtBtn.setTextSize(14);
                 addAmtBtn.setBackgroundResource(R.drawable.curved_orange_button);
                 addAmtBtn.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
-                addAmtBtn.setGravity(Gravity.CENTER); // Center text both vertically and horizontally
+                addAmtBtn.setGravity(Gravity.CENTER);
                 LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 btnParams.setMargins(24, 0, 0, 0);
@@ -195,8 +215,11 @@ public class FriendsFragment extends Fragment {
                 friendCount++;
             }
 
+            // Place ADD FRIEND and DELETE FRIEND buttons after the list
             if (btnAddFriend.getParent() != null) ((ViewGroup) btnAddFriend.getParent()).removeView(btnAddFriend);
             rootLayout.addView(btnAddFriend);
+            if (btnDeleteFriend.getParent() != null) ((ViewGroup) btnDeleteFriend.getParent()).removeView(btnDeleteFriend);
+            rootLayout.addView(btnDeleteFriend);
         }
     }
 
