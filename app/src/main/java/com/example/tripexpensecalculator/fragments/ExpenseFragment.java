@@ -24,7 +24,8 @@ public class ExpenseFragment extends Fragment {
 
     private EditText inputCategory, inputAmount;
     private Button btnAddExpense;
-    private LinearLayout expensesListLayout;
+    private LinearLayout expensesListLayout, expenseInputCard;
+    private ViewGroup rootLayout;
 
     private static final List<String> expenseTypes = new ArrayList<>();
     private static final List<Double> expenseAmounts = new ArrayList<>();
@@ -49,11 +50,13 @@ public class ExpenseFragment extends Fragment {
         inputAmount = root.findViewById(R.id.inputAmount);
         btnAddExpense = root.findViewById(R.id.btnAddExpense);
         expensesListLayout = root.findViewById(R.id.expensesListLayout);
+        expenseInputCard = root.findViewById(R.id.expenseInputCard);
+        rootLayout = (ViewGroup) root;
 
         btnAddExpense.setOnClickListener(v -> addExpense());
 
         loadExpensesData();
-        refreshExpensesList();
+        refreshExpensesUI();
         return root;
     }
 
@@ -89,17 +92,69 @@ public class ExpenseFragment extends Fragment {
         inputAmount.setText("");
 
         saveExpensesData();
-        refreshExpensesList();
+        refreshExpensesUI();
         Toast.makeText(getContext(), "Expense added.", Toast.LENGTH_SHORT).show();
     }
 
-    private void refreshExpensesList() {
+    private void refreshExpensesUI() {
         expensesListLayout.removeAllViews();
-        for (int i = 0; i < expenseTypes.size(); i++) {
-            TextView tv = new TextView(getContext());
-            tv.setText(expenseTypes.get(i) + ": ₹" + String.format("%.2f", expenseAmounts.get(i)));
-            tv.setTextSize(16);
-            expensesListLayout.addView(tv);
+        if (btnAddExpense.getParent() != null) ((ViewGroup) btnAddExpense.getParent()).removeView(btnAddExpense);
+
+        // If no expenses, show Add Expense button below input
+        if (expenseTypes.isEmpty()) {
+            int inputCardIdx = ((ViewGroup) expenseInputCard.getParent()).indexOfChild(expenseInputCard);
+            rootLayout.addView(btnAddExpense, inputCardIdx + 1);
+        } else {
+            // List section: big curved box with divider lines
+            LinearLayout outerBox = new LinearLayout(getContext());
+            outerBox.setOrientation(LinearLayout.VERTICAL);
+            outerBox.setBackgroundResource(R.drawable.curved_box_with_border);
+            outerBox.setPadding(18, 22, 18, 22);
+
+            LinearLayout.LayoutParams outerParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            outerParams.setMargins(0, 10, 0, 24);
+            outerBox.setLayoutParams(outerParams);
+
+            for (int i = 0; i < expenseTypes.size(); i++) {
+                LinearLayout row = new LinearLayout(getContext());
+                row.setOrientation(LinearLayout.HORIZONTAL);
+                row.setPadding(0, 8, 0, 8);
+
+                TextView typeView = new TextView(getContext());
+                typeView.setText(expenseTypes.get(i));
+                typeView.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+                typeView.setTextColor(getResources().getColor(R.color.input_text));
+                typeView.setTextSize(16);
+                LinearLayout.LayoutParams leftParams = new LinearLayout.LayoutParams(0,
+                        LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+                typeView.setLayoutParams(leftParams);
+
+                TextView amtView = new TextView(getContext());
+                amtView.setText("₹" + String.format("%.2f", expenseAmounts.get(i)));
+                amtView.setTextColor(getResources().getColor(R.color.input_text));
+                amtView.setTextSize(16);
+
+                row.addView(typeView);
+                row.addView(amtView);
+
+                outerBox.addView(row);
+
+                // Divider, except after last
+                if (i < expenseTypes.size() - 1) {
+                    View divider = new View(getContext());
+                    divider.setBackgroundColor(getResources().getColor(R.color.divider));
+                    LinearLayout.LayoutParams dividParams = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT, 1);
+                    dividParams.setMargins(0, 12, 0, 12);
+                    divider.setLayoutParams(dividParams);
+                    outerBox.addView(divider);
+                }
+            }
+            expensesListLayout.addView(outerBox);
+
+            // Add the button after the expenses list
+            rootLayout.addView(btnAddExpense);
         }
     }
 
