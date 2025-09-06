@@ -163,7 +163,7 @@ public class SummaryFragment extends Fragment {
         box.setPadding(32,22,32,22);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        params.setMargins(24,0,24,20); // more margin left-right
+        params.setMargins(32,0,32,20); // more margin left-right
         box.setLayoutParams(params);
         return box;
     }
