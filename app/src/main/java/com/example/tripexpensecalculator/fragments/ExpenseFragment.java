@@ -59,12 +59,10 @@ public class ExpenseFragment extends Fragment {
         btnDeleteExpense = new Button(getContext());
         btnDeleteExpense.setText("DELETE A EXPENSE");
         btnDeleteExpense.setAllCaps(true);
-        // Use white bold text for best on gradient
         btnDeleteExpense.setTextColor(getResources().getColor(android.R.color.white));
         btnDeleteExpense.setTextSize(18);
         btnDeleteExpense.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
         btnDeleteExpense.setBackgroundResource(R.drawable.gradient_pink_purple_button);
-        // Full WRAP_CONTENT height so button isn't clipped!
         LinearLayout.LayoutParams delParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         delParams.setMargins(0, 0, 0, 18);
@@ -189,15 +187,17 @@ public class ExpenseFragment extends Fragment {
     private void refreshExpensesUI() {
         expensesListLayout.removeAllViews();
 
-        // Always add the buttons one after another
+        // Remove buttons from any parent before re-adding
         if (btnAddExpense.getParent() != null) ((ViewGroup) btnAddExpense.getParent()).removeView(btnAddExpense);
         if (btnDeleteExpense.getParent() != null) ((ViewGroup) btnDeleteExpense.getParent()).removeView(btnDeleteExpense);
 
         int inputCardIdx = ((ViewGroup) expenseInputCard.getParent()).indexOfChild(expenseInputCard);
         rootLayout.addView(btnAddExpense, inputCardIdx + 1);
-        rootLayout.addView(btnDeleteExpense, inputCardIdx + 2);
 
+        // SHOW Delete Expense button ONLY if there are expenses
         if (!expenseTypes.isEmpty()) {
+            rootLayout.addView(btnDeleteExpense, inputCardIdx + 2);
+
             // List section: big curved box with divider lines
             LinearLayout outerBox = new LinearLayout(getContext());
             outerBox.setOrientation(LinearLayout.VERTICAL);
@@ -245,6 +245,7 @@ public class ExpenseFragment extends Fragment {
             }
             expensesListLayout.addView(outerBox);
         }
+        // If no expenses, do NOT add delete button (not shown by default)
     }
 
     private void saveExpensesData() {
