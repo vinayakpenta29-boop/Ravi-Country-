@@ -49,7 +49,7 @@ public class FriendsFragment extends Fragment {
         friendsListLayout = root.findViewById(R.id.friendsListLayout);
         rootLayout = (ViewGroup) root;
 
-        // Always create Delete Friend button programmatically and style it only here!
+        // --- CREATE DELETE FRIEND BUTTON PROGRAMMATICALLY ---
         btnDeleteFriend = new Button(getContext());
         btnDeleteFriend.setText("DELETE A FRIEND");
         btnDeleteFriend.setAllCaps(true);
@@ -144,21 +144,17 @@ public class FriendsFragment extends Fragment {
     private void refreshUI() {
         friendsListLayout.removeAllViews();
 
-        // Remove both buttons from parent, regardless of empty or not
+        // Remove both buttons from parent
         if (btnAddFriend.getParent() != null) ((ViewGroup) btnAddFriend.getParent()).removeView(btnAddFriend);
         if (btnDeleteFriend.getParent() != null) ((ViewGroup) btnDeleteFriend.getParent()).removeView(btnDeleteFriend);
 
-        // Always add ADD FRIEND under input
         int inputNameIndex = rootLayout.indexOfChild(inputName);
-        rootLayout.addView(btnAddFriend, inputNameIndex + 1);
 
-        // ONLY add DELETE A FRIEND IF there's at least one friend
-        if (!contributions.isEmpty()) {
-            rootLayout.addView(btnDeleteFriend, inputNameIndex + 2);
-        }
-
-        // friend cards
-        if (!contributions.isEmpty()) {
+        if (contributions.isEmpty()) {
+            // Show ADD FRIEND at the top (just after input)
+            rootLayout.addView(btnAddFriend, inputNameIndex + 1);
+        } else {
+            // Show all friend cards first
             for (Map.Entry<String, Double> entry : contributions.entrySet()) {
                 final String friendName = entry.getKey();
 
@@ -264,6 +260,9 @@ public class FriendsFragment extends Fragment {
 
                 friendsListLayout.addView(cardBox);
             }
+            // Add buttons below the entire list
+            rootLayout.addView(btnAddFriend);
+            rootLayout.addView(btnDeleteFriend);
         }
     }
 
