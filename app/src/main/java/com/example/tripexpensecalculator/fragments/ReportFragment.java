@@ -48,19 +48,20 @@ public class ReportFragment extends Fragment {
         double totalContribution = sum(contributions);
         double balance = totalContribution - totalExpense;
 
-        // Section 1: Transaction Log
+        // Section 1: Transaction Log (white+orange border curved box)
         LinearLayout logBox = getCurvedBox();
         logBox.addView(getHeaderTextView("All Expenses (Transaction Log)"));
         for (int i = 0; i < expenseTypes.size(); i++) {
             logBox.addView(getRowTextView(
                 (i + 1) + ". " + expenseTypes.get(i),
-                "₹" + String.format("%.2f", expenseAmounts.get(i))
+                "₹" + String.format("%.2f", expenseAmounts.get(i)),
+                Color.BLACK, false
             ));
             if (i < expenseTypes.size() - 1) logBox.addView(getDivider());
         }
         reportRootLayout.addView(logBox);
 
-        // Section 2: Category-wise summary
+        // Section 2: Category-wise summary (white+orange border curved box)
         LinearLayout categoryBox = getCurvedBox();
         categoryBox.addView(getHeaderTextView("Category-wise Summary"));
         Map<String, Double> categoryTotals = new LinkedHashMap<>();
@@ -74,37 +75,46 @@ public class ReportFragment extends Fragment {
             double percent = (totalExpense > 0) ? (e.getValue() * 100.0 / totalExpense) : 0.0;
             categoryBox.addView(getRowTextView(
                 e.getKey(),
-                "₹" + String.format("%.2f", e.getValue()) + " (" + String.format("%.2f", percent) + "%)"
+                "₹" + String.format("%.2f", e.getValue()) + " (" + String.format("%.2f", percent) + "%)",
+                Color.BLACK, false
             ));
             if (cNo++ < categoryTotals.size() - 1) categoryBox.addView(getDivider());
         }
         reportRootLayout.addView(categoryBox);
 
-        // Section 3: Totals and Balance
-        LinearLayout totalsBox = getCurvedBox();
-        totalsBox.addView(getRowTextView("Total Expenses", "₹" + String.format("%.2f", totalExpense)));
-        totalsBox.addView(getDivider());
-        totalsBox.addView(getRowTextView("Total Contributions", "₹" + String.format("%.2f", totalContribution)));
-        totalsBox.addView(getDivider());
-        String balanceLabel, balanceValue;
-        int balanceColor = Color.BLACK;
+        // Section 3: Totals and Balance (orange curved box, white bold text)
+        LinearLayout orangeBox = new LinearLayout(getContext());
+        orangeBox.setOrientation(LinearLayout.VERTICAL);
+        orangeBox.setBackgroundResource(R.drawable.curved_orange_button);
+        orangeBox.setPadding(32, 22, 32, 22);
+        LinearLayout.LayoutParams orangeParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        orangeParams.setMargins(32, 0, 32, 20);
+        orangeBox.setLayoutParams(orangeParams);
+
+        orangeBox.addView(getRowTextView("Total Expenses", "₹" + String.format("%.2f", totalExpense), Color.WHITE, true));
+        orangeBox.addView(getDivider(Color.WHITE));
+        orangeBox.addView(getRowTextView("Total Contributions", "₹" + String.format("%.2f", totalContribution), Color.WHITE, true));
+        orangeBox.addView(getDivider(Color.WHITE));
+
+        String balanceLabel;
+        String balanceValue;
+        int balanceColor = Color.WHITE;
         if (balance > 0) {
             balanceLabel = "Balance (Extra Money Left)";
             balanceValue = "₹" + String.format("%.2f", balance);
         } else if (balance < 0) {
             balanceLabel = "Balance (More Money Needed)";
             balanceValue = "-₹" + String.format("%.2f", Math.abs(balance));
-            balanceColor = Color.RED;
         } else {
             balanceLabel = "Balance";
             balanceValue = "Settled (0)";
-            balanceColor = Color.parseColor("#117c00");
         }
-        totalsBox.addView(getRowTextView(balanceLabel, balanceValue, balanceColor));
-        reportRootLayout.addView(totalsBox);
+        orangeBox.addView(getRowTextView(balanceLabel, balanceValue, balanceColor, true));
+        reportRootLayout.addView(orangeBox);
     }
 
-    // Helper for big curved white+orange border box with margin
+    // Helper for big curved white+orange border box with horizontal margin
     private LinearLayout getCurvedBox() {
         LinearLayout box = new LinearLayout(getContext());
         box.setOrientation(LinearLayout.VERTICAL);
@@ -112,12 +122,12 @@ public class ReportFragment extends Fragment {
         box.setPadding(32, 22, 32, 22);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        params.setMargins(32, 0, 32, 20); // 32dp side margin for same look as Summary tab
+        params.setMargins(32, 0, 32, 20); // 32dp side margin
         box.setLayoutParams(params);
         return box;
     }
 
-    // Section or card title
+    // Section header title
     private TextView getHeaderTextView(String text) {
         TextView tv = new TextView(getContext());
         tv.setText(text);
@@ -132,17 +142,14 @@ public class ReportFragment extends Fragment {
         return tv;
     }
 
-    // Expense/summary row
-    private LinearLayout getRowTextView(String left, String right) {
-        return getRowTextView(left, right, Color.BLACK);
-    }
-    private LinearLayout getRowTextView(String left, String right, int rightColor) {
+    // Row with 2 columns: left (label), right (value)
+    private LinearLayout getRowTextView(String left, String right, int rightColor, boolean whiteMode) {
         LinearLayout row = new LinearLayout(getContext());
         row.setOrientation(LinearLayout.HORIZONTAL);
 
         TextView leftTv = new TextView(getContext());
         leftTv.setText(left);
-        leftTv.setTextColor(Color.BLACK);
+        leftTv.setTextColor(whiteMode ? Color.WHITE : Color.BLACK);
         leftTv.setTextSize(16);
         leftTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
         LinearLayout.LayoutParams leftParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
@@ -159,10 +166,14 @@ public class ReportFragment extends Fragment {
         return row;
     }
 
-    // Divider line
+    // Divider line, default color (black/grey)
     private View getDivider() {
+        return getDivider(getResources().getColor(R.color.divider));
+    }
+    // Divider line, custom color (e.g., white for orange box)
+    private View getDivider(int color) {
         View divider = new View(getContext());
-        divider.setBackgroundColor(getResources().getColor(R.color.divider));
+        divider.setBackgroundColor(color);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, 1);
         params.setMargins(0, 10, 0, 10);
