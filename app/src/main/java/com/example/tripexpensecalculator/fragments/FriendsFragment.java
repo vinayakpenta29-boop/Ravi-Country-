@@ -26,7 +26,7 @@ import java.util.Map;
 public class FriendsFragment extends Fragment {
     private EditText inputName;
     private Button btnAddFriend;
-    private Button btnDeleteFriend; // now always handled programmatically
+    private Button btnDeleteFriend;
     private LinearLayout friendsListLayout;
     private ViewGroup rootLayout;
 
@@ -49,7 +49,7 @@ public class FriendsFragment extends Fragment {
         friendsListLayout = root.findViewById(R.id.friendsListLayout);
         rootLayout = (ViewGroup) root;
 
-        // -- Create DELETE A FRIEND BUTTON with correct style --
+        // Always create Delete Friend button programmatically and style it only here!
         btnDeleteFriend = new Button(getContext());
         btnDeleteFriend.setText("DELETE A FRIEND");
         btnDeleteFriend.setAllCaps(true);
@@ -106,7 +106,6 @@ public class FriendsFragment extends Fragment {
                     checkedItems[which] = isChecked;
                 })
                 .setPositiveButton("OK", (dialog, which) -> {
-                    // Collect selected names
                     StringBuilder sb = new StringBuilder();
                     int count = 0;
                     for (int i = 0; i < checkedItems.length; i++) {
@@ -116,7 +115,7 @@ public class FriendsFragment extends Fragment {
                             count++;
                         }
                     }
-                    if (count == 0) return; // Nothing selected
+                    if (count == 0) return;
 
                     String namesToDelete = sb.toString();
 
@@ -145,19 +144,20 @@ public class FriendsFragment extends Fragment {
     private void refreshUI() {
         friendsListLayout.removeAllViews();
 
-        // Remove buttons from any parent before re-adding
+        // Remove both buttons from parent, regardless of empty or not
         if (btnAddFriend.getParent() != null) ((ViewGroup) btnAddFriend.getParent()).removeView(btnAddFriend);
         if (btnDeleteFriend.getParent() != null) ((ViewGroup) btnDeleteFriend.getParent()).removeView(btnDeleteFriend);
 
-        // Always add ADD FRIEND button just after the input
+        // Always add ADD FRIEND under input
         int inputNameIndex = rootLayout.indexOfChild(inputName);
         rootLayout.addView(btnAddFriend, inputNameIndex + 1);
 
-        // Only add DELETE FRIEND button if there are friends
+        // ONLY add DELETE A FRIEND IF there's at least one friend
         if (!contributions.isEmpty()) {
             rootLayout.addView(btnDeleteFriend, inputNameIndex + 2);
         }
 
+        // friend cards
         if (!contributions.isEmpty()) {
             for (Map.Entry<String, Double> entry : contributions.entrySet()) {
                 final String friendName = entry.getKey();
