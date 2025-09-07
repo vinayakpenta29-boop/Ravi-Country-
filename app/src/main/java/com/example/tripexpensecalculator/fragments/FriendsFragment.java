@@ -25,7 +25,8 @@ import java.util.Map;
 
 public class FriendsFragment extends Fragment {
     private EditText inputName;
-    private Button btnAddFriend, btnDeleteFriend;
+    private Button btnAddFriend;
+    private Button btnDeleteFriend; // now always handled programmatically
     private LinearLayout friendsListLayout;
     private ViewGroup rootLayout;
 
@@ -48,7 +49,7 @@ public class FriendsFragment extends Fragment {
         friendsListLayout = root.findViewById(R.id.friendsListLayout);
         rootLayout = (ViewGroup) root;
 
-        // --- CREATE DELETE FRIEND BUTTON PROGRAMMATICALLY FOR CONTROL ---
+        // -- Create DELETE A FRIEND BUTTON with correct style --
         btnDeleteFriend = new Button(getContext());
         btnDeleteFriend.setText("DELETE A FRIEND");
         btnDeleteFriend.setAllCaps(true);
@@ -148,11 +149,11 @@ public class FriendsFragment extends Fragment {
         if (btnAddFriend.getParent() != null) ((ViewGroup) btnAddFriend.getParent()).removeView(btnAddFriend);
         if (btnDeleteFriend.getParent() != null) ((ViewGroup) btnDeleteFriend.getParent()).removeView(btnDeleteFriend);
 
-        int inputNameIndex = rootLayout.indexOfChild(inputName);
         // Always add ADD FRIEND button just after the input
+        int inputNameIndex = rootLayout.indexOfChild(inputName);
         rootLayout.addView(btnAddFriend, inputNameIndex + 1);
 
-        // SHOW Delete Friend button ONLY if there are friends
+        // Only add DELETE FRIEND button if there are friends
         if (!contributions.isEmpty()) {
             rootLayout.addView(btnDeleteFriend, inputNameIndex + 2);
         }
