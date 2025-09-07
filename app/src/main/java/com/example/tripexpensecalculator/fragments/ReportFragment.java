@@ -1,11 +1,14 @@
 package com.example.tripexpensecalculator.fragments;
 
+import android.app.AlertDialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -20,6 +23,7 @@ import java.util.*;
 public class ReportFragment extends Fragment {
 
     private LinearLayout reportRootLayout;
+    private Button btnResetAllData;
 
     @Nullable
     @Override
@@ -27,6 +31,22 @@ public class ReportFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_report, container, false);
         reportRootLayout = root.findViewById(R.id.reportRootLayout);
+
+        btnResetAllData = new Button(getContext());
+        btnResetAllData.setText("RESET ALL DATA");
+        btnResetAllData.setAllCaps(true);
+        btnResetAllData.setTextColor(getResources().getColor(android.R.color.white));
+        btnResetAllData.setTextSize(18);
+        btnResetAllData.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+        btnResetAllData.setBackgroundResource(R.drawable.curved_orange_button);
+        LinearLayout.LayoutParams resetParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        resetParams.setMargins(32, 12, 32, 32);
+        btnResetAllData.setLayoutParams(resetParams);
+        btnResetAllData.setGravity(Gravity.CENTER);
+        btnResetAllData.setPadding(0, 18, 0, 18);
+        btnResetAllData.setOnClickListener(v -> showResetWarning());
+
         displayDetailedReport();
         return root;
     }
@@ -48,7 +68,7 @@ public class ReportFragment extends Fragment {
         double totalContribution = sum(contributions);
         double balance = totalContribution - totalExpense;
 
-        // Section 1: Transaction Log (white+orange border curved box)
+        // Section 1: Transaction Log
         LinearLayout logBox = getCurvedBox();
         logBox.addView(getHeaderTextView("All Expenses (Transaction Log)"));
         for (int i = 0; i < expenseTypes.size(); i++) {
@@ -61,7 +81,7 @@ public class ReportFragment extends Fragment {
         }
         reportRootLayout.addView(logBox);
 
-        // Section 2: Category-wise summary (white+orange border curved box)
+        // Section 2: Category-wise summary
         LinearLayout categoryBox = getCurvedBox();
         categoryBox.addView(getHeaderTextView("Category-wise Summary"));
         Map<String, Double> categoryTotals = new LinkedHashMap<>();
@@ -112,13 +132,42 @@ public class ReportFragment extends Fragment {
         }
         orangeBox.addView(getRowTextView(balanceLabel, balanceValue, balanceColor, true));
         reportRootLayout.addView(orangeBox);
+
+        // ------- Add Reset Button at the end -------
+        reportRootLayout.addView(btnResetAllData);
+    }
+
+    private void showResetWarning() {
+        new AlertDialog.Builder(getContext())
+                .setTitle("Warning")
+                .setMessage("Are you sure! it will be Erase All Data")
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("Reset", (dialog, which) -> {
+                    clearAllData();
+                })
+                .show();
+    }
+
+    private void clearAllData() {
+        // Clear Friends
+        FriendsFragment.getContributions().clear();
+        // Clear Expenses
+        ExpenseFragment.getExpenseTypes().clear();
+        ExpenseFragment.getExpenseAmounts().clear();
+
+        // Remove from persistent storage
+        Context ctx = requireContext();
+        ctx.getSharedPreferences("TripExpensePrefs", Context.MODE_PRIVATE).edit().clear().apply();
+
+        displayDetailedReport();
+        Toast.makeText(ctx, "All data has been reset.", Toast.LENGTH_SHORT).show();
     }
 
     // Helper for big curved white+orange border box with horizontal margin
     private LinearLayout getCurvedBox() {
         LinearLayout box = new LinearLayout(getContext());
         box.setOrientation(LinearLayout.VERTICAL);
-        box.setBackgroundResource(R.drawable.gradient_pink_purple_button);
+        box.setBackgroundResource(R.drawable.curved_box_white_with_orange_border);
         box.setPadding(32, 22, 32, 22);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -166,11 +215,9 @@ public class ReportFragment extends Fragment {
         return row;
     }
 
-    // Divider line, default color (black/grey)
     private View getDivider() {
         return getDivider(getResources().getColor(R.color.divider));
     }
-    // Divider line, custom color (e.g., white for orange box)
     private View getDivider(int color) {
         View divider = new View(getContext());
         divider.setBackgroundColor(color);
