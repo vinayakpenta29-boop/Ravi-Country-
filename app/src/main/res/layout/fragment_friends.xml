@@ -8,23 +8,21 @@
 
     <!-- Friend Name Input -->
     <EditText
-    android:id="@+id/inputName"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:minHeight="60dp"
-    android:background="@drawable/curved_box"
-    android:textColor="@color/input_text"
-    android:hint="Friend's Name"
-    android:textSize="18sp"
-    android:fontFamily="@font/poppins_bold"
-    android:paddingLeft="18dp"
-    android:paddingRight="18dp"
-    android:paddingTop="14dp"
-    android:paddingBottom="14dp"
-    android:layout_marginBottom="10dp"
-    android:textColorHint="@color/grey_hint"
-    />
-
+        android:id="@+id/inputName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="60dp"
+        android:background="@drawable/curved_box"
+        android:textColor="@color/input_text"
+        android:hint="Friend's Name"
+        android:textSize="18sp"
+        android:fontFamily="@font/poppins_bold"
+        android:paddingLeft="18dp"
+        android:paddingRight="18dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp"
+        android:layout_marginBottom="10dp"
+        android:textColorHint="@color/grey_hint" />
 
     <!-- ORANGE ADD FRIEND Button -->
     <Button
@@ -37,23 +35,9 @@
         android:textSize="18sp"
         android:fontFamily="@font/poppins_bold"
         android:background="@drawable/curved_orange_button"
-        android:layout_marginBottom="18dp"
-        />
+        android:layout_marginBottom="18dp" />
 
-    <Button
-        android:id="@+id/btnDeleteFriend"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="DELETE A FRIEND"
-        android:textAllCaps="true"
-        android:textColor="@color/input_text"
-        android:textSize="18sp"
-        android:fontFamily="@font/poppins_bold"
-        android:background="@drawable/curved_red_button"
-        android:layout_marginBottom="18dp"
-        />
-
-
+    <!-- FRIENDS LIST -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
