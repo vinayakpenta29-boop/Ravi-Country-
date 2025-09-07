@@ -59,15 +59,18 @@ public class ExpenseFragment extends Fragment {
         btnDeleteExpense = new Button(getContext());
         btnDeleteExpense.setText("DELETE A EXPENSE");
         btnDeleteExpense.setAllCaps(true);
-        btnDeleteExpense.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+        // Use white bold text for best on gradient
+        btnDeleteExpense.setTextColor(getResources().getColor(android.R.color.white));
         btnDeleteExpense.setTextSize(18);
         btnDeleteExpense.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
-        btnDeleteExpense.setBackgroundResource(R.drawable.curved_yellow_button);
+        btnDeleteExpense.setBackgroundResource(R.drawable.gradient_pink_purple_button);
+        // Full WRAP_CONTENT height so button isn't clipped!
         LinearLayout.LayoutParams delParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, 50); // height in px, can use dp util
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         delParams.setMargins(0, 0, 0, 18);
         btnDeleteExpense.setLayoutParams(delParams);
         btnDeleteExpense.setGravity(Gravity.CENTER);
+        btnDeleteExpense.setPadding(0, 16, 0, 16);
 
         btnAddExpense.setOnClickListener(v -> addExpense());
         btnDeleteExpense.setOnClickListener(v -> showDeleteExpenseDialog());
@@ -186,10 +189,10 @@ public class ExpenseFragment extends Fragment {
     private void refreshExpensesUI() {
         expensesListLayout.removeAllViews();
 
+        // Always add the buttons one after another
         if (btnAddExpense.getParent() != null) ((ViewGroup) btnAddExpense.getParent()).removeView(btnAddExpense);
         if (btnDeleteExpense.getParent() != null) ((ViewGroup) btnDeleteExpense.getParent()).removeView(btnDeleteExpense);
 
-        // Always add the buttons one after another
         int inputCardIdx = ((ViewGroup) expenseInputCard.getParent()).indexOfChild(expenseInputCard);
         rootLayout.addView(btnAddExpense, inputCardIdx + 1);
         rootLayout.addView(btnDeleteExpense, inputCardIdx + 2);
