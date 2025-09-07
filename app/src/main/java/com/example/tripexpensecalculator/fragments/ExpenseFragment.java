@@ -1,9 +1,11 @@
 package com.example.tripexpensecalculator.fragments;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +25,7 @@ import java.util.List;
 public class ExpenseFragment extends Fragment {
 
     private EditText inputCategory, inputAmount;
-    private Button btnAddExpense;
+    private Button btnAddExpense, btnDeleteExpense;
     private LinearLayout expensesListLayout, expenseInputCard;
     private ViewGroup rootLayout;
 
@@ -53,7 +55,22 @@ public class ExpenseFragment extends Fragment {
         expenseInputCard = root.findViewById(R.id.expenseInputCard);
         rootLayout = (ViewGroup) root;
 
+        // Create Delete Expense Button programmatically so it's always after Add
+        btnDeleteExpense = new Button(getContext());
+        btnDeleteExpense.setText("DELETE A EXPENSE");
+        btnDeleteExpense.setAllCaps(true);
+        btnDeleteExpense.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+        btnDeleteExpense.setTextSize(18);
+        btnDeleteExpense.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+        btnDeleteExpense.setBackgroundResource(R.drawable.curved_yellow_button);
+        LinearLayout.LayoutParams delParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, 50); // height in px, can use dp util
+        delParams.setMargins(0, 0, 0, 18);
+        btnDeleteExpense.setLayoutParams(delParams);
+        btnDeleteExpense.setGravity(Gravity.CENTER);
+
         btnAddExpense.setOnClickListener(v -> addExpense());
+        btnDeleteExpense.setOnClickListener(v -> showDeleteExpenseDialog());
 
         loadExpensesData();
         refreshExpensesUI();
@@ -96,14 +113,90 @@ public class ExpenseFragment extends Fragment {
         Toast.makeText(getContext(), "Expense added.", Toast.LENGTH_SHORT).show();
     }
 
+    private void showDeleteExpenseDialog() {
+        if (expenseTypes.isEmpty()) {
+            Toast.makeText(getContext(), "No expenses to delete.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        final String[] expenseNames = new String[expenseTypes.size()];
+        for (int i = 0; i < expenseTypes.size(); i++) {
+            expenseNames[i] = expenseTypes.get(i) + " : ₹" + String.format("%.2f", expenseAmounts.get(i));
+        }
+        final boolean[] checkedItems = new boolean[expenseNames.length];
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Select Expenses to Delete");
+        builder.setMultiChoiceItems(expenseNames, checkedItems, (dialog, which, isChecked) -> {
+            checkedItems[which] = isChecked;
+            // Dynamically show/hide Delete button
+            final ListView listView = ((AlertDialog) dialog).getListView();
+            Button delBtn = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+            if (delBtn != null) delBtn.setVisibility(isAnyChecked(checkedItems) ? View.VISIBLE : View.GONE);
+        });
+
+        // No action here; handled below with custom dialog after show
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+        builder.setPositiveButton("Delete", null); // Initially invisible
+
+        AlertDialog dialog = builder.create();
+        dialog.setOnShowListener(dlg -> {
+            final Button delBtn = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            delBtn.setVisibility(View.GONE); // Hide Delete initially
+            delBtn.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+            delBtn.setAllCaps(true);
+
+            Button cancelBtn = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+            cancelBtn.setTextColor(getResources().getColor(android.R.color.darker_gray));
+            cancelBtn.setAllCaps(true);
+
+            delBtn.setOnClickListener(v -> {
+                // Get selected
+                List<Integer> toDelete = new ArrayList<>();
+                for (int i = 0; i < checkedItems.length; i++) {
+                    if (checkedItems[i]) toDelete.add(i);
+                }
+                if (!toDelete.isEmpty()) {
+                    // Confirm each item
+                    for (int idx : toDelete) {
+                        String name = expenseNames[idx];
+                        new AlertDialog.Builder(getContext())
+                                .setTitle("Delete Expense")
+                                .setMessage("Are you sure you want to Delete " + name + "?")
+                                .setNegativeButton("Cancel", null)
+                                .setPositiveButton("Delete", (d, w) -> {
+                                    // Remove from last to first for safe deletion by index
+                                    for (int j = toDelete.size() - 1; j >= 0; j--) {
+                                        int delIdx = toDelete.get(j);
+                                        expenseTypes.remove(delIdx);
+                                        expenseAmounts.remove(delIdx);
+                                    }
+                                    saveExpensesData();
+                                    refreshExpensesUI();
+                                    Toast.makeText(getContext(), "Expense(s) deleted.", Toast.LENGTH_SHORT).show();
+                                })
+                                .show();
+                    }
+                    dialog.dismiss();
+                }
+            });
+        });
+        dialog.show();
+    }
+
+    private boolean isAnyChecked(boolean[] checkedItems) {
+        for (boolean b : checkedItems) if (b) return true;
+        return false;
+    }
+
     private void refreshExpensesUI() {
         expensesListLayout.removeAllViews();
         if (btnAddExpense.getParent() != null) ((ViewGroup) btnAddExpense.getParent()).removeView(btnAddExpense);
+        if (btnDeleteExpense.getParent() != null) ((ViewGroup) btnDeleteExpense.getParent()).removeView(btnDeleteExpense);
 
-        // If no expenses, show Add Expense button below input
         if (expenseTypes.isEmpty()) {
             int inputCardIdx = ((ViewGroup) expenseInputCard.getParent()).indexOfChild(expenseInputCard);
             rootLayout.addView(btnAddExpense, inputCardIdx + 1);
+            rootLayout.addView(btnDeleteExpense, inputCardIdx + 2);
         } else {
             // List section: big curved box with divider lines
             LinearLayout outerBox = new LinearLayout(getContext());
@@ -140,7 +233,6 @@ public class ExpenseFragment extends Fragment {
 
                 outerBox.addView(row);
 
-                // Divider, except after last
                 if (i < expenseTypes.size() - 1) {
                     View divider = new View(getContext());
                     divider.setBackgroundColor(getResources().getColor(R.color.divider));
@@ -153,8 +245,9 @@ public class ExpenseFragment extends Fragment {
             }
             expensesListLayout.addView(outerBox);
 
-            // Add the button after the expenses list
+            // Add the buttons after the expenses list
             rootLayout.addView(btnAddExpense);
+            rootLayout.addView(btnDeleteExpense);
         }
     }
 
