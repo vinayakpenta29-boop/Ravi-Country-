@@ -118,7 +118,7 @@ public class ReportFragment extends Fragment {
     private LinearLayout getCurvedBox() {
         LinearLayout box = new LinearLayout(getContext());
         box.setOrientation(LinearLayout.VERTICAL);
-        box.setBackgroundResource(R.drawable.curved_box_white_with_orange_border);
+        box.setBackgroundResource(R.drawable.gradient_pink_purple_button);
         box.setPadding(32, 22, 32, 22);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -150,7 +150,7 @@ public class ReportFragment extends Fragment {
         TextView leftTv = new TextView(getContext());
         leftTv.setText(left);
         leftTv.setTextColor(whiteMode ? Color.WHITE : Color.BLACK);
-        leftTv.setTextSize(16);
+        leftTv.setTextSize(18);
         leftTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
         LinearLayout.LayoutParams leftParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
         leftTv.setLayoutParams(leftParams);
@@ -158,7 +158,7 @@ public class ReportFragment extends Fragment {
         TextView rightTv = new TextView(getContext());
         rightTv.setText(right);
         rightTv.setTextColor(rightColor);
-        rightTv.setTextSize(16);
+        rightTv.setTextSize(18);
         rightTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
 
         row.addView(leftTv);
