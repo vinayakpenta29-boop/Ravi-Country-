@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -29,6 +30,8 @@ public class ExpenseFragment extends Fragment {
     private LinearLayout expensesListLayout, expenseInputCard;
     private ViewGroup rootLayout;
 
+    public static ExpenseFragment instance = null;
+
     private static final List<String> expenseTypes = new ArrayList<>();
     private static final List<Double> expenseAmounts = new ArrayList<>();
     private static final String PREFS_NAME = "TripExpensePrefs";
@@ -40,6 +43,12 @@ public class ExpenseFragment extends Fragment {
 
     public static List<Double> getExpenseAmounts() {
         return expenseAmounts;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        instance = this;
     }
 
     @Nullable
@@ -55,7 +64,6 @@ public class ExpenseFragment extends Fragment {
         expenseInputCard = root.findViewById(R.id.expenseInputCard);
         rootLayout = (ViewGroup) root;
 
-        // Create Delete Expense Button programmatically so it's always after Add
         btnDeleteExpense = new Button(getContext());
         btnDeleteExpense.setText("DELETE A EXPENSE");
         btnDeleteExpense.setAllCaps(true);
@@ -139,7 +147,7 @@ public class ExpenseFragment extends Fragment {
         AlertDialog dialog = builder.create();
         dialog.setOnShowListener(dlg -> {
             final Button delBtn = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-            delBtn.setVisibility(View.GONE); // Hide Delete initially
+            delBtn.setVisibility(View.GONE);
             delBtn.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
             delBtn.setAllCaps(true);
 
@@ -160,7 +168,6 @@ public class ExpenseFragment extends Fragment {
                                 .setMessage("Are you sure you want to Delete " + name + "?")
                                 .setNegativeButton("Cancel", null)
                                 .setPositiveButton("Delete", (d, w) -> {
-                                    // Remove from last to first for safe deletion by index
                                     for (int j = toDelete.size() - 1; j >= 0; j--) {
                                         int delIdx = toDelete.get(j);
                                         expenseTypes.remove(delIdx);
@@ -184,21 +191,22 @@ public class ExpenseFragment extends Fragment {
         return false;
     }
 
+    public void safeRefreshExpensesUI() {
+        if (expensesListLayout != null) refreshExpensesUI();
+    }
+
     private void refreshExpensesUI() {
         expensesListLayout.removeAllViews();
 
-        // Remove buttons from any parent before re-adding
         if (btnAddExpense.getParent() != null) ((ViewGroup) btnAddExpense.getParent()).removeView(btnAddExpense);
         if (btnDeleteExpense.getParent() != null) ((ViewGroup) btnDeleteExpense.getParent()).removeView(btnDeleteExpense);
 
         int inputCardIdx = ((ViewGroup) expenseInputCard.getParent()).indexOfChild(expenseInputCard);
         rootLayout.addView(btnAddExpense, inputCardIdx + 1);
 
-        // SHOW Delete Expense button ONLY if there are expenses
         if (!expenseTypes.isEmpty()) {
             rootLayout.addView(btnDeleteExpense, inputCardIdx + 2);
 
-            // List section: big curved box with divider lines
             LinearLayout outerBox = new LinearLayout(getContext());
             outerBox.setOrientation(LinearLayout.VERTICAL);
             outerBox.setBackgroundResource(R.drawable.curved_box_with_border);
@@ -245,7 +253,6 @@ public class ExpenseFragment extends Fragment {
             }
             expensesListLayout.addView(outerBox);
         }
-        // If no expenses, do NOT add delete button (not shown by default)
     }
 
     private void saveExpensesData() {
