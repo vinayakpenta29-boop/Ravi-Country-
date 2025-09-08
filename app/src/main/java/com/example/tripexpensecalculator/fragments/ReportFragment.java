@@ -106,7 +106,7 @@ public class ReportFragment extends Fragment {
         // Section 3: Totals and Balance (pink-purple gradient curved box)
         LinearLayout gradientBox = new LinearLayout(getContext());
         gradientBox.setOrientation(LinearLayout.VERTICAL);
-        gradientBox.setBackgroundResource(R.drawable.gradient_pink_purple_button);
+        gradientBox.setBackgroundResource(R.drawable.curved_box_white_with_border);
         gradientBox.setPadding(32, 22, 32, 22);
         LinearLayout.LayoutParams gradientParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
