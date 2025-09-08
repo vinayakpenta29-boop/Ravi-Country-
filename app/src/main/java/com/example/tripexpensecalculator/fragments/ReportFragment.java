@@ -140,7 +140,7 @@ public class ReportFragment extends Fragment {
     private void showResetWarning() {
         new AlertDialog.Builder(getContext())
                 .setTitle("Warning")
-                .setMessage("Are you sure! it will be Erase All Data")
+                .setMessage("Are you sure it will be erase the all data")
                 .setNegativeButton("Cancel", null)
                 .setPositiveButton("Reset", (dialog, which) -> {
                     clearAllData();
