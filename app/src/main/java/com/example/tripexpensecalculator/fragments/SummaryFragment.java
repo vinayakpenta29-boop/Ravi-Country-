@@ -83,11 +83,11 @@ public class SummaryFragment extends Fragment {
             LinearLayout subBox = new LinearLayout(getContext());
             subBox.setOrientation(LinearLayout.HORIZONTAL);
             subBox.setBackgroundResource(R.drawable.curved_pink_purple_background);
-            subBox.setPadding(16, 12, 16, 12);
+            subBox.setPadding(10, 12, 10, 12);
             LinearLayout.LayoutParams subBoxParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             // DECREASED margin: adjust all values as per your visual goal
-            int marginPx = (int) (getResources().getDisplayMetrics().density * 2); // 4dp
+            int marginPx = (int) (getResources().getDisplayMetrics().density * 1); // 4dp
             subBoxParams.setMargins(marginPx, marginPx, marginPx, marginPx);
             subBox.setLayoutParams(subBoxParams);
 
