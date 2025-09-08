@@ -14,4 +14,5 @@
     <color name="teal_200">#03DAC5</color>
     <color name="teal_700">#018786</color>
     <color name="gray_border">#d3d3d3</color>
+    <color name="navyblue_border">#151a3d</color>
 </resources>
