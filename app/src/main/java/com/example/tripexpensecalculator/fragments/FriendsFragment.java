@@ -30,12 +30,20 @@ public class FriendsFragment extends Fragment {
     private LinearLayout friendsListLayout;
     private ViewGroup rootLayout;
 
+    public static FriendsFragment instance = null;
+
     private static final Map<String, Double> contributions = new LinkedHashMap<>();
     private static final String PREFS_NAME = "TripExpensePrefs";
     private static final String FRIENDS_KEY = "FriendsList";
 
     public static Map<String, Double> getContributions() {
         return contributions;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        instance = this;
     }
 
     @Nullable
@@ -49,7 +57,6 @@ public class FriendsFragment extends Fragment {
         friendsListLayout = root.findViewById(R.id.friendsListLayout);
         rootLayout = (ViewGroup) root;
 
-        // --- CREATE DELETE FRIEND BUTTON PROGRAMMATICALLY ---
         btnDeleteFriend = new Button(getContext());
         btnDeleteFriend.setText("DELETE A FRIEND");
         btnDeleteFriend.setAllCaps(true);
@@ -70,6 +77,10 @@ public class FriendsFragment extends Fragment {
         loadFriendsData();
         refreshUI();
         return root;
+    }
+
+    public void safeRefreshUI() {
+        if (friendsListLayout != null) refreshUI();
     }
 
     private void addFriend() {
@@ -151,14 +162,11 @@ public class FriendsFragment extends Fragment {
         int inputNameIndex = rootLayout.indexOfChild(inputName);
 
         if (contributions.isEmpty()) {
-            // Show ADD FRIEND at the top (just after input)
             rootLayout.addView(btnAddFriend, inputNameIndex + 1);
         } else {
-            // Show all friend cards first
             for (Map.Entry<String, Double> entry : contributions.entrySet()) {
                 final String friendName = entry.getKey();
 
-                // OUTER CARD
                 LinearLayout cardBox = new LinearLayout(getContext());
                 cardBox.setOrientation(LinearLayout.VERTICAL);
                 cardBox.setBackgroundResource(R.drawable.curved_box_with_border);
@@ -171,7 +179,6 @@ public class FriendsFragment extends Fragment {
                 cardParams.setMargins(0, 0, 0, 32);
                 cardBox.setLayoutParams(cardParams);
 
-                // TOP INNER BOX
                 LinearLayout topInner = new LinearLayout(getContext());
                 topInner.setOrientation(LinearLayout.HORIZONTAL);
                 topInner.setBackgroundResource(R.drawable.curved_light_box);
@@ -197,7 +204,6 @@ public class FriendsFragment extends Fragment {
                 topInner.addView(nameView);
                 topInner.addView(amtView);
 
-                // DIVIDER
                 View divider = new View(getContext());
                 divider.setBackgroundColor(getResources().getColor(R.color.divider));
                 LinearLayout.LayoutParams dividerParams = new LinearLayout.LayoutParams(
@@ -205,7 +211,6 @@ public class FriendsFragment extends Fragment {
                 dividerParams.setMargins(0,16,0,16);
                 divider.setLayoutParams(dividerParams);
 
-                // BOTTOM INNER BOX
                 LinearLayout botInner = new LinearLayout(getContext());
                 botInner.setOrientation(LinearLayout.HORIZONTAL);
                 botInner.setBackgroundResource(R.drawable.curved_light_box);
@@ -253,14 +258,12 @@ public class FriendsFragment extends Fragment {
                 botInner.addView(inputAmt);
                 botInner.addView(addAmtBtn);
 
-                // BUILD CARD
                 cardBox.addView(topInner);
                 cardBox.addView(divider);
                 cardBox.addView(botInner);
 
                 friendsListLayout.addView(cardBox);
             }
-            // Add buttons below the entire list
             rootLayout.addView(btnAddFriend);
             rootLayout.addView(btnDeleteFriend);
         }
