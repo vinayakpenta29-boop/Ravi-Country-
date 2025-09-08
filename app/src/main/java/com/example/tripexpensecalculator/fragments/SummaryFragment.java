@@ -159,7 +159,7 @@ public class SummaryFragment extends Fragment {
     private LinearLayout getCurvedBox() {
         LinearLayout box = new LinearLayout(getContext());
         box.setOrientation(LinearLayout.VERTICAL);
-        box.setBackgroundResource(R.drawable.curved_box_white_with_orange_border); // new drawable
+        box.setBackgroundResource(R.drawable.curved_box_white_with_gray_border); // new drawable
         box.setPadding(42,28,42,28);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
