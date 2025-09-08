@@ -79,14 +79,16 @@ public class SummaryFragment extends Fragment {
         if (!negativeMembers.isEmpty()) {
             LinearLayout negativeBox = getCurvedBox();
 
-            // Orange sub-box for section title
+            // Curved sub-box for section title, now with smaller margin!
             LinearLayout subBox = new LinearLayout(getContext());
             subBox.setOrientation(LinearLayout.HORIZONTAL);
             subBox.setBackgroundResource(R.drawable.curved_pink_purple_background);
             subBox.setPadding(16, 12, 16, 12);
             LinearLayout.LayoutParams subBoxParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            subBoxParams.setMargins(0, 0, 0, 16);
+            // DECREASED margin: adjust all values as per your visual goal
+            int marginPx = (int) (getResources().getDisplayMetrics().density * 4); // 4dp
+            subBoxParams.setMargins(marginPx, marginPx, marginPx, marginPx);
             subBox.setLayoutParams(subBoxParams);
 
             TextView titleTv = new TextView(getContext());
@@ -119,10 +121,9 @@ public class SummaryFragment extends Fragment {
         orangeBox.setGravity(android.view.Gravity.CENTER);
         LinearLayout.LayoutParams orangeParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        orangeParams.setMargins(24, 18, 24, 18); // more side margin for orange box too
+        orangeParams.setMargins(24, 18, 24, 18);
         orangeBox.setLayoutParams(orangeParams);
 
-        // Top: label line
         TextView labelTv = new TextView(getContext());
         labelTv.setText("Extra Money Left:");
         labelTv.setTextColor(Color.WHITE);
@@ -130,7 +131,6 @@ public class SummaryFragment extends Fragment {
         labelTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
         labelTv.setGravity(android.view.Gravity.CENTER);
 
-        // Middle: amount, large, bold, minus sign if negative
         TextView amtTv = new TextView(getContext());
         String amtStr = "₹" + String.format("%.2f", Math.abs(overallBalance));
         if (overallBalance < 0) amtStr = "₹-" + String.format("%.2f", Math.abs(overallBalance));
@@ -159,11 +159,11 @@ public class SummaryFragment extends Fragment {
     private LinearLayout getCurvedBox() {
         LinearLayout box = new LinearLayout(getContext());
         box.setOrientation(LinearLayout.VERTICAL);
-        box.setBackgroundResource(R.drawable.curved_box_white_with_gray_border); // new drawable
+        box.setBackgroundResource(R.drawable.curved_box_white_with_gray_border);
         box.setPadding(42,28,42,28);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        params.setMargins(10,0,10,24); // more margin left-right
+        params.setMargins(10,0,10,24);
         box.setLayoutParams(params);
         return box;
     }
