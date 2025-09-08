@@ -82,12 +82,12 @@ public class SummaryFragment extends Fragment {
             // Curved sub-box for section title, now with smaller margin!
             LinearLayout subBox = new LinearLayout(getContext());
             subBox.setOrientation(LinearLayout.HORIZONTAL);
-            subBox.setBackgroundResource(R.drawable.curved_pink_purple_background);
+            subBox.setBackgroundResource(R.drawable.curved_box_gray_with_border);
             subBox.setPadding(25, 10, 25, 10);
             LinearLayout.LayoutParams subBoxParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             // DECREASED margin: adjust all values as per your visual goal
-            int marginPx = (int) (getResources().getDisplayMetrics().density * 2); // 4dp
+            int marginPx = (int) (getResources().getDisplayMetrics().density * 8); // 4dp
             subBoxParams.setMargins(marginPx, marginPx, marginPx, marginPx);
             subBox.setLayoutParams(subBoxParams);
 
