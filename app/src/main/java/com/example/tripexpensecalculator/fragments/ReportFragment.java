@@ -183,7 +183,7 @@ public class ReportFragment extends Fragment {
     private TextView getHeaderTextView(String text) {
         TextView tv = new TextView(getContext());
         tv.setText(text);
-        tv.setTextColor(getResources().getColor(R.color.primary_orange));
+        tv.setTextColor(getResources().getColor(R.color.purple_500));
         tv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
         tv.setTextSize(18);
         tv.setGravity(Gravity.CENTER);
