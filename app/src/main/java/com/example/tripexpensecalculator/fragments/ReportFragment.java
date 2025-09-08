@@ -74,9 +74,9 @@ public class ReportFragment extends Fragment {
         logBox.addView(getHeaderTextView("All Expenses (Transaction Log)"));
         for (int i = 0; i < expenseTypes.size(); i++) {
             logBox.addView(getRowTextView(
-                (i + 1) + ". " + expenseTypes.get(i),
-                "₹" + String.format("%.2f", expenseAmounts.get(i)),
-                Color.BLACK, false
+                    (i + 1) + ". " + expenseTypes.get(i),
+                    "₹" + String.format("%.2f", expenseAmounts.get(i)),
+                    Color.BLACK, false
             ));
             if (i < expenseTypes.size() - 1) logBox.addView(getDivider());
         }
@@ -95,32 +95,32 @@ public class ReportFragment extends Fragment {
         for (Map.Entry<String, Double> e : categoryTotals.entrySet()) {
             double percent = (totalExpense > 0) ? (e.getValue() * 100.0 / totalExpense) : 0.0;
             categoryBox.addView(getRowTextView(
-                e.getKey(),
-                "₹" + String.format("%.2f", e.getValue()) + " (" + String.format("%.2f", percent) + "%)",
-                Color.BLACK, false
+                    e.getKey(),
+                    "₹" + String.format("%.2f", e.getValue()) + " (" + String.format("%.2f", percent) + "%)",
+                    Color.BLACK, false
             ));
             if (cNo++ < categoryTotals.size() - 1) categoryBox.addView(getDivider());
         }
         reportRootLayout.addView(categoryBox);
 
-        // Section 3: Totals and Balance (pink-purple gradient curved box)
-        LinearLayout gradientBox = new LinearLayout(getContext());
-        gradientBox.setOrientation(LinearLayout.VERTICAL);
-        gradientBox.setBackgroundResource(R.drawable.curved_box_white_with_border);
-        gradientBox.setPadding(32, 22, 32, 22);
-        LinearLayout.LayoutParams gradientParams = new LinearLayout.LayoutParams(
+        // ---- New Section: Totals in white curved box, labels and values in purple ----
+        LinearLayout whiteBox = new LinearLayout(getContext());
+        whiteBox.setOrientation(LinearLayout.VERTICAL);
+        whiteBox.setBackgroundResource(R.drawable.curved_box_white_with_border);
+        whiteBox.setPadding(32, 22, 32, 22);
+        LinearLayout.LayoutParams whiteParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        gradientParams.setMargins(32, 0, 32, 20);
-        gradientBox.setLayoutParams(gradientParams);
+        whiteParams.setMargins(32, 0, 32, 20);
+        whiteBox.setLayoutParams(whiteParams);
 
-        gradientBox.addView(getRowTextView("Total Expenses", "₹" + String.format("%.2f", totalExpense), Color.white, true));
-        gradientBox.addView(getDivider(Color.WHITE));
-        gradientBox.addView(getRowTextView("Total Contributions", "₹" + String.format("%.2f", totalContribution), Color.white, true));
-        gradientBox.addView(getDivider(Color.white));
+        int purple = getResources().getColor(R.color.purple_500);
 
+        whiteBox.addView(getRowTextView("Total Expenses",    "₹" + String.format("%.2f", totalExpense), purple, true));
+        whiteBox.addView(getDivider());
+        whiteBox.addView(getRowTextView("Total Contributions", "₹" + String.format("%.2f", totalContribution), purple, true));
+        whiteBox.addView(getDivider());
         String balanceLabel;
         String balanceValue;
-        int balanceColor = Color.WHITE;
         if (balance > 0) {
             balanceLabel = "Balance (Extra Money Left)";
             balanceValue = "₹" + String.format("%.2f", balance);
@@ -131,8 +131,8 @@ public class ReportFragment extends Fragment {
             balanceLabel = "Balance";
             balanceValue = "Settled (0)";
         }
-        gradientBox.addView(getRowTextView(balanceLabel, balanceValue, balanceColor, true));
-        reportRootLayout.addView(gradientBox);
+        whiteBox.addView(getRowTextView(balanceLabel, balanceValue, purple, true));
+        reportRootLayout.addView(whiteBox);
 
         // ------- Add Reset Button at the end -------
         reportRootLayout.addView(btnResetAllData);
@@ -150,16 +150,13 @@ public class ReportFragment extends Fragment {
     }
 
     private void clearAllData() {
-        // Clear Friends and Expenses
         FriendsFragment.getContributions().clear();
         ExpenseFragment.getExpenseTypes().clear();
         ExpenseFragment.getExpenseAmounts().clear();
 
-        // Remove from persistent storage
         Context ctx = requireContext();
         ctx.getSharedPreferences("TripExpensePrefs", Context.MODE_PRIVATE).edit().clear().apply();
 
-        // Refresh other Fragments instantly
         if (ExpenseFragment.instance != null) ExpenseFragment.instance.safeRefreshExpensesUI();
         if (FriendsFragment.instance != null) FriendsFragment.instance.safeRefreshUI();
 
@@ -167,7 +164,6 @@ public class ReportFragment extends Fragment {
         Toast.makeText(ctx, "All data has been reset.", Toast.LENGTH_SHORT).show();
     }
 
-    // Helper for big curved white+orange border box with horizontal margin
     private LinearLayout getCurvedBox() {
         LinearLayout box = new LinearLayout(getContext());
         box.setOrientation(LinearLayout.VERTICAL);
@@ -194,13 +190,13 @@ public class ReportFragment extends Fragment {
         return tv;
     }
 
-    private LinearLayout getRowTextView(String left, String right, int rightColor, boolean whiteMode) {
+    private LinearLayout getRowTextView(String left, String right, int color, boolean useBold) {
         LinearLayout row = new LinearLayout(getContext());
         row.setOrientation(LinearLayout.HORIZONTAL);
 
         TextView leftTv = new TextView(getContext());
         leftTv.setText(left);
-        leftTv.setTextColor(whiteMode ? Color.WHITE : Color.BLACK);
+        leftTv.setTextColor(color);
         leftTv.setTextSize(16);
         leftTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
         LinearLayout.LayoutParams leftParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
@@ -208,7 +204,7 @@ public class ReportFragment extends Fragment {
 
         TextView rightTv = new TextView(getContext());
         rightTv.setText(right);
-        rightTv.setTextColor(rightColor);
+        rightTv.setTextColor(color);
         rightTv.setTextSize(16);
         rightTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
 
