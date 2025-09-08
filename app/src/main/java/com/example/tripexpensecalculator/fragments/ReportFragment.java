@@ -113,10 +113,10 @@ public class ReportFragment extends Fragment {
         gradientParams.setMargins(32, 0, 32, 20);
         gradientBox.setLayoutParams(gradientParams);
 
-        gradientBox.addView(getRowTextView("Total Expenses", "₹" + String.format("%.2f", totalExpense), Color.purple_500, true));
+        gradientBox.addView(getRowTextView("Total Expenses", "₹" + String.format("%.2f", totalExpense), Color.white, true));
         gradientBox.addView(getDivider(Color.WHITE));
-        gradientBox.addView(getRowTextView("Total Contributions", "₹" + String.format("%.2f", totalContribution), Color.purple_500, true));
-        gradientBox.addView(getDivider(Color.purple_500));
+        gradientBox.addView(getRowTextView("Total Contributions", "₹" + String.format("%.2f", totalContribution), Color.white, true));
+        gradientBox.addView(getDivider(Color.white));
 
         String balanceLabel;
         String balanceValue;
