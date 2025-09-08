@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast; // <-- Fix: Import Toast
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -103,10 +103,10 @@ public class ReportFragment extends Fragment {
         }
         reportRootLayout.addView(categoryBox);
 
-        // Section 3: Totals and Balance (pink-purple gradient curved box, white bold text)
+        // Section 3: Totals and Balance (pink-purple gradient curved box)
         LinearLayout gradientBox = new LinearLayout(getContext());
         gradientBox.setOrientation(LinearLayout.VERTICAL);
-        gradientBox.setBackgroundResource(R.drawable.gradient_pink_purple_button); // <--- Change made here
+        gradientBox.setBackgroundResource(R.drawable.gradient_pink_purple_button);
         gradientBox.setPadding(32, 22, 32, 22);
         LinearLayout.LayoutParams gradientParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -150,15 +150,18 @@ public class ReportFragment extends Fragment {
     }
 
     private void clearAllData() {
-        // Clear Friends
+        // Clear Friends and Expenses
         FriendsFragment.getContributions().clear();
-        // Clear Expenses
         ExpenseFragment.getExpenseTypes().clear();
         ExpenseFragment.getExpenseAmounts().clear();
 
         // Remove from persistent storage
         Context ctx = requireContext();
         ctx.getSharedPreferences("TripExpensePrefs", Context.MODE_PRIVATE).edit().clear().apply();
+
+        // Refresh other Fragments instantly
+        if (ExpenseFragment.instance != null) ExpenseFragment.instance.safeRefreshExpensesUI();
+        if (FriendsFragment.instance != null) FriendsFragment.instance.safeRefreshUI();
 
         displayDetailedReport();
         Toast.makeText(ctx, "All data has been reset.", Toast.LENGTH_SHORT).show();
@@ -172,12 +175,11 @@ public class ReportFragment extends Fragment {
         box.setPadding(32, 22, 32, 22);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        params.setMargins(32, 0, 32, 20); // 32dp side margin
+        params.setMargins(32, 0, 32, 20);
         box.setLayoutParams(params);
         return box;
     }
 
-    // Section header title
     private TextView getHeaderTextView(String text) {
         TextView tv = new TextView(getContext());
         tv.setText(text);
@@ -192,7 +194,6 @@ public class ReportFragment extends Fragment {
         return tv;
     }
 
-    // Row with 2 columns: left (label), right (value)
     private LinearLayout getRowTextView(String left, String right, int rightColor, boolean whiteMode) {
         LinearLayout row = new LinearLayout(getContext());
         row.setOrientation(LinearLayout.HORIZONTAL);
