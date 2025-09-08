@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast; // <-- Fix: Import Toast
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -102,20 +103,20 @@ public class ReportFragment extends Fragment {
         }
         reportRootLayout.addView(categoryBox);
 
-        // Section 3: Totals and Balance (orange curved box, white bold text)
-        LinearLayout orangeBox = new LinearLayout(getContext());
-        orangeBox.setOrientation(LinearLayout.VERTICAL);
-        orangeBox.setBackgroundResource(R.drawable.curved_orange_button);
-        orangeBox.setPadding(32, 22, 32, 22);
-        LinearLayout.LayoutParams orangeParams = new LinearLayout.LayoutParams(
+        // Section 3: Totals and Balance (pink-purple gradient curved box, white bold text)
+        LinearLayout gradientBox = new LinearLayout(getContext());
+        gradientBox.setOrientation(LinearLayout.VERTICAL);
+        gradientBox.setBackgroundResource(R.drawable.gradient_pink_purple_button); // <--- Change made here
+        gradientBox.setPadding(32, 22, 32, 22);
+        LinearLayout.LayoutParams gradientParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        orangeParams.setMargins(32, 0, 32, 20);
-        orangeBox.setLayoutParams(orangeParams);
+        gradientParams.setMargins(32, 0, 32, 20);
+        gradientBox.setLayoutParams(gradientParams);
 
-        orangeBox.addView(getRowTextView("Total Expenses", "₹" + String.format("%.2f", totalExpense), Color.WHITE, true));
-        orangeBox.addView(getDivider(Color.WHITE));
-        orangeBox.addView(getRowTextView("Total Contributions", "₹" + String.format("%.2f", totalContribution), Color.WHITE, true));
-        orangeBox.addView(getDivider(Color.WHITE));
+        gradientBox.addView(getRowTextView("Total Expenses", "₹" + String.format("%.2f", totalExpense), Color.WHITE, true));
+        gradientBox.addView(getDivider(Color.WHITE));
+        gradientBox.addView(getRowTextView("Total Contributions", "₹" + String.format("%.2f", totalContribution), Color.WHITE, true));
+        gradientBox.addView(getDivider(Color.WHITE));
 
         String balanceLabel;
         String balanceValue;
@@ -130,8 +131,8 @@ public class ReportFragment extends Fragment {
             balanceLabel = "Balance";
             balanceValue = "Settled (0)";
         }
-        orangeBox.addView(getRowTextView(balanceLabel, balanceValue, balanceColor, true));
-        reportRootLayout.addView(orangeBox);
+        gradientBox.addView(getRowTextView(balanceLabel, balanceValue, balanceColor, true));
+        reportRootLayout.addView(gradientBox);
 
         // ------- Add Reset Button at the end -------
         reportRootLayout.addView(btnResetAllData);
