@@ -87,7 +87,7 @@ public class SummaryFragment extends Fragment {
             LinearLayout.LayoutParams subBoxParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             // DECREASED margin: adjust all values as per your visual goal
-            int marginPx = (int) (getResources().getDisplayMetrics().density * 8); // 4dp
+            int marginPx = (int) (getResources().getDisplayMetrics().density * 2); // 4dp
             subBoxParams.setMargins(marginPx, marginPx, marginPx, marginPx);
             subBox.setLayoutParams(subBoxParams);
 
