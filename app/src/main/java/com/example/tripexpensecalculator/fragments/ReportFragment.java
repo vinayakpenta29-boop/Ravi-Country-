@@ -201,7 +201,7 @@ public class ReportFragment extends Fragment {
         TextView leftTv = new TextView(getContext());
         leftTv.setText(left);
         leftTv.setTextColor(whiteMode ? Color.WHITE : Color.BLACK);
-        leftTv.setTextSize(18);
+        leftTv.setTextSize(16);
         leftTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
         LinearLayout.LayoutParams leftParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
         leftTv.setLayoutParams(leftParams);
@@ -209,7 +209,7 @@ public class ReportFragment extends Fragment {
         TextView rightTv = new TextView(getContext());
         rightTv.setText(right);
         rightTv.setTextColor(rightColor);
-        rightTv.setTextSize(18);
+        rightTv.setTextSize(16);
         rightTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
 
         row.addView(leftTv);
