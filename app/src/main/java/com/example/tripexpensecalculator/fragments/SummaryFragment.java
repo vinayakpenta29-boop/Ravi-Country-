@@ -82,7 +82,7 @@ public class SummaryFragment extends Fragment {
             // Orange sub-box for section title
             LinearLayout subBox = new LinearLayout(getContext());
             subBox.setOrientation(LinearLayout.HORIZONTAL);
-            subBox.setBackgroundResource(R.drawable.curved_orange_button);
+            subBox.setBackgroundResource(R.drawable.gradient_pink_purple_button);
             subBox.setPadding(16, 12, 16, 12);
             LinearLayout.LayoutParams subBoxParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
