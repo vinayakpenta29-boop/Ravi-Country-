@@ -67,10 +67,10 @@ public class ExpenseFragment extends Fragment {
         btnDeleteExpense = new Button(getContext());
         btnDeleteExpense.setText("DELETE A EXPENSE");
         btnDeleteExpense.setAllCaps(true);
-        btnDeleteExpense.setTextColor(getResources().getColor(android.R.color.white));
+        btnDeleteExpense.setTextColor(getResources().getColor(android.R.color.navyblue_border));
         btnDeleteExpense.setTextSize(18);
         btnDeleteExpense.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
-        btnDeleteExpense.setBackgroundResource(R.drawable.gradient_pink_purple_button);
+        btnDeleteExpense.setBackgroundResource(R.drawable.curved_gray_button);
         LinearLayout.LayoutParams delParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         delParams.setMargins(0, 0, 0, 18);
@@ -202,11 +202,15 @@ public class ExpenseFragment extends Fragment {
         if (btnDeleteExpense.getParent() != null) ((ViewGroup) btnDeleteExpense.getParent()).removeView(btnDeleteExpense);
 
         int inputCardIdx = ((ViewGroup) expenseInputCard.getParent()).indexOfChild(expenseInputCard);
-        rootLayout.addView(btnAddExpense, inputCardIdx + 1);
+
+        if (expenseTypes.isEmpty()) {
+            // If list empty: show Add and Delete just below input fields
+            rootLayout.addView(btnAddExpense, inputCardIdx + 1);
+            rootLayout.addView(btnDeleteExpense, inputCardIdx + 2);
+        }
 
         if (!expenseTypes.isEmpty()) {
-            rootLayout.addView(btnDeleteExpense, inputCardIdx + 2);
-
+            // Show the expenses list
             LinearLayout outerBox = new LinearLayout(getContext());
             outerBox.setOrientation(LinearLayout.VERTICAL);
             outerBox.setBackgroundResource(R.drawable.curved_box_with_border);
@@ -252,6 +256,10 @@ public class ExpenseFragment extends Fragment {
                 }
             }
             expensesListLayout.addView(outerBox);
+
+            // Show Add and Delete buttons below the list (at the very end)
+            rootLayout.addView(btnAddExpense);
+            rootLayout.addView(btnDeleteExpense);
         }
     }
 
