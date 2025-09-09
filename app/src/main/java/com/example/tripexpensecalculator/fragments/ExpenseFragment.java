@@ -67,7 +67,7 @@ public class ExpenseFragment extends Fragment {
         btnDeleteExpense = new Button(getContext());
         btnDeleteExpense.setText("DELETE A EXPENSE");
         btnDeleteExpense.setAllCaps(true);
-        btnDeleteExpense.setTextColor(getResources().getColor(android.R.color.navyblue_border));
+        btnDeleteExpense.setTextColor(getResources().getColor(android.R.color.navyblue));
         btnDeleteExpense.setTextSize(18);
         btnDeleteExpense.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
         btnDeleteExpense.setBackgroundResource(R.drawable.curved_gray_button);
