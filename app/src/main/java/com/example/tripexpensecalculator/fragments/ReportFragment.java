@@ -3,6 +3,7 @@ package com.example.tripexpensecalculator.fragments;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -25,6 +26,7 @@ public class ReportFragment extends Fragment {
 
     private LinearLayout reportRootLayout;
     private Button btnResetAllData;
+    private Typeface loraBoldTypeface;
 
     @Nullable
     @Override
@@ -33,12 +35,15 @@ public class ReportFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_report, container, false);
         reportRootLayout = root.findViewById(R.id.reportRootLayout);
 
+        // Load your custom Lora_Bold font from assets
+        loraBoldTypeface = Typeface.createFromAsset(requireContext().getAssets(), "fonts/Lora_Bold.ttf");
+
         btnResetAllData = new Button(getContext());
         btnResetAllData.setText("RESET ALL DATA");
         btnResetAllData.setAllCaps(true);
         btnResetAllData.setTextColor(getResources().getColor(android.R.color.white));
         btnResetAllData.setTextSize(18);
-        btnResetAllData.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+        btnResetAllData.setTypeface(Typeface.DEFAULT_BOLD);
         btnResetAllData.setBackgroundResource(R.drawable.curved_orange_button);
         LinearLayout.LayoutParams resetParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -103,7 +108,7 @@ public class ReportFragment extends Fragment {
         }
         reportRootLayout.addView(categoryBox);
 
-        // ---- New Section: Totals in white curved box, labels and values in purple ----
+        // ---- New Section: Totals in white curved box, labels and values in purple, Lora_Bold ----
         LinearLayout whiteBox = new LinearLayout(getContext());
         whiteBox.setOrientation(LinearLayout.VERTICAL);
         whiteBox.setBackgroundResource(R.drawable.curved_box_white_with_gray_border);
@@ -115,9 +120,9 @@ public class ReportFragment extends Fragment {
 
         int purple = getResources().getColor(R.color.purple_500);
 
-        whiteBox.addView(getRowTextView("Total Expenses",    "₹" + String.format("%.2f", totalExpense), purple, true));
+        whiteBox.addView(getLoraRowTextView("Total Expenses",    "₹" + String.format("%.2f", totalExpense), purple));
         whiteBox.addView(getDivider());
-        whiteBox.addView(getRowTextView("Total Contributions", "₹" + String.format("%.2f", totalContribution), purple, true));
+        whiteBox.addView(getLoraRowTextView("Total Contributions", "₹" + String.format("%.2f", totalContribution), purple));
         whiteBox.addView(getDivider());
         String balanceLabel;
         String balanceValue;
@@ -131,7 +136,7 @@ public class ReportFragment extends Fragment {
             balanceLabel = "Balance";
             balanceValue = "Settled (0)";
         }
-        whiteBox.addView(getRowTextView(balanceLabel, balanceValue, purple, true));
+        whiteBox.addView(getLoraRowTextView(balanceLabel, balanceValue, purple));
         reportRootLayout.addView(whiteBox);
 
         // ------- Add Reset Button at the end -------
@@ -180,7 +185,7 @@ public class ReportFragment extends Fragment {
         TextView tv = new TextView(getContext());
         tv.setText(text);
         tv.setTextColor(getResources().getColor(R.color.purple_500));
-        tv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+        tv.setTypeface(Typeface.DEFAULT_BOLD);
         tv.setTextSize(18);
         tv.setGravity(Gravity.CENTER);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
@@ -190,6 +195,7 @@ public class ReportFragment extends Fragment {
         return tv;
     }
 
+    // For normal rows
     private LinearLayout getRowTextView(String left, String right, int color, boolean useBold) {
         LinearLayout row = new LinearLayout(getContext());
         row.setOrientation(LinearLayout.HORIZONTAL);
@@ -198,7 +204,7 @@ public class ReportFragment extends Fragment {
         leftTv.setText(left);
         leftTv.setTextColor(color);
         leftTv.setTextSize(16);
-        leftTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+        leftTv.setTypeface(Typeface.DEFAULT_BOLD);
         LinearLayout.LayoutParams leftParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
         leftTv.setLayoutParams(leftParams);
 
@@ -206,7 +212,31 @@ public class ReportFragment extends Fragment {
         rightTv.setText(right);
         rightTv.setTextColor(color);
         rightTv.setTextSize(16);
-        rightTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+        rightTv.setTypeface(Typeface.DEFAULT_BOLD);
+
+        row.addView(leftTv);
+        row.addView(rightTv);
+        return row;
+    }
+
+    // For purple section only, in Lora_Bold
+    private LinearLayout getLoraRowTextView(String left, String right, int color) {
+        LinearLayout row = new LinearLayout(getContext());
+        row.setOrientation(LinearLayout.HORIZONTAL);
+
+        TextView leftTv = new TextView(getContext());
+        leftTv.setText(left);
+        leftTv.setTextColor(color);
+        leftTv.setTextSize(16);
+        leftTv.setTypeface(loraBoldTypeface);
+        LinearLayout.LayoutParams leftParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+        leftTv.setLayoutParams(leftParams);
+
+        TextView rightTv = new TextView(getContext());
+        rightTv.setText(right);
+        rightTv.setTextColor(color);
+        rightTv.setTextSize(16);
+        rightTv.setTypeface(loraBoldTypeface);
 
         row.addView(leftTv);
         row.addView(rightTv);
@@ -216,6 +246,7 @@ public class ReportFragment extends Fragment {
     private View getDivider() {
         return getDivider(getResources().getColor(R.color.divider));
     }
+
     private View getDivider(int color) {
         View divider = new View(getContext());
         divider.setBackgroundColor(color);
