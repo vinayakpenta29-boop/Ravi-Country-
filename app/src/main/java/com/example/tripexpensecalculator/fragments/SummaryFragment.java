@@ -79,16 +79,16 @@ public class SummaryFragment extends Fragment {
         if (!negativeMembers.isEmpty()) {
             LinearLayout negativeBox = getCurvedBox();
 
-            // Curved sub-box for section title, now with smaller margin!
+            // Title sub-box: no left, right, or top margin—only bottom margin for separation
             LinearLayout subBox = new LinearLayout(getContext());
             subBox.setOrientation(LinearLayout.HORIZONTAL);
             subBox.setBackgroundResource(R.drawable.curved_box_gray_with_border);
             subBox.setPadding(25, 10, 25, 10);
             LinearLayout.LayoutParams subBoxParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            // DECREASED margin: adjust all values as per your visual goal
-            int marginPx = (int) (getResources().getDisplayMetrics().density * 0); // 4dp
-            subBoxParams.setMargins(marginPx, marginPx, marginPx, marginPx);
+            // Only bottom margin for spacing after the title, rest are 0 for flush fit
+            int marginBottomPx = (int) (getResources().getDisplayMetrics().density * 12); // 12dp between title and list
+            subBoxParams.setMargins(0, 0, 0, marginBottomPx); // flush: top, left, right = 0
             subBox.setLayoutParams(subBoxParams);
 
             TextView titleTv = new TextView(getContext());
