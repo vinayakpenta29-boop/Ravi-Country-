@@ -198,19 +198,17 @@ public class ExpenseFragment extends Fragment {
     private void refreshExpensesUI() {
         expensesListLayout.removeAllViews();
 
+        // Always remove buttons before adding them
         if (btnAddExpense.getParent() != null) ((ViewGroup) btnAddExpense.getParent()).removeView(btnAddExpense);
         if (btnDeleteExpense.getParent() != null) ((ViewGroup) btnDeleteExpense.getParent()).removeView(btnDeleteExpense);
 
         int inputCardIdx = ((ViewGroup) expenseInputCard.getParent()).indexOfChild(expenseInputCard);
 
         if (expenseTypes.isEmpty()) {
-            // If list empty: show Add and Delete just below input fields
+            // Show only ADD button under inputs, no DELETE
             rootLayout.addView(btnAddExpense, inputCardIdx + 1);
-            rootLayout.addView(btnDeleteExpense, inputCardIdx + 2);
-        }
-
-        if (!expenseTypes.isEmpty()) {
-            // Show the expenses list
+        } else {
+            // Show expenses list
             LinearLayout outerBox = new LinearLayout(getContext());
             outerBox.setOrientation(LinearLayout.VERTICAL);
             outerBox.setBackgroundResource(R.drawable.curved_box_with_border);
@@ -257,7 +255,7 @@ public class ExpenseFragment extends Fragment {
             }
             expensesListLayout.addView(outerBox);
 
-            // Show Add and Delete buttons below the list (at the very end)
+            // Show buttons below the list (ADD above DELETE)
             rootLayout.addView(btnAddExpense);
             rootLayout.addView(btnDeleteExpense);
         }
