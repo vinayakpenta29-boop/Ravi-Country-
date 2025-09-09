@@ -111,7 +111,7 @@ public class ReportFragment extends Fragment {
         // ---- New Section: Totals in white curved box, labels and values in purple, Lora_Bold ----
         LinearLayout whiteBox = new LinearLayout(getContext());
         whiteBox.setOrientation(LinearLayout.VERTICAL);
-        whiteBox.setBackgroundResource(R.drawable.curved_box_white_with_gray_border);
+        whiteBox.setBackgroundResource(R.drawable.curved_gray_button);
         whiteBox.setPadding(32, 22, 32, 22);
         LinearLayout.LayoutParams whiteParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
