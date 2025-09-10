@@ -16,7 +16,11 @@ public class SplashActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Orange background, vertical center
+        // Load custom fonts from assets
+        Typeface garamondSemiBold = Typeface.createFromAsset(getAssets(), "fonts/EBGaramond_SemiBold.ttf");
+        Typeface loraBold = Typeface.createFromAsset(getAssets(), "fonts/Lora_Bold.ttf");
+
+        // Navy blue background, vertical center
         LinearLayout layout = new LinearLayout(this);
         layout.setBackgroundColor(getResources().getColor(R.color.navy_blue));
         layout.setOrientation(LinearLayout.VERTICAL);
@@ -24,28 +28,28 @@ public class SplashActivity extends Activity {
 
         // App icon
         ImageView icon = new ImageView(this);
-        icon.setImageResource(R.mipmap.ic_launcher); // your launcher icon
+        icon.setImageResource(R.mipmap.ic_launcher);
         LinearLayout.LayoutParams iconParams = new LinearLayout.LayoutParams(220, 220);
         icon.setLayoutParams(iconParams);
 
-        // App name bold, white
+        // App name in EBGaramond_SemiBold
         TextView appName = new TextView(this);
         appName.setText(getString(R.string.app_name));
         appName.setTextSize(28);
         appName.setTextColor(Color.WHITE);
-        appName.setTypeface(Typeface.DEFAULT_BOLD);
+        appName.setTypeface(garamondSemiBold);
         appName.setGravity(Gravity.CENTER);
         LinearLayout.LayoutParams appNameParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         appNameParams.topMargin = 36;
         appName.setLayoutParams(appNameParams);
 
-        // "Created by RP"
+        // "Created by RP" in Lora_Bold
         TextView credit = new TextView(this);
         credit.setText("Created by RP");
         credit.setTextColor(Color.WHITE);
         credit.setTextSize(16);
-        credit.setTypeface(Typeface.DEFAULT);
+        credit.setTypeface(loraBold);
         credit.setGravity(Gravity.CENTER);
         LinearLayout.LayoutParams creditParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -58,7 +62,6 @@ public class SplashActivity extends Activity {
 
         setContentView(layout);
 
-        // Delay 1.6s, then launch MainActivity
         new Handler().postDelayed(() -> {
             startActivity(new Intent(SplashActivity.this, MainActivity.class));
             finish();
