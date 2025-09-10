@@ -16,19 +16,21 @@ public class SplashActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Load custom fonts from assets
+        // Load fonts from assets
         Typeface garamondSemiBold = Typeface.createFromAsset(getAssets(), "fonts/EBGaramond_SemiBold.ttf");
         Typeface loraBold = Typeface.createFromAsset(getAssets(), "fonts/Lora_Bold.ttf");
 
-        // Navy blue background, vertical center
+        // Splash screen layout
         LinearLayout layout = new LinearLayout(this);
         layout.setBackgroundColor(getResources().getColor(R.color.navy_blue));
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setGravity(Gravity.CENTER);
 
-        // App icon
+        // App icon with rounded background
         ImageView icon = new ImageView(this);
-        icon.setImageResource(R.mipmap.ic_launcher);
+        icon.setImageResource(R.mipmap.ic_launcher); // use your app icon or splash icon
+        icon.setBackgroundResource(R.drawable.rounded_white_bg); // apply rounded corner white background
+        icon.setPadding(24, 24, 24, 24); // inner padding so icon is nicely inset in rounded bg
         LinearLayout.LayoutParams iconParams = new LinearLayout.LayoutParams(220, 220);
         icon.setLayoutParams(iconParams);
 
@@ -62,6 +64,7 @@ public class SplashActivity extends Activity {
 
         setContentView(layout);
 
+        // Transition to MainActivity after 1.6 sec
         new Handler().postDelayed(() -> {
             startActivity(new Intent(SplashActivity.this, MainActivity.class));
             finish();
