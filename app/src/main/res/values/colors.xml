@@ -1,13 +1,13 @@
 <resources>
     <color name="background_dark">#23243C</color>
     <color name="input_box">#2D2E4A</color>
-    <color name="card_light">#36375B</color> <!-- For inner sub-boxes -->
-    <color name="primary_orange">#FF7F00</color>
+    <color name="card_light">#36375B</color>
+    <color name="primary_orange">#FF7F00</color> <!-- Used for splash background -->
     <color name="input_text">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
     <color name="grey_hint">#BBBED3</color>
-    <color name="divider">#444665</color>       <!-- For subtle separators -->
+    <color name="divider">#444665</color>
     <color name="purple_200">#BB86FC</color>
     <color name="purple_500">#6200EE</color>
     <color name="purple_700">#3700B3</color>
