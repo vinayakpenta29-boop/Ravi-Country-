@@ -18,7 +18,7 @@ public class SplashActivity extends Activity {
 
         // Build your splash screen layout programmatically
         LinearLayout layout = new LinearLayout(this);
-        layout.setBackgroundColor(getResources().getColor(R.color.orange)); // orange background (reference in colors.xml)
+        layout.setBackgroundColor(getResources().getColor(R.color.primary_orange)); // orange background (reference in colors.xml)
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setGravity(Gravity.CENTER);
 
