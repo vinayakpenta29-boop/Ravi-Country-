@@ -51,6 +51,8 @@ public class SummaryFragment extends Fragment {
         mainBox.addView(getDivider());
         mainBox.addView(getRow("Total Expenses",     "₹" + String.format("%.2f", totalExpense), Color.BLACK));
         mainBox.addView(getDivider());
+        mainBox.addView(getRow("Total Friends", String.valueOf(people), Color.BLACK)); // <-- NEW LINE
+        mainBox.addView(getDivider());
         mainBox.addView(getRow("Each Person Share",  "₹" + String.format("%.2f", perPerson), Color.BLACK));
         summaryRootLayout.addView(mainBox);
 
@@ -86,9 +88,8 @@ public class SummaryFragment extends Fragment {
             subBox.setPadding(25, 10, 25, 10);
             LinearLayout.LayoutParams subBoxParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            // Only bottom margin for spacing after the title, rest are 0 for flush fit
             int marginBottomPx = (int) (getResources().getDisplayMetrics().density * 12); // 12dp between title and list
-            subBoxParams.setMargins(0, 0, 0, marginBottomPx); // flush: top, left, right = 0
+            subBoxParams.setMargins(0, 0, 0, marginBottomPx);
             subBox.setLayoutParams(subBoxParams);
 
             TextView titleTv = new TextView(getContext());
