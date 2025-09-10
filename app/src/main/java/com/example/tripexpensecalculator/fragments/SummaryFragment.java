@@ -1,6 +1,7 @@
 package com.example.tripexpensecalculator.fragments;
 
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ import java.util.Map;
 public class SummaryFragment extends Fragment {
 
     private LinearLayout summaryRootLayout;
+    private Typeface loraBoldTypeface;
 
     @Nullable
     @Override
@@ -25,6 +27,10 @@ public class SummaryFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_summary, container, false);
         summaryRootLayout = root.findViewById(R.id.summaryRootLayout);
+
+        // Load Lora_Bold.ttf from assets
+        loraBoldTypeface = Typeface.createFromAsset(requireContext().getAssets(), "fonts/Lora_Bold.ttf");
+
         displaySummary();
         return root;
     }
@@ -45,15 +51,15 @@ public class SummaryFragment extends Fragment {
         double perPerson = (people > 0) ? (totalExpense / people) : 0.0;
         double overallBalance = totalContribution - totalExpense;
 
-        // ---- Main Summary Box ----
+        // ---- Main Summary Box (All text in Lora_Bold) ----
         LinearLayout mainBox = getCurvedBox();
-        mainBox.addView(getRow("Total Contributions", "₹" + String.format("%.2f", totalContribution), Color.BLACK));
+        mainBox.addView(getLoraRow("Total Contributions", "₹" + String.format("%.2f", totalContribution), Color.BLACK));
         mainBox.addView(getDivider());
-        mainBox.addView(getRow("Total Expenses",     "₹" + String.format("%.2f", totalExpense), Color.BLACK));
+        mainBox.addView(getLoraRow("Total Expenses",     "₹" + String.format("%.2f", totalExpense), Color.BLACK));
         mainBox.addView(getDivider());
-        mainBox.addView(getRow("Total Friends", String.valueOf(people), Color.BLACK)); // <-- NEW LINE
+        mainBox.addView(getLoraRow("Total Friends", String.valueOf(people), Color.BLACK));
         mainBox.addView(getDivider());
-        mainBox.addView(getRow("Each Person Share",  "₹" + String.format("%.2f", perPerson), Color.BLACK));
+        mainBox.addView(getLoraRow("Each Person Share",  "₹" + String.format("%.2f", perPerson), Color.BLACK));
         summaryRootLayout.addView(mainBox);
 
         // ---- Friends Balance Box ----
@@ -88,7 +94,7 @@ public class SummaryFragment extends Fragment {
             subBox.setPadding(25, 10, 25, 10);
             LinearLayout.LayoutParams subBoxParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            int marginBottomPx = (int) (getResources().getDisplayMetrics().density * 12); // 12dp between title and list
+            int marginBottomPx = (int) (getResources().getDisplayMetrics().density * 12);
             subBoxParams.setMargins(0, 0, 0, marginBottomPx);
             subBox.setLayoutParams(subBoxParams);
 
@@ -96,7 +102,7 @@ public class SummaryFragment extends Fragment {
             titleTv.setText("Take The Balance Amount in This Friends This has a Nagative(-) Balance:");
             titleTv.setTextColor(Color.WHITE);
             titleTv.setTextSize(18);
-            titleTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+            titleTv.setTypeface(loraBoldTypeface); // Only header in Lora_Bold
             titleTv.setGravity(android.view.Gravity.CENTER);
             titleTv.setLayoutParams(new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
@@ -129,7 +135,7 @@ public class SummaryFragment extends Fragment {
         labelTv.setText("Extra Money Left:");
         labelTv.setTextColor(Color.WHITE);
         labelTv.setTextSize(20);
-        labelTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+        labelTv.setTypeface(Typeface.DEFAULT_BOLD);
         labelTv.setGravity(android.view.Gravity.CENTER);
 
         TextView amtTv = new TextView(getContext());
@@ -138,7 +144,7 @@ public class SummaryFragment extends Fragment {
         amtTv.setText(amtStr);
         amtTv.setTextColor(Color.WHITE);
         amtTv.setTextSize(32);
-        amtTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+        amtTv.setTypeface(Typeface.DEFAULT_BOLD);
         amtTv.setGravity(android.view.Gravity.CENTER);
 
         orangeBox.addView(labelTv);
@@ -150,7 +156,7 @@ public class SummaryFragment extends Fragment {
             warningTv.setTextColor(Color.WHITE);
             warningTv.setTextSize(16);
             warningTv.setGravity(android.view.Gravity.CENTER);
-            warningTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+            warningTv.setTypeface(Typeface.DEFAULT_BOLD);
             orangeBox.addView(warningTv);
         }
 
@@ -177,7 +183,7 @@ public class SummaryFragment extends Fragment {
         labelTv.setText(label);
         labelTv.setTextColor(Color.BLACK);
         labelTv.setTextSize(16);
-        labelTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+        labelTv.setTypeface(Typeface.DEFAULT_BOLD);
         LinearLayout.LayoutParams labelParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
         labelTv.setLayoutParams(labelParams);
 
@@ -185,27 +191,34 @@ public class SummaryFragment extends Fragment {
         valueTv.setText(value);
         valueTv.setTextColor(valueColor);
         valueTv.setTextSize(16);
-        valueTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+        valueTv.setTypeface(Typeface.DEFAULT_BOLD);
 
         row.addView(labelTv);
         row.addView(valueTv);
         return row;
     }
 
-    private LinearLayout getSimpleRow(String text, int color) {
+    // For Lora_Bold rows (summary box)
+    private LinearLayout getLoraRow(String label, String value, int valueColor) {
         LinearLayout row = new LinearLayout(getContext());
         row.setOrientation(LinearLayout.HORIZONTAL);
 
         TextView labelTv = new TextView(getContext());
-        labelTv.setText(text);
-        labelTv.setTextColor(color);
+        labelTv.setText(label);
+        labelTv.setTextColor(Color.BLACK);
         labelTv.setTextSize(16);
-        labelTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
-        LinearLayout.LayoutParams labelParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        labelTv.setTypeface(loraBoldTypeface);
+        LinearLayout.LayoutParams labelParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
         labelTv.setLayoutParams(labelParams);
 
+        TextView valueTv = new TextView(getContext());
+        valueTv.setText(value);
+        valueTv.setTextColor(valueColor);
+        valueTv.setTextSize(16);
+        valueTv.setTypeface(loraBoldTypeface);
+
         row.addView(labelTv);
+        row.addView(valueTv);
         return row;
     }
 
