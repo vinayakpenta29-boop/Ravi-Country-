@@ -9,6 +9,6 @@
 
     <!-- Splash screen theme -->
     <style name="Theme.SplashScreen" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:windowBackground">@color/primary_orange</item>
+        <item name="android:windowBackground">@color/navy_blue</item>
     </style>
 </resources>
