@@ -7,6 +7,9 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
@@ -26,7 +29,7 @@ import java.util.List;
 public class ExpenseFragment extends Fragment {
 
     private EditText inputCategory, inputAmount;
-    private Button btnAddExpense, btnDeleteExpense;
+    private Button btnAddExpense;
     private LinearLayout expensesListLayout, expenseInputCard;
     private ViewGroup rootLayout;
 
@@ -43,6 +46,12 @@ public class ExpenseFragment extends Fragment {
 
     public static List<Double> getExpenseAmounts() {
         return expenseAmounts;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true); // enable 3-dots menu
     }
 
     @Override
@@ -64,27 +73,30 @@ public class ExpenseFragment extends Fragment {
         expenseInputCard = root.findViewById(R.id.expenseInputCard);
         rootLayout = (ViewGroup) root;
 
-        btnDeleteExpense = new Button(getContext());
-        btnDeleteExpense.setText("DELETE A EXPENSE");
-        btnDeleteExpense.setAllCaps(true);
-        btnDeleteExpense.setTextColor(getResources().getColor(android.R.color.white));
-        btnDeleteExpense.setTextSize(18);
-        btnDeleteExpense.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
-        btnDeleteExpense.setBackgroundResource(R.drawable.gradient_pink_purple_button);
-        LinearLayout.LayoutParams delParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        delParams.setMargins(0, 0, 0, 18);
-        btnDeleteExpense.setLayoutParams(delParams);
-        btnDeleteExpense.setGravity(Gravity.CENTER);
-        btnDeleteExpense.setPadding(0, 16, 0, 16);
-
         btnAddExpense.setOnClickListener(v -> addExpense());
-        btnDeleteExpense.setOnClickListener(v -> showDeleteExpenseDialog());
 
         loadExpensesData();
         refreshExpensesUI();
         return root;
     }
+
+    // ----- Menu (3 dots) -----
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.expense_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.menu_delete_expense) {
+            showDeleteExpenseDialog();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    // ----- Core logic -----
 
     private void addExpense() {
         String category = inputCategory.getText().toString().trim();
@@ -198,14 +210,12 @@ public class ExpenseFragment extends Fragment {
     private void refreshExpensesUI() {
         expensesListLayout.removeAllViews();
 
-        // Always remove buttons before adding them
         if (btnAddExpense.getParent() != null) ((ViewGroup) btnAddExpense.getParent()).removeView(btnAddExpense);
-        if (btnDeleteExpense.getParent() != null) ((ViewGroup) btnDeleteExpense.getParent()).removeView(btnDeleteExpense);
 
         int inputCardIdx = ((ViewGroup) expenseInputCard.getParent()).indexOfChild(expenseInputCard);
 
         if (expenseTypes.isEmpty()) {
-            // Show only ADD button under inputs, no DELETE
+            // Show only ADD button under inputs
             rootLayout.addView(btnAddExpense, inputCardIdx + 1);
         } else {
             // Show expenses list
@@ -255,9 +265,8 @@ public class ExpenseFragment extends Fragment {
             }
             expensesListLayout.addView(outerBox);
 
-            // Show buttons below the list (ADD above DELETE)
+            // Add button below list
             rootLayout.addView(btnAddExpense);
-            rootLayout.addView(btnDeleteExpense);
         }
     }
 
