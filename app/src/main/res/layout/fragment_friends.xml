@@ -1,10 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_dark"
     android:orientation="vertical"
     android:padding="16dp">
+
+    <!-- Toolbar inside fragment for 3-dots menu -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/friendsToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/background_dark"
+        android:paddingStart="0dp"
+        android:paddingEnd="0dp"
+        android:contentInsetStartWithNavigation="0dp"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     <!-- Friend Name Input -->
     <EditText
@@ -21,6 +34,7 @@
         android:paddingRight="18dp"
         android:paddingTop="14dp"
         android:paddingBottom="14dp"
+        android:layout_marginTop="4dp"
         android:layout_marginBottom="10dp"
         android:textColorHint="@color/grey_hint" />
 
@@ -49,4 +63,5 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </ScrollView>
+
 </LinearLayout>
