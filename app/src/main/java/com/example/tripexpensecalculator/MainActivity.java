@@ -1,13 +1,13 @@
 package com.example.tripexpensecalculator;
 
 import android.os.Bundle;
-import android.view.WindowManager;
-import android.view.View;
-import androidx.annotation.NonNull;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.viewpager2.widget.ViewPager2;
+
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
-import androidx.viewpager2.widget.ViewPager2;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,8 +20,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Set status bar color to match your app
+        // Status bar color to match your app
         getWindow().setStatusBarColor(getResources().getColor(R.color.background_dark));
+
+        // Setup custom toolbar for overflow (three-dots) menu
+        Toolbar toolbar = findViewById(R.id.mainToolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            // Optional: no text title, tabs already show section
+            getSupportActionBar().setTitle("");
+        }
 
         tabLayout = findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPager);
