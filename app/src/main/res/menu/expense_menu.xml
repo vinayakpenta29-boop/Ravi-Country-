@@ -1,0 +1,6 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_delete_expense"
+        android:title="Delete an Expense"
+        android:showAsAction="never" />
+</menu>
