@@ -7,15 +7,17 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import com.example.tripexpensecalculator.R;
@@ -51,7 +53,7 @@ public class ExpenseFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true); // enable 3-dots menu
+        instance = this;          // no setHasOptionsMenu() now
     }
 
     @Override
@@ -66,6 +68,17 @@ public class ExpenseFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_expense, container, false);
 
+        // Toolbar inside fragment for 3-dots menu
+        Toolbar toolbar = root.findViewById(R.id.expensesToolbar);
+        toolbar.inflateMenu(R.menu.expense_menu);
+        toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.menu_delete_expense) {
+                showDeleteExpenseDialog();
+                return true;
+            }
+            return false;
+        });
+
         inputCategory = root.findViewById(R.id.inputCategory);
         inputAmount = root.findViewById(R.id.inputAmount);
         btnAddExpense = root.findViewById(R.id.btnAddExpense);
@@ -78,22 +91,6 @@ public class ExpenseFragment extends Fragment {
         loadExpensesData();
         refreshExpensesUI();
         return root;
-    }
-
-    // ----- Menu (3 dots) -----
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.expense_menu, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.menu_delete_expense) {
-            showDeleteExpenseDialog();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     // ----- Core logic -----
@@ -210,7 +207,9 @@ public class ExpenseFragment extends Fragment {
     private void refreshExpensesUI() {
         expensesListLayout.removeAllViews();
 
-        if (btnAddExpense.getParent() != null) ((ViewGroup) btnAddExpense.getParent()).removeView(btnAddExpense);
+        if (btnAddExpense.getParent() != null) {
+            ((ViewGroup) btnAddExpense.getParent()).removeView(btnAddExpense);
+        }
 
         int inputCardIdx = ((ViewGroup) expenseInputCard.getParent()).indexOfChild(expenseInputCard);
 
