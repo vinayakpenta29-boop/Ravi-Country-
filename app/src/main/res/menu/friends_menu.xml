@@ -1,10 +1,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- 3-dots menu item to delete a friend -->
     <item
         android:id="@+id/menu_delete_friend"
         android:title="Delete a Friend"
-        android:icon="@drawable/ic_delete"
         android:showAsAction="never" />
 
 </menu>
