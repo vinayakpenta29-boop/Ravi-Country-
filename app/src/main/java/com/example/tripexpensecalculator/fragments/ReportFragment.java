@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,13 +21,18 @@ import androidx.fragment.app.Fragment;
 
 import com.example.tripexpensecalculator.R;
 
-import java.util.*;
+import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class ReportFragment extends Fragment {
 
     private LinearLayout reportRootLayout;
     private Button btnResetAllData;
     private Typeface loraBoldTypeface;
+
+    // fixed password
+    private static final String RESET_PASSWORD = "1234";
 
     @Nullable
     @Override
@@ -108,7 +114,7 @@ public class ReportFragment extends Fragment {
         }
         reportRootLayout.addView(categoryBox);
 
-        // ---- New Section: Totals in white curved box, labels and values in purple, Lora_Bold ----
+        // Totals white curved box
         LinearLayout whiteBox = new LinearLayout(getContext());
         whiteBox.setOrientation(LinearLayout.VERTICAL);
         whiteBox.setBackgroundResource(R.drawable.curved_gray_button);
@@ -120,7 +126,7 @@ public class ReportFragment extends Fragment {
 
         int purple = getResources().getColor(R.color.purple_500);
 
-        whiteBox.addView(getLoraRowTextView("Total Expenses",    "₹" + String.format("%.2f", totalExpense), purple));
+        whiteBox.addView(getLoraRowTextView("Total Expenses", "₹" + String.format("%.2f", totalExpense), purple));
         whiteBox.addView(getDivider());
         whiteBox.addView(getLoraRowTextView("Total Contributions", "₹" + String.format("%.2f", totalContribution), purple));
         whiteBox.addView(getDivider());
@@ -139,17 +145,42 @@ public class ReportFragment extends Fragment {
         whiteBox.addView(getLoraRowTextView(balanceLabel, balanceValue, purple));
         reportRootLayout.addView(whiteBox);
 
-        // ------- Add Reset Button at the end -------
+        // Reset button at the end
         reportRootLayout.addView(btnResetAllData);
     }
 
+    // Step 1: warning dialog
     private void showResetWarning() {
         new AlertDialog.Builder(getContext())
                 .setTitle("Warning")
-                .setMessage("Are you sure it will be erase the all data")
+                .setMessage("Are you sure? This will erase all data.")
                 .setNegativeButton("Cancel", null)
-                .setPositiveButton("Reset", (dialog, which) -> {
-                    clearAllData();
+                .setPositiveButton("Continue", (dialog, which) -> showPasswordDialog())
+                .show();
+    }
+
+    // Step 2: password dialog
+    private void showPasswordDialog() {
+        final EditText input = new EditText(getContext());
+        input.setHint("Enter password");
+        input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER |
+                           android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+        LinearLayout container = new LinearLayout(getContext());
+        container.setPadding(40, 20, 40, 0);
+        container.addView(input);
+
+        new AlertDialog.Builder(getContext())
+                .setTitle("Confirm Reset")
+                .setMessage("Please enter password to reset all data.")
+                .setView(container)
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("OK", (dialog, which) -> {
+                    String pwd = input.getText().toString().trim();
+                    if (RESET_PASSWORD.equals(pwd)) {
+                        clearAllData();
+                    } else {
+                        Toast.makeText(getContext(), "Incorrect password.", Toast.LENGTH_SHORT).show();
+                    }
                 })
                 .show();
     }
@@ -195,7 +226,6 @@ public class ReportFragment extends Fragment {
         return tv;
     }
 
-    // For normal rows
     private LinearLayout getRowTextView(String left, String right, int color, boolean useBold) {
         LinearLayout row = new LinearLayout(getContext());
         row.setOrientation(LinearLayout.HORIZONTAL);
@@ -205,7 +235,8 @@ public class ReportFragment extends Fragment {
         leftTv.setTextColor(color);
         leftTv.setTextSize(16);
         leftTv.setTypeface(Typeface.DEFAULT_BOLD);
-        LinearLayout.LayoutParams leftParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+        LinearLayout.LayoutParams leftParams = new LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
         leftTv.setLayoutParams(leftParams);
 
         TextView rightTv = new TextView(getContext());
@@ -219,7 +250,6 @@ public class ReportFragment extends Fragment {
         return row;
     }
 
-    // For purple section only, in Lora_Bold
     private LinearLayout getLoraRowTextView(String left, String right, int color) {
         LinearLayout row = new LinearLayout(getContext());
         row.setOrientation(LinearLayout.HORIZONTAL);
@@ -229,7 +259,8 @@ public class ReportFragment extends Fragment {
         leftTv.setTextColor(color);
         leftTv.setTextSize(18);
         leftTv.setTypeface(loraBoldTypeface);
-        LinearLayout.LayoutParams leftParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+        LinearLayout.LayoutParams leftParams = new LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
         leftTv.setLayoutParams(leftParams);
 
         TextView rightTv = new TextView(getContext());
@@ -264,6 +295,7 @@ public class ReportFragment extends Fragment {
         }
         return s;
     }
+
     private double sum(List<Double> list) {
         double s = 0.0;
         for (double v : list) s += v;
