@@ -5,8 +5,18 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.view.*;
-import android.widget.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.view.Gravity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +31,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class FriendsFragment extends Fragment {
+
     private EditText inputName;
     private Button btnAddFriend;
     private LinearLayout friendsListLayout;
@@ -39,7 +50,7 @@ public class FriendsFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true); // Enable menu in fragment
+        setHasOptionsMenu(true);   // needed for 3‑dots menu
         instance = this;
     }
 
@@ -67,14 +78,15 @@ public class FriendsFragment extends Fragment {
         return root;
     }
 
+    // ---------- options menu (3 dots) ----------
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.friends_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.menu_delete_friend) {
             showDeleteFriendDialog();
             return true;
@@ -82,6 +94,7 @@ public class FriendsFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    // ---------- logic ----------
     public void safeRefreshUI() {
         if (friendsListLayout != null) refreshUI();
     }
@@ -158,7 +171,9 @@ public class FriendsFragment extends Fragment {
     private void refreshUI() {
         friendsListLayout.removeAllViews();
 
-        if (btnAddFriend.getParent() != null) ((ViewGroup) btnAddFriend.getParent()).removeView(btnAddFriend);
+        if (btnAddFriend.getParent() != null) {
+            ((ViewGroup) btnAddFriend.getParent()).removeView(btnAddFriend);
+        }
 
         int inputNameIndex = rootLayout.indexOfChild(inputName);
 
@@ -193,7 +208,8 @@ public class FriendsFragment extends Fragment {
                 nameView.setTextSize(18);
                 nameView.setTextColor(getResources().getColor(R.color.input_text));
                 nameView.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
-                LinearLayout.LayoutParams leftParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+                LinearLayout.LayoutParams leftParams = new LinearLayout.LayoutParams(
+                        0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
                 nameView.setLayoutParams(leftParams);
 
                 TextView amtView = new TextView(getContext());
@@ -209,7 +225,7 @@ public class FriendsFragment extends Fragment {
                 divider.setBackgroundColor(getResources().getColor(R.color.divider));
                 LinearLayout.LayoutParams dividerParams = new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, 2);
-                dividerParams.setMargins(0,16,0,16);
+                dividerParams.setMargins(0, 16, 0, 16);
                 divider.setLayoutParams(dividerParams);
 
                 LinearLayout botInner = new LinearLayout(getContext());
@@ -228,11 +244,13 @@ public class FriendsFragment extends Fragment {
                 inputAmt.setHintTextColor(getResources().getColor(R.color.grey_hint));
                 inputAmt.setTextSize(16);
                 inputAmt.setPadding(14, 10, 14, 10);
-                LinearLayout.LayoutParams inputAmtParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+                LinearLayout.LayoutParams inputAmtParams = new LinearLayout.LayoutParams(
+                        0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
                 inputAmt.setLayoutParams(inputAmtParams);
 
                 Button addAmtBtn = new Button(getContext());
-                addAmtBtn.setText("ADDAMOUNT");
+                addAmtBtn.setText("ADD
+AMOUNT"); // two-line label
                 addAmtBtn.setTextColor(getResources().getColor(R.color.input_text));
                 addAmtBtn.setTextSize(14);
                 addAmtBtn.setBackgroundResource(R.drawable.curved_orange_button);
