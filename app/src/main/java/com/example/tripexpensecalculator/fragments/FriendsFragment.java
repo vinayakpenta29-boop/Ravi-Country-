@@ -5,10 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.*;
 
 import androidx.annotation.NonNull;
@@ -26,7 +23,6 @@ import java.util.Map;
 public class FriendsFragment extends Fragment {
     private EditText inputName;
     private Button btnAddFriend;
-    private Button btnDeleteFriend;
     private LinearLayout friendsListLayout;
     private ViewGroup rootLayout;
 
@@ -38,6 +34,13 @@ public class FriendsFragment extends Fragment {
 
     public static Map<String, Double> getContributions() {
         return contributions;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true); // Enable menu in fragment
+        instance = this;
     }
 
     @Override
@@ -57,26 +60,26 @@ public class FriendsFragment extends Fragment {
         friendsListLayout = root.findViewById(R.id.friendsListLayout);
         rootLayout = (ViewGroup) root;
 
-        btnDeleteFriend = new Button(getContext());
-        btnDeleteFriend.setText("DELETE A FRIEND");
-        btnDeleteFriend.setAllCaps(true);
-        btnDeleteFriend.setTextColor(getResources().getColor(android.R.color.white));
-        btnDeleteFriend.setTextSize(18);
-        btnDeleteFriend.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
-        btnDeleteFriend.setBackgroundResource(R.drawable.gradient_pink_purple_button);
-        LinearLayout.LayoutParams delParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        delParams.setMargins(0, 0, 0, 18);
-        btnDeleteFriend.setLayoutParams(delParams);
-        btnDeleteFriend.setGravity(Gravity.CENTER);
-        btnDeleteFriend.setPadding(0, 16, 0, 16);
-
         btnAddFriend.setOnClickListener(v -> addFriend());
-        btnDeleteFriend.setOnClickListener(v -> showDeleteFriendDialog());
 
         loadFriendsData();
         refreshUI();
         return root;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.friends_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_delete_friend) {
+            showDeleteFriendDialog();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void safeRefreshUI() {
@@ -155,9 +158,7 @@ public class FriendsFragment extends Fragment {
     private void refreshUI() {
         friendsListLayout.removeAllViews();
 
-        // Remove both buttons from parent
         if (btnAddFriend.getParent() != null) ((ViewGroup) btnAddFriend.getParent()).removeView(btnAddFriend);
-        if (btnDeleteFriend.getParent() != null) ((ViewGroup) btnDeleteFriend.getParent()).removeView(btnDeleteFriend);
 
         int inputNameIndex = rootLayout.indexOfChild(inputName);
 
@@ -231,7 +232,8 @@ public class FriendsFragment extends Fragment {
                 inputAmt.setLayoutParams(inputAmtParams);
 
                 Button addAmtBtn = new Button(getContext());
-                addAmtBtn.setText("ADD\nAMOUNT");
+                addAmtBtn.setText("ADD
+AMOUNT");
                 addAmtBtn.setTextColor(getResources().getColor(R.color.input_text));
                 addAmtBtn.setTextSize(14);
                 addAmtBtn.setBackgroundResource(R.drawable.curved_orange_button);
@@ -265,7 +267,6 @@ public class FriendsFragment extends Fragment {
                 friendsListLayout.addView(cardBox);
             }
             rootLayout.addView(btnAddFriend);
-            rootLayout.addView(btnDeleteFriend);
         }
     }
 
