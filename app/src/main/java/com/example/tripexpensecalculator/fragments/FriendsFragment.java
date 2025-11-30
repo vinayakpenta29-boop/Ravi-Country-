@@ -233,7 +233,7 @@ public class FriendsFragment extends Fragment {
 
                 Button addAmtBtn = new Button(getContext());
                 addAmtBtn.setText("ADD
-AMOUNT");
+                                  AMOUNT");
                 addAmtBtn.setTextColor(getResources().getColor(R.color.input_text));
                 addAmtBtn.setTextSize(14);
                 addAmtBtn.setBackgroundResource(R.drawable.curved_orange_button);
