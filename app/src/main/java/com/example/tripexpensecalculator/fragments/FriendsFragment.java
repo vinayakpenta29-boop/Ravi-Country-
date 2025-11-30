@@ -6,9 +6,6 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -20,6 +17,7 @@ import android.view.Gravity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import com.example.tripexpensecalculator.R;
@@ -50,8 +48,7 @@ public class FriendsFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);   // needed for 3‑dots menu
-        instance = this;
+        instance = this;   // no setHasOptionsMenu() here anymore
     }
 
     @Override
@@ -66,6 +63,17 @@ public class FriendsFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_friends, container, false);
 
+        // Toolbar inside fragment for 3-dots menu
+        Toolbar toolbar = root.findViewById(R.id.friendsToolbar);
+        toolbar.inflateMenu(R.menu.friends_menu);
+        toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.menu_delete_friend) {
+                showDeleteFriendDialog();
+                return true;
+            }
+            return false;
+        });
+
         inputName = root.findViewById(R.id.inputName);
         btnAddFriend = root.findViewById(R.id.btnAddFriend);
         friendsListLayout = root.findViewById(R.id.friendsListLayout);
@@ -76,22 +84,6 @@ public class FriendsFragment extends Fragment {
         loadFriendsData();
         refreshUI();
         return root;
-    }
-
-    // ---------- options menu (3 dots) ----------
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.friends_menu, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.menu_delete_friend) {
-            showDeleteFriendDialog();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     // ---------- logic ----------
@@ -249,7 +241,8 @@ public class FriendsFragment extends Fragment {
                 inputAmt.setLayoutParams(inputAmtParams);
 
                 Button addAmtBtn = new Button(getContext());
-                addAmtBtn.setText("ADDAMOUNT"); // two-line label
+                addAmtBtn.setText("ADD
+AMOUNT");
                 addAmtBtn.setTextColor(getResources().getColor(R.color.input_text));
                 addAmtBtn.setTextSize(14);
                 addAmtBtn.setBackgroundResource(R.drawable.curved_orange_button);
