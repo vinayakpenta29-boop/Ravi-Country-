@@ -1,4 +1,5 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <solid android:color="@color/input_box"/>
     <corners android:radius="24dp"/>
+    <stroke android:width="2dp" android:color="#e6e4e7"/>
 </shape>
