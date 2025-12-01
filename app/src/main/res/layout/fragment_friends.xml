@@ -45,7 +45,7 @@
         android:layout_height="50dp"
         android:text="ADD FRIEND"
         android:textAllCaps="true"
-        android:textColor="@color/input_text"
+        android:textColor="@color/white_text_for_button"
         android:textSize="18sp"
         android:fontFamily="@font/poppins_bold"
         android:background="@drawable/curved_orange_button"
