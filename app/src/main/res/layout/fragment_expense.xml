@@ -9,7 +9,7 @@
 
     <!-- Toolbar inside fragment for 3-dots menu -->
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/expenseToolbar"
+        android:id="@+id/expensesToolbar"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:background="@color/background_dark"
