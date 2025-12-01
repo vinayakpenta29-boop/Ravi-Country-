@@ -4,6 +4,7 @@
     <color name="card_light">#FFFFFF</color>
     <color name="primary_orange">#FF7F00</color> <!-- Used for splash background -->
     <color name="input_text">#000000</color>
+    <color name="white_text_for_button">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
     <color name="grey_hint">#BBBED3</color>
