@@ -177,7 +177,7 @@ public class FriendsFragment extends Fragment {
 
                 LinearLayout cardBox = new LinearLayout(getContext());
                 cardBox.setOrientation(LinearLayout.VERTICAL);
-                cardBox.setBackgroundResource(R.drawable.curved_light_box);
+                cardBox.setBackgroundResource(R.drawable.white_with_border);
                 cardBox.setPadding(20, 28, 20, 28);
 
                 LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
@@ -189,7 +189,7 @@ public class FriendsFragment extends Fragment {
 
                 LinearLayout topInner = new LinearLayout(getContext());
                 topInner.setOrientation(LinearLayout.HORIZONTAL);
-                topInner.setBackgroundResource(R.drawable.curved_box_with_border);
+                topInner.setBackgroundResource(R.drawable.pista_with_border);
                 topInner.setPadding(24, 20, 24, 20);
                 LinearLayout.LayoutParams topParams = new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -222,7 +222,7 @@ public class FriendsFragment extends Fragment {
 
                 LinearLayout botInner = new LinearLayout(getContext());
                 botInner.setOrientation(LinearLayout.HORIZONTAL);
-                botInner.setBackgroundResource(R.drawable.curved_box_with_border);
+                botInner.setBackgroundResource(R.drawable.pista_with_border);
                 botInner.setPadding(24, 20, 24, 20);
                 LinearLayout.LayoutParams botParams = new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -231,7 +231,7 @@ public class FriendsFragment extends Fragment {
                 EditText inputAmt = new EditText(getContext());
                 inputAmt.setHint("Enter Amount");
                 inputAmt.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-                inputAmt.setBackgroundResource(R.drawable.curved_light_box);
+                inputAmt.setBackgroundResource(R.drawable.white_with_border);
                 inputAmt.setTextColor(getResources().getColor(R.color.input_text));
                 inputAmt.setHintTextColor(getResources().getColor(R.color.grey_hint));
                 inputAmt.setTextSize(16);
