@@ -222,7 +222,7 @@ public class FriendsFragment extends Fragment {
 
                 LinearLayout botInner = new LinearLayout(getContext());
                 botInner.setOrientation(LinearLayout.HORIZONTAL);
-                botInner.setBackgroundResource(R.drawable.curved_light_box);
+                botInner.setBackgroundResource(R.drawable.curved_box_no_border);
                 botInner.setPadding(24, 20, 24, 20);
                 LinearLayout.LayoutParams botParams = new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -231,7 +231,7 @@ public class FriendsFragment extends Fragment {
                 EditText inputAmt = new EditText(getContext());
                 inputAmt.setHint("Enter Amount");
                 inputAmt.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-                inputAmt.setBackgroundResource(R.drawable.curved_box);
+                inputAmt.setBackgroundResource(R.drawable.curved_box_pista);
                 inputAmt.setTextColor(getResources().getColor(R.color.input_text));
                 inputAmt.setHintTextColor(getResources().getColor(R.color.grey_hint));
                 inputAmt.setTextSize(16);
