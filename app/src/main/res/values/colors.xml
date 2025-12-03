@@ -16,4 +16,5 @@
     <color name="teal_700">#018786</color>
     <color name="gray_border">#e6e4e7</color>
     <color name="navy_blue">#151a3d</color>
+    <color name="white_for_button">#FFFFFF</color>
 </resources>
