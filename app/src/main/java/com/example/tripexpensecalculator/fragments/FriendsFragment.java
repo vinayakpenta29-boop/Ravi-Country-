@@ -177,7 +177,7 @@ public class FriendsFragment extends Fragment {
 
                 LinearLayout cardBox = new LinearLayout(getContext());
                 cardBox.setOrientation(LinearLayout.VERTICAL);
-                cardBox.setBackgroundResource(R.drawable.white_with_border);
+                cardBox.setBackgroundResource(R.drawable.pista_with_border);
                 cardBox.setPadding(20, 28, 20, 28);
 
                 LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
@@ -189,7 +189,7 @@ public class FriendsFragment extends Fragment {
 
                 LinearLayout topInner = new LinearLayout(getContext());
                 topInner.setOrientation(LinearLayout.HORIZONTAL);
-                topInner.setBackgroundResource(R.drawable.pista_with_no_border);
+                topInner.setBackgroundResource(R.drawable.white_with_no_border);
                 topInner.setPadding(24, 20, 24, 20);
                 LinearLayout.LayoutParams topParams = new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
