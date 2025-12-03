@@ -234,7 +234,7 @@ public class FriendsFragment extends Fragment {
                 inputAmt.setTextColor(getResources().getColor(R.color.white));
                 inputAmt.setHintTextColor(getResources().getColor(R.color.grey_hint));
                 inputAmt.setTextSize(16);
-                inputAmt.setPadding(14, 10, 14, 10);
+                inputAmt.setPadding(14, 20, 14, 20);
                 LinearLayout.LayoutParams inputAmtParams = new LinearLayout.LayoutParams(
                         0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
                 inputAmt.setLayoutParams(inputAmtParams);
