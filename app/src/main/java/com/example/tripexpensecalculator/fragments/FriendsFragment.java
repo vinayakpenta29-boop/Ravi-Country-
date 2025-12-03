@@ -207,7 +207,7 @@ public class FriendsFragment extends Fragment {
                 TextView amtView = new TextView(getContext());
                 amtView.setText("₹" + String.format("%.2f", entry.getValue()));
                 amtView.setTextSize(17);
-                amtView.setTextColor(getResources().getColor(R.color.white_for_button));
+                amtView.setTextColor(getResources().getColor(R.color.black));
                 amtView.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
 
                 topInner.addView(nameView);
@@ -242,7 +242,7 @@ public class FriendsFragment extends Fragment {
 
                 Button addAmtBtn = new Button(getContext());
                 addAmtBtn.setText("ADDAMOUNT");
-                addAmtBtn.setTextColor(getResources().getColor(R.color.input_text));
+                addAmtBtn.setTextColor(getResources().getColor(R.color.white_for_button));
                 addAmtBtn.setTextSize(14);
                 addAmtBtn.setBackgroundResource(R.drawable.curved_orange_button);
                 addAmtBtn.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
