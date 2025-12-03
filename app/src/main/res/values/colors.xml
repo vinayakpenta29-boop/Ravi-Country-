@@ -14,8 +14,8 @@
     <color name="purple_700">#3700B3</color>
     <color name="teal_200">#03DAC5</color>
     <color name="teal_700">#018786</color>
-    <color name="gray_border">#e6e4e7</color>
+    <color name="gray_border">#909090</color>
     <color name="navy_blue">#151a3d</color>
     <color name="white_for_button">#FFFFFF</color>
-    <color name="status_bar_grey">#FFDDDDDD</color>
+    <color name="status_bar_grey">#909090</color>
 </resources>
