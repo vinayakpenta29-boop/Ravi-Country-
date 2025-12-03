@@ -17,4 +17,5 @@
     <color name="gray_border">#e6e4e7</color>
     <color name="navy_blue">#151a3d</color>
     <color name="white_for_button">#FFFFFF</color>
+    <color name="status_bar_grey">#FFDDDDDD</color>
 </resources>
