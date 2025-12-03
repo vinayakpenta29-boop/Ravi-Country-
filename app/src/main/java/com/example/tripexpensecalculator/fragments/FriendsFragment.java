@@ -232,7 +232,7 @@ public class FriendsFragment extends Fragment {
                 inputAmt.setHint("Enter Amount");
                 inputAmt.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                 inputAmt.setBackgroundResource(R.drawable.white_with_no_border);
-                inputAmt.setTextColor(getResources().getColor(R.color.input_text));
+                inputAmt.setTextColor(getResources().getColor(R.color.white));
                 inputAmt.setHintTextColor(getResources().getColor(R.color.grey_hint));
                 inputAmt.setTextSize(16);
                 inputAmt.setPadding(14, 10, 14, 10);
