@@ -222,8 +222,7 @@ public class FriendsFragment extends Fragment {
 
                 LinearLayout botInner = new LinearLayout(getContext());
                 botInner.setOrientation(LinearLayout.HORIZONTAL);
-                botInner.setBackgroundResource(R.drawable.pista_with_no_border);
-                botInner.setPadding(24, 20, 24, 20);
+                botInner.setPadding(0, 0, 0, 0);
                 LinearLayout.LayoutParams botParams = new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 botInner.setLayoutParams(botParams);
