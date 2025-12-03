@@ -2,6 +2,8 @@ package com.example.tripexpensecalculator;
 
 import android.os.Bundle;
 
+import android.view.View;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -20,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Status bar color to match your app
-        getWindow().setStatusBarColor(getResources().getColor(R.color.background_dark));
+        getWindow().setStatusBarColor(getResources().getColor(R.color.white_for_names));
 
         tabLayout = findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPager);
