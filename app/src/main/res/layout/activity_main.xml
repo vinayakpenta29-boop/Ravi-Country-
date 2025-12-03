@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_dark">
+    android:background="@color/white_for_names">
 
     <!-- Tabs row (now directly under status bar) -->
     <com.google.android.material.tabs.TabLayout
@@ -15,7 +15,7 @@
         app:tabIndicatorFullWidth="false"
         app:tabIndicatorColor="@color/primary_orange"
         app:tabTextColor="#000000"
-        app:tabSelectedTextColor="@android:color/white" />
+        app:tabSelectedTextColor="#676765" />
 
     <!-- ViewPager2 content -->
     <androidx.viewpager2.widget.ViewPager2
