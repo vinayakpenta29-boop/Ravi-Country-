@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Status bar color to match your app
-        getWindow().setStatusBarColor(getResources().getColor(R.color.white_for_names));
+        getWindow().setStatusBarColor(getResources().getColor(R.color.white_for_button));
 
         tabLayout = findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPager);
