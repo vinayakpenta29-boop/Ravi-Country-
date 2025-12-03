@@ -71,7 +71,7 @@ public class SummaryFragment extends Fragment {
             double bal = entry.getValue() - perPerson;
             String sign = (bal >= 0) ? "+" : "-";
             int color = (bal >= 0) ? Color.parseColor("#117c00") : Color.RED;
-            String balanceLabel = entry.getKey() + " paid";
+            String balanceLabel = entry.getKey() + " Paid";
             String balanceValue = "₹" + String.format("%.2f", entry.getValue()) + "  |  " +
                     "Balance: " + sign + "₹" + String.format("%.2f", Math.abs(bal));
             balanceBox.addView(getRow(balanceLabel, balanceValue, color));
