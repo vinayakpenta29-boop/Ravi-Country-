@@ -22,7 +22,7 @@
     <LinearLayout
         android:id="@+id/expenseInputCard"
         android:orientation="vertical"
-        android:background="@drawable/curved_box"
+        android:background="@drawable/curved_box_pista"
         android:padding="6dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
