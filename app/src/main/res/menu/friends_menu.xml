@@ -5,4 +5,9 @@
         android:title="Delete a Friend"
         android:showAsAction="never" />
 
+    <item
+        android:id="@+id/menu_given_amount"
+        android:title="Given Amount"
+        android:showAsAction="never" />
+
 </menu>
