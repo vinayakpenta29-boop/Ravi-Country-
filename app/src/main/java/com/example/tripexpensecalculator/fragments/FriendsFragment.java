@@ -178,8 +178,7 @@ public class FriendsFragment extends Fragment {
             sb.append(name)
               .append(" = ₹")
               .append(String.format("%.2f", total))
-              .append("
-");
+              .append("");
         }
 
         new android.app.AlertDialog.Builder(requireContext())
