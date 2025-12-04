@@ -8,12 +8,12 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Gravity;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.view.Gravity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,7 +48,7 @@ public class FriendsFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        instance = this;   // no setHasOptionsMenu() here anymore
+        instance = this;   // no setHasOptionsMenu()
     }
 
     @Override
@@ -67,8 +67,12 @@ public class FriendsFragment extends Fragment {
         Toolbar toolbar = root.findViewById(R.id.friendsToolbar);
         toolbar.inflateMenu(R.menu.friends_menu);
         toolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.menu_delete_friend) {
+            int id = item.getItemId();
+            if (id == R.id.menu_delete_friend) {
                 showDeleteFriendDialog();
+                return true;
+            } else if (id == R.id.menu_given_amount) {
+                showGivenAmountDialog();
                 return true;
             }
             return false;
@@ -157,6 +161,31 @@ public class FriendsFragment extends Fragment {
                             .show();
                 })
                 .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    // New: show total given amount per friend
+    private void showGivenAmountDialog() {
+        if (contributions.isEmpty()) {
+            Toast.makeText(getContext(), "No friends available.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, Double> entry : contributions.entrySet()) {
+            String name = entry.getKey();
+            double total = entry.getValue();
+            sb.append(name)
+              .append(" = ₹")
+              .append(String.format("%.2f", total))
+              .append("
+");
+        }
+
+        new android.app.AlertDialog.Builder(requireContext())
+                .setTitle("Given Amount")
+                .setMessage(sb.toString().trim())
+                .setPositiveButton("OK", null)
                 .show();
     }
 
