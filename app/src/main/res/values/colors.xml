@@ -18,4 +18,5 @@
     <color name="navy_blue">#151a3d</color>
     <color name="white_for_button">#FFFFFF</color>
     <color name="status_bar_grey">#909090</color>
+    <color name="skyblue">#87CEEB</color>
 </resources>
