@@ -22,10 +22,13 @@ import androidx.fragment.app.Fragment;
 
 import com.example.tripexpensecalculator.R;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class FriendsFragment extends Fragment {
@@ -37,11 +40,12 @@ public class FriendsFragment extends Fragment {
 
     public static FriendsFragment instance = null;
 
-    private static final Map<String, Double> contributions = new LinkedHashMap<>();
+    // Now store list of amounts per friend
+    private static final Map<String, List<Double>> contributions = new LinkedHashMap<>();
     private static final String PREFS_NAME = "TripExpensePrefs";
     private static final String FRIENDS_KEY = "FriendsList";
 
-    public static Map<String, Double> getContributions() {
+    public static Map<String, List<Double>> getContributions() {
         return contributions;
     }
 
@@ -107,7 +111,7 @@ public class FriendsFragment extends Fragment {
             return;
         }
 
-        contributions.put(name, 0.0);
+        contributions.put(name, new ArrayList<>());
 
         inputName.setText("");
         saveFriendsData();
@@ -164,7 +168,7 @@ public class FriendsFragment extends Fragment {
                 .show();
     }
 
-    // New: show total given amount per friend
+    // Show full history like Ravi = 100+300+400 = ₹800
     private void showGivenAmountDialog() {
         if (contributions.isEmpty()) {
             Toast.makeText(getContext(), "No friends available.", Toast.LENGTH_SHORT).show();
@@ -172,13 +176,33 @@ public class FriendsFragment extends Fragment {
         }
 
         StringBuilder sb = new StringBuilder();
-        for (Map.Entry<String, Double> entry : contributions.entrySet()) {
+        for (Map.Entry<String, List<Double>> entry : contributions.entrySet()) {
             String name = entry.getKey();
-            double total = entry.getValue();
-            sb.append(name)
-              .append(" = ₹")
-              .append(String.format("%.2f", total))
-              .append("");
+            List<Double> list = entry.getValue();
+            if (list == null || list.isEmpty()) continue;
+
+            double total = 0.0;
+            StringBuilder line = new StringBuilder();
+            line.append(name).append(" = ");
+
+            for (int i = 0; i < list.size(); i++) {
+                double v = list.get(i);
+                total += v;
+                // remove .0 for integer values
+                if ((long) v == v) {
+                    line.append((long) v);
+                } else {
+                    line.append(v);
+                }
+                if (i < list.size() - 1) line.append("+");
+            }
+            line.append(" = ₹").append(String.format("%.2f", total));
+            sb.append(line).append("");
+        }
+
+        if (sb.length() == 0) {
+            Toast.makeText(getContext(), "No amounts added yet.", Toast.LENGTH_SHORT).show();
+            return;
         }
 
         new android.app.AlertDialog.Builder(requireContext())
@@ -200,8 +224,14 @@ public class FriendsFragment extends Fragment {
         if (contributions.isEmpty()) {
             rootLayout.addView(btnAddFriend, inputNameIndex + 1);
         } else {
-            for (Map.Entry<String, Double> entry : contributions.entrySet()) {
+            for (Map.Entry<String, List<Double>> entry : contributions.entrySet()) {
                 final String friendName = entry.getKey();
+                final List<Double> list = entry.getValue();
+
+                double total = 0.0;
+                if (list != null) {
+                    for (double v : list) total += v;
+                }
 
                 LinearLayout cardBox = new LinearLayout(getContext());
                 cardBox.setOrientation(LinearLayout.VERTICAL);
@@ -233,7 +263,7 @@ public class FriendsFragment extends Fragment {
                 nameView.setLayoutParams(leftParams);
 
                 TextView amtView = new TextView(getContext());
-                amtView.setText("₹" + String.format("%.2f", entry.getValue()));
+                amtView.setText("₹" + String.format("%.2f", total));
                 amtView.setTextSize(17);
                 amtView.setTextColor(getResources().getColor(R.color.black));
                 amtView.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
@@ -285,7 +315,12 @@ public class FriendsFragment extends Fragment {
                     if (!amtStr.isEmpty()) {
                         try {
                             double addVal = Double.parseDouble(amtStr);
-                            contributions.put(friendName, entry.getValue() + addVal);
+                            List<Double> l = contributions.get(friendName);
+                            if (l == null) {
+                                l = new ArrayList<>();
+                                contributions.put(friendName, l);
+                            }
+                            l.add(addVal);
                             saveFriendsData();
                             refreshUI();
                         } catch (NumberFormatException ignored) { }
@@ -309,8 +344,10 @@ public class FriendsFragment extends Fragment {
         SharedPreferences prefs = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         JSONObject obj = new JSONObject();
         try {
-            for (Map.Entry<String, Double> entry : contributions.entrySet()) {
-                obj.put(entry.getKey(), entry.getValue());
+            for (Map.Entry<String, List<Double>> entry : contributions.entrySet()) {
+                JSONArray arr = new JSONArray();
+                for (double v : entry.getValue()) arr.put(v);
+                obj.put(entry.getKey(), arr);
             }
         } catch (Exception ignored) { }
         prefs.edit().putString(FRIENDS_KEY, obj.toString()).apply();
@@ -326,7 +363,12 @@ public class FriendsFragment extends Fragment {
                 Iterator<String> keys = obj.keys();
                 while (keys.hasNext()) {
                     String key = keys.next();
-                    contributions.put(key, obj.getDouble(key));
+                    JSONArray arr = obj.getJSONArray(key);
+                    List<Double> list = new ArrayList<>();
+                    for (int i = 0; i < arr.length(); i++) {
+                        list.add(arr.getDouble(i));
+                    }
+                    contributions.put(key, list);
                 }
             } catch (Exception ignored) { }
         }
