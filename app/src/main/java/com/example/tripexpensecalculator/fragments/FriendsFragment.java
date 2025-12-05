@@ -175,41 +175,57 @@ public class FriendsFragment extends Fragment {
             return;
         }
 
-        StringBuilder sb = new StringBuilder();
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        View dialogView = inflater.inflate(R.layout.dialog_given_amount, null);
+        LinearLayout container = dialogView.findViewById(R.id.givenAmountContainer);
+
+        int index = 0;
+        int size = contributions.size();
+
         for (Map.Entry<String, List<Double>> entry : contributions.entrySet()) {
             String name = entry.getKey();
             List<Double> list = entry.getValue();
             if (list == null || list.isEmpty()) continue;
 
             double total = 0.0;
-            StringBuilder line = new StringBuilder();
-            line.append(name).append(" = ");
-
+            StringBuilder expr = new StringBuilder();
             for (int i = 0; i < list.size(); i++) {
                 double v = list.get(i);
                 total += v;
-                // remove .0 for integer values
-                if ((long) v == v) {
-                    line.append((long) v);
-                } else {
-                    line.append(v);
-                }
-                if (i < list.size() - 1) line.append("+");
+                if ((long) v == v) expr.append((long) v);
+                else expr.append(v);
+                if (i < list.size() - 1) expr.append(" + ");
             }
-            line.append(" = ₹").append(String.format("%.2f", total));
 
-            // one line per friend
-            sb.append(line).append("\n");
-        }
+            // row
+            LinearLayout row = new LinearLayout(getContext());
+            row.setOrientation(LinearLayout.VERTICAL);
+            row.setPadding(0, 8, 0, 8);
 
-        if (sb.length() == 0) {
-            Toast.makeText(getContext(), "No amounts added yet.", Toast.LENGTH_SHORT).show();
-            return;
+            TextView lineTv = new TextView(getContext());
+            lineTv.setText(name + " = " + expr + " = ₹" + String.format("%.2f", total));
+            lineTv.setTextSize(16);
+            lineTv.setTextColor(getResources().getColor(R.color.black));
+            row.addView(lineTv);
+
+            container.addView(row);
+
+            // real divider view between rows
+            if (index < size - 1) {
+                View divider = new View(getContext());
+                divider.setBackgroundColor(getResources().getColor(R.color.divider));
+                LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT, 2);
+                p.setMargins(0, 4, 0, 4);
+                divider.setLayoutParams(p);
+                container.addView(divider);
+            }
+            index++;
         }
 
         new android.app.AlertDialog.Builder(requireContext())
                 .setTitle("Given Amount")
-                .setMessage(sb.toString().trim())
+                .setView(dialogView)
                 .setPositiveButton("OK", null)
                 .show();
     }
