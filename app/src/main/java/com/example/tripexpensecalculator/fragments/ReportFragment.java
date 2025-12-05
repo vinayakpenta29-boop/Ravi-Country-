@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment;
 import com.example.tripexpensecalculator.R;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -74,7 +75,15 @@ public class ReportFragment extends Fragment {
 
         List<String> expenseTypes = ExpenseFragment.getExpenseTypes();
         List<Double> expenseAmounts = ExpenseFragment.getExpenseAmounts();
-        Map<String, Double> contributions = FriendsFragment.getContributions();
+
+        // FriendsFragment now returns Map<String, List<Double>>; convert to totals
+        Map<String, List<Double>> rawContributions = FriendsFragment.getContributions();
+        Map<String, Double> contributions = new LinkedHashMap<>();
+        for (Map.Entry<String, List<Double>> e : rawContributions.entrySet()) {
+            double total = 0.0;
+            for (double v : e.getValue()) total += v;
+            contributions.put(e.getKey(), total);
+        }
 
         double totalExpense = sum(expenseAmounts);
         double totalContribution = sum(contributions);
@@ -290,9 +299,7 @@ public class ReportFragment extends Fragment {
 
     private double sum(Map<String, Double> map) {
         double s = 0.0;
-        for (double v : map.values()) {
-            s += v;
-        }
+        for (double v : map.values()) s += v;
         return s;
     }
 
