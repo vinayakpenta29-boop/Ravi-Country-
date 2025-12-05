@@ -8,11 +8,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import com.example.tripexpensecalculator.R;
+
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +48,15 @@ public class SummaryFragment extends Fragment {
     private void displaySummary() {
         summaryRootLayout.removeAllViews();
 
-        Map<String, Double> contributions = FriendsFragment.getContributions();
+        // FriendsFragment now returns Map<String, List<Double>>; convert to totals
+        Map<String, List<Double>> rawContributions = FriendsFragment.getContributions();
+        Map<String, Double> contributions = new LinkedHashMap<>();
+        for (Map.Entry<String, List<Double>> e : rawContributions.entrySet()) {
+            double total = 0.0;
+            for (double v : e.getValue()) total += v;
+            contributions.put(e.getKey(), total);
+        }
+
         double totalContribution = sum(contributions);
         double totalExpense = sum(ExpenseFragment.getExpenseAmounts());
         int people = contributions.size();
@@ -87,7 +99,7 @@ public class SummaryFragment extends Fragment {
         if (!negativeMembers.isEmpty()) {
             LinearLayout negativeBox = getCurvedBox();
 
-            // Title sub-box: no left, right, or top margin—only bottom margin for separation
+            // Title sub-box
             LinearLayout subBox = new LinearLayout(getContext());
             subBox.setOrientation(LinearLayout.HORIZONTAL);
             subBox.setBackgroundResource(R.drawable.curved_box_gray_with_border);
@@ -102,7 +114,7 @@ public class SummaryFragment extends Fragment {
             titleTv.setText("Take The Balance Amount in This Friends This has a Nagative(-) Balance:");
             titleTv.setTextColor(Color.WHITE);
             titleTv.setTextSize(18);
-            titleTv.setTypeface(loraBoldTypeface); // Only header in Lora_Bold
+            titleTv.setTypeface(loraBoldTypeface);
             titleTv.setGravity(android.view.Gravity.CENTER);
             titleTv.setLayoutParams(new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
@@ -120,7 +132,7 @@ public class SummaryFragment extends Fragment {
             summaryRootLayout.addView(negativeBox);
         }
 
-        // ---- Overall Balance (Big Orange Box with two/three lines) ----
+        // ---- Overall Balance (Big Orange Box) ----
         LinearLayout orangeBox = new LinearLayout(getContext());
         orangeBox.setOrientation(LinearLayout.VERTICAL);
         orangeBox.setBackgroundResource(R.drawable.curved_orange_button);
@@ -167,10 +179,10 @@ public class SummaryFragment extends Fragment {
         LinearLayout box = new LinearLayout(getContext());
         box.setOrientation(LinearLayout.VERTICAL);
         box.setBackgroundResource(R.drawable.curved_box_white_with_gray_border);
-        box.setPadding(42,28,42,28);
+        box.setPadding(42, 28, 42, 28);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        params.setMargins(10,0,10,24);
+        params.setMargins(10, 0, 10, 24);
         box.setLayoutParams(params);
         return box;
     }
@@ -184,7 +196,8 @@ public class SummaryFragment extends Fragment {
         labelTv.setTextColor(Color.BLACK);
         labelTv.setTextSize(16);
         labelTv.setTypeface(Typeface.DEFAULT_BOLD);
-        LinearLayout.LayoutParams labelParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+        LinearLayout.LayoutParams labelParams = new LinearLayout.LayoutParams(
+                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
         labelTv.setLayoutParams(labelParams);
 
         TextView valueTv = new TextView(getContext());
@@ -198,7 +211,6 @@ public class SummaryFragment extends Fragment {
         return row;
     }
 
-    // For Lora_Bold rows (summary box)
     private LinearLayout getLoraRow(String label, String value, int valueColor) {
         LinearLayout row = new LinearLayout(getContext());
         row.setOrientation(LinearLayout.HORIZONTAL);
@@ -208,7 +220,8 @@ public class SummaryFragment extends Fragment {
         labelTv.setTextColor(Color.BLACK);
         labelTv.setTextSize(16);
         labelTv.setTypeface(loraBoldTypeface);
-        LinearLayout.LayoutParams labelParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+        LinearLayout.LayoutParams labelParams = new LinearLayout.LayoutParams(
+                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
         labelTv.setLayoutParams(labelParams);
 
         TextView valueTv = new TextView(getContext());
