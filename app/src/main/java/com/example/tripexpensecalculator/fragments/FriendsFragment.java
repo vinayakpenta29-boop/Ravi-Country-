@@ -198,9 +198,10 @@ public class FriendsFragment extends Fragment {
             }
             line.append(" = ₹").append(String.format("%.2f", total));
 
-    sb.append(line).append("
-");  // <-- this exact line
-}
+            // one line per friend
+            sb.append(line).append("
+");
+        }
 
         if (sb.length() == 0) {
             Toast.makeText(getContext(), "No amounts added yet.", Toast.LENGTH_SHORT).show();
