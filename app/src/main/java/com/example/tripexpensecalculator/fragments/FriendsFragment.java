@@ -197,7 +197,8 @@ public class FriendsFragment extends Fragment {
                 if (i < list.size() - 1) line.append("+");
             }
             line.append(" = ₹").append(String.format("%.2f", total));
-            sb.append(line).append("");
+            sb.append(line).append("
+        ");
         }
 
         if (sb.length() == 0) {
