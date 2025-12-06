@@ -74,6 +74,21 @@ public class SummaryFragment extends Fragment {
         mainBox.addView(getLoraRow("Each Person Share",  "₹" + String.format("%.2f", perPerson), Color.BLACK));
         summaryRootLayout.addView(mainBox);
 
+        // ---- Cash / Online Balance Box (for now uses same totals) ----
+        double totalCashGiven = totalContribution;      // later: only cash part
+        double totalOnlineGiven = 0.0;                  // later: only online part
+        double totalCashExpenses = totalExpense;        // later: only cash expenses
+        double totalOnlineExpenses = 0.0;               // later: only online expenses
+
+        double cashBalance = totalCashGiven - totalCashExpenses;
+        double onlineBalance = totalOnlineGiven - totalOnlineExpenses;
+
+        LinearLayout cashOnlineBox = getCurvedBox();
+        cashOnlineBox.addView(getLoraRow("Cash Balance", "₹" + String.format("%.2f", cashBalance), Color.BLACK));
+        cashOnlineBox.addView(getDivider());
+        cashOnlineBox.addView(getLoraRow("Online Balance", "₹" + String.format("%.2f", onlineBalance), Color.BLACK));
+        summaryRootLayout.addView(cashOnlineBox);
+
         // ---- Friends Balance Box ----
         LinearLayout balanceBox = getCurvedBox();
         List<String> negativeMembers = new ArrayList<>();
