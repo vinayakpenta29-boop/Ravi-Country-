@@ -120,6 +120,31 @@ public class ExpenseFragment extends Fragment {
             return;
         }
 
+        // If Online Payment mode is OFF, behave as before
+        boolean onlineMode = FriendsFragment.isOnlineMode(requireContext());
+        if (!onlineMode) {
+            saveExpenseSimple(category, amount);
+            return;
+        }
+
+        // If Online Payment mode is ON, ask Cash or Online (for now just show info and still save normally)
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Payment Type")
+                .setMessage("How did you pay this expense?")
+                .setNegativeButton("Cash Payment", (d, w) -> {
+                    // later you can store CASH separately; for now just save
+                    saveExpenseSimple(category, amount);
+                })
+                .setPositiveButton("Online Payment", (d, w) -> {
+                    // later you can store ONLINE separately; for now just save
+                    saveExpenseSimple(category, amount);
+                })
+                .setCancelable(false)
+                .show();
+    }
+
+    // common code to actually store the expense
+    private void saveExpenseSimple(String category, double amount) {
         expenseTypes.add(category);
         expenseAmounts.add(amount);
 
