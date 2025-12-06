@@ -8,16 +8,49 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Toolbar inside fragment for 3-dots menu -->
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/friendsToolbar"
+    <!-- Top bar: Online Payment toggle + Toolbar 3-dots -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="@color/background_dark"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:paddingStart="0dp"
-        android:paddingEnd="0dp"
-        android:contentInsetStartWithNavigation="0dp"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        android:paddingEnd="0dp">
+
+        <!-- Online Payment toggle (left side) -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvOnlinePaymentLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Online Payment"
+                android:textColor="@color/input_text"
+                android:textSize="14sp" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switchOnlinePayment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp" />
+        </LinearLayout>
+
+        <!-- Toolbar inside fragment for 3-dots menu (right side) -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/friendsToolbar"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@color/background_dark"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            android:contentInsetStartWithNavigation="0dp"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+    </LinearLayout>
 
     <!-- Friend Name Input -->
     <EditText
