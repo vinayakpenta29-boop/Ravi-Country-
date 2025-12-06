@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
@@ -40,13 +41,25 @@ public class FriendsFragment extends Fragment {
 
     public static FriendsFragment instance = null;
 
-    // Now store list of amounts per friend
+    // list of amounts per friend (total, independent of cash/online for now)
     private static final Map<String, List<Double>> contributions = new LinkedHashMap<>();
     private static final String PREFS_NAME = "TripExpensePrefs";
     private static final String FRIENDS_KEY = "FriendsList";
+    private static final String KEY_ONLINE_MODE = "OnlineMode"; // toggle flag
 
     public static Map<String, List<Double>> getContributions() {
         return contributions;
+    }
+
+    // ---------- online mode helpers (used by other fragments too) ----------
+    public static boolean isOnlineMode(Context ctx) {
+        SharedPreferences prefs = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getBoolean(KEY_ONLINE_MODE, false);
+    }
+
+    public static void setOnlineMode(Context ctx, boolean value) {
+        SharedPreferences prefs = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        prefs.edit().putBoolean(KEY_ONLINE_MODE, value).apply();
     }
 
     @Override
@@ -81,6 +94,14 @@ public class FriendsFragment extends Fragment {
             }
             return false;
         });
+
+        // Online Payment toggle (SwitchCompat in layout)
+        SwitchCompat switchOnline = root.findViewById(R.id.switchOnlinePayment);
+        boolean current = isOnlineMode(requireContext());
+        switchOnline.setChecked(current);
+        switchOnline.setOnCheckedChangeListener((buttonView, isChecked) ->
+                setOnlineMode(requireContext(), isChecked)
+        );
 
         inputName = root.findViewById(R.id.inputName);
         btnAddFriend = root.findViewById(R.id.btnAddFriend);
@@ -322,8 +343,10 @@ public class FriendsFragment extends Fragment {
                 addAmtBtn.setBackgroundResource(R.drawable.curved_orange_button);
                 addAmtBtn.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
                 addAmtBtn.setGravity(Gravity.CENTER);
-                LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                LinearLayout.LayoutParams btnParams =
+                        new LinearLayout.LayoutParams(
+                                ViewGroup.LayoutParams.WRAP_CONTENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT);
                 btnParams.setMargins(24, 0, 0, 0);
                 addAmtBtn.setLayoutParams(btnParams);
                 addAmtBtn.setPadding(32, 22, 32, 22);
