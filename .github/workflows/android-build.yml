@@ -16,8 +16,9 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      # Decode Base64 keystore from secret into keystore.jks
+      # Decode Base64 keystore from secret into app/keystore.jks
       - name: Decode keystore
+        working-directory: app
         env:
           KEYSTORE_B64: ${{ secrets.SIGNING_KEYSTORE_BASE64 }}
         run: echo "$KEYSTORE_B64" | base64 -d > keystore.jks
