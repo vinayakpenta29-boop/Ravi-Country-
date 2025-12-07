@@ -41,13 +41,18 @@ public class FriendsFragment extends Fragment {
 
     public static FriendsFragment instance = null;
 
-    // list of amounts per friend (total, independent of cash/online for now)
-    private static final Map<String, List<Double>> contributions = new LinkedHashMap<>();
+    // Model: separate cash and online totals for each friend
+    public static class FriendTotals {
+        public double cash = 0.0;
+        public double online = 0.0;
+    }
+
+    private static final Map<String, FriendTotals> contributions = new LinkedHashMap<>();
     private static final String PREFS_NAME = "TripExpensePrefs";
     private static final String FRIENDS_KEY = "FriendsList";
     private static final String KEY_ONLINE_MODE = "OnlineMode"; // toggle flag
 
-    public static Map<String, List<Double>> getContributions() {
+    public static Map<String, FriendTotals> getContributions() {
         return contributions;
     }
 
@@ -132,7 +137,8 @@ public class FriendsFragment extends Fragment {
             return;
         }
 
-        contributions.put(name, new ArrayList<>());
+        FriendTotals totals = new FriendTotals();
+        contributions.put(name, totals);
 
         inputName.setText("");
         saveFriendsData();
@@ -189,7 +195,7 @@ public class FriendsFragment extends Fragment {
                 .show();
     }
 
-    // Show full history like Ravi = 100+300+400 = ₹800
+    // Show full history like Ravi = cash+online = total
     private void showGivenAmountDialog() {
         if (contributions.isEmpty()) {
             Toast.makeText(getContext(), "No friends available.", Toast.LENGTH_SHORT).show();
@@ -203,22 +209,20 @@ public class FriendsFragment extends Fragment {
         int index = 0;
         int size = contributions.size();
 
-        for (Map.Entry<String, List<Double>> entry : contributions.entrySet()) {
+        for (Map.Entry<String, FriendTotals> entry : contributions.entrySet()) {
             String name = entry.getKey();
-            List<Double> list = entry.getValue();
-            if (list == null || list.isEmpty()) continue;
+            FriendTotals t = entry.getValue();
+            double total = t.cash + t.online;
 
-            double total = 0.0;
-            StringBuilder expr = new StringBuilder();
-            for (int i = 0; i < list.size(); i++) {
-                double v = list.get(i);
-                total += v;
-                if ((long) v == v) expr.append((long) v);
-                else expr.append(v);
-                if (i < list.size() - 1) expr.append(" + ");
+            String expr = "";
+            if (t.cash > 0 && t.online > 0) {
+                expr = String.format("Cash %.2f + Online %.2f", t.cash, t.online);
+            } else if (t.cash > 0) {
+                expr = String.format("Cash %.2f", t.cash);
+            } else if (t.online > 0) {
+                expr = String.format("Online %.2f", t.online);
             }
 
-            // row
             LinearLayout row = new LinearLayout(getContext());
             row.setOrientation(LinearLayout.VERTICAL);
             row.setPadding(0, 8, 0, 8);
@@ -231,7 +235,6 @@ public class FriendsFragment extends Fragment {
 
             container.addView(row);
 
-            // real divider view between rows
             if (index < size - 1) {
                 View divider = new View(getContext());
                 divider.setBackgroundColor(getResources().getColor(R.color.divider));
@@ -263,14 +266,11 @@ public class FriendsFragment extends Fragment {
         if (contributions.isEmpty()) {
             rootLayout.addView(btnAddFriend, inputNameIndex + 1);
         } else {
-            for (Map.Entry<String, List<Double>> entry : contributions.entrySet()) {
+            for (Map.Entry<String, FriendTotals> entry : contributions.entrySet()) {
                 final String friendName = entry.getKey();
-                final List<Double> list = entry.getValue();
+                final FriendTotals totals = entry.getValue();
 
-                double total = 0.0;
-                if (list != null) {
-                    for (double v : list) total += v;
-                }
+                double total = totals.cash + totals.online;
 
                 LinearLayout cardBox = new LinearLayout(getContext());
                 cardBox.setOrientation(LinearLayout.VERTICAL);
@@ -353,19 +353,34 @@ public class FriendsFragment extends Fragment {
 
                 addAmtBtn.setOnClickListener(v -> {
                     String amtStr = inputAmt.getText().toString().trim();
-                    if (!amtStr.isEmpty()) {
-                        try {
-                            double addVal = Double.parseDouble(amtStr);
-                            List<Double> l = contributions.get(friendName);
-                            if (l == null) {
-                                l = new ArrayList<>();
-                                contributions.put(friendName, l);
-                            }
-                            l.add(addVal);
-                            saveFriendsData();
-                            refreshUI();
-                        } catch (NumberFormatException ignored) { }
-                    }
+                    if (amtStr.isEmpty()) return;
+
+                    try {
+                        double addVal = Double.parseDouble(amtStr);
+
+                        boolean onlineMode = isOnlineMode(requireContext());
+                        if (!onlineMode) {
+                            // toggle OFF: everything treated as cash
+                            totals.cash += addVal;
+                            finishFriendAddAmount(inputAmt);
+                            return;
+                        }
+
+                        new android.app.AlertDialog.Builder(requireContext())
+                                .setTitle("Payment Type")
+                                .setMessage("How did " + friendName + " give this amount?")
+                                .setNegativeButton("Cash", (d, w) -> {
+                                    totals.cash += addVal;
+                                    finishFriendAddAmount(inputAmt);
+                                })
+                                .setPositiveButton("Online", (d, w) -> {
+                                    totals.online += addVal;
+                                    finishFriendAddAmount(inputAmt);
+                                })
+                                .setCancelable(true)
+                                .show();
+
+                    } catch (NumberFormatException ignored) { }
                 });
 
                 botInner.addView(inputAmt);
@@ -381,14 +396,23 @@ public class FriendsFragment extends Fragment {
         }
     }
 
+    private void finishFriendAddAmount(EditText inputAmt) {
+        inputAmt.setText("");
+        saveFriendsData();
+        refreshUI();
+        Toast.makeText(getContext(), "Amount added.", Toast.LENGTH_SHORT).show();
+    }
+
     private void saveFriendsData() {
         SharedPreferences prefs = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         JSONObject obj = new JSONObject();
         try {
-            for (Map.Entry<String, List<Double>> entry : contributions.entrySet()) {
-                JSONArray arr = new JSONArray();
-                for (double v : entry.getValue()) arr.put(v);
-                obj.put(entry.getKey(), arr);
+            for (Map.Entry<String, FriendTotals> entry : contributions.entrySet()) {
+                FriendTotals t = entry.getValue();
+                JSONObject o = new JSONObject();
+                o.put("cash", t.cash);
+                o.put("online", t.online);
+                obj.put(entry.getKey(), o);
             }
         } catch (Exception ignored) { }
         prefs.edit().putString(FRIENDS_KEY, obj.toString()).apply();
@@ -404,12 +428,11 @@ public class FriendsFragment extends Fragment {
                 Iterator<String> keys = obj.keys();
                 while (keys.hasNext()) {
                     String key = keys.next();
-                    JSONArray arr = obj.getJSONArray(key);
-                    List<Double> list = new ArrayList<>();
-                    for (int i = 0; i < arr.length(); i++) {
-                        list.add(arr.getDouble(i));
-                    }
-                    contributions.put(key, list);
+                    JSONObject o = obj.getJSONObject(key);
+                    FriendTotals t = new FriendTotals();
+                    t.cash = o.optDouble("cash", 0.0);
+                    t.online = o.optDouble("online", 0.0);
+                    contributions.put(key, t);
                 }
             } catch (Exception ignored) { }
         }
