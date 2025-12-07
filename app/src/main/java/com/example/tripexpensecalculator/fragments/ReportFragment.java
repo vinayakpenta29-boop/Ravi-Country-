@@ -77,12 +77,19 @@ public class ReportFragment extends Fragment {
         List<Double> expenseAmounts = ExpenseFragment.getExpenseAmounts();
 
         // FriendsFragment now returns Map<String, List<Double>>; convert to totals
-        Map<String, List<Double>> rawContributions = FriendsFragment.getContributions();
+        Map<String, FriendsFragment.FriendTotals> rawContributions = FriendsFragment.getContributions();
         Map<String, Double> contributions = new LinkedHashMap<>();
-        for (Map.Entry<String, List<Double>> e : rawContributions.entrySet()) {
-            double total = 0.0;
-            for (double v : e.getValue()) total += v;
+
+        double totalCashGiven = 0.0;
+        double totalOnlineGiven = 0.0;
+
+        for (Map.Entry<String, FriendsFragment.FriendTotals> e : rawContributions.entrySet()) {
+            FriendsFragment.FriendTotals t = e.getValue();
+            double total = t.cash + t.online;
             contributions.put(e.getKey(), total);
+
+            totalCashGiven += t.cash;
+            totalOnlineGiven += t.online;
         }
 
         double totalExpense = sum(expenseAmounts);
