@@ -39,6 +39,9 @@ public class ExpenseFragment extends Fragment {
 
     private static final List<String> expenseTypes = new ArrayList<>();
     private static final List<Double> expenseAmounts = new ArrayList<>();
+    // true = online payment, false = cash payment
+    private static final List<Boolean> expenseIsOnline = new ArrayList<>();
+
     private static final String PREFS_NAME = "TripExpensePrefs";
     private static final String EXPENSES_KEY = "ExpensesList";
 
@@ -48,6 +51,10 @@ public class ExpenseFragment extends Fragment {
 
     public static List<Double> getExpenseAmounts() {
         return expenseAmounts;
+    }
+
+    public static List<Boolean> getExpenseIsOnline() {
+        return expenseIsOnline;
     }
 
     @Override
@@ -120,33 +127,30 @@ public class ExpenseFragment extends Fragment {
             return;
         }
 
-        // If Online Payment mode is OFF, behave as before
+        // If Online Payment mode is OFF, treat everything as cash
         boolean onlineMode = FriendsFragment.isOnlineMode(requireContext());
         if (!onlineMode) {
-            saveExpenseSimple(category, amount);
+            saveExpenseSimple(category, amount, false);
             return;
         }
 
-        // If Online Payment mode is ON, ask Cash or Online (for now just show info and still save normally)
+        // If Online Payment mode is ON, ask Cash or Online and store flag
         new AlertDialog.Builder(requireContext())
                 .setTitle("Payment Type")
                 .setMessage("How did you pay this expense?")
-                .setNegativeButton("Cash Payment", (d, w) -> {
-                    // later you can store CASH separately; for now just save
-                    saveExpenseSimple(category, amount);
-                })
-                .setPositiveButton("Online Payment", (d, w) -> {
-                    // later you can store ONLINE separately; for now just save
-                    saveExpenseSimple(category, amount);
-                })
+                .setNegativeButton("Cash Payment", (d, w) ->
+                        saveExpenseSimple(category, amount, false))
+                .setPositiveButton("Online Payment", (d, w) ->
+                        saveExpenseSimple(category, amount, true))
                 .setCancelable(false)
                 .show();
     }
 
     // common code to actually store the expense
-    private void saveExpenseSimple(String category, double amount) {
+    private void saveExpenseSimple(String category, double amount, boolean isOnline) {
         expenseTypes.add(category);
         expenseAmounts.add(amount);
+        expenseIsOnline.add(isOnline);
 
         inputCategory.setText("");
         inputAmount.setText("");
@@ -206,6 +210,9 @@ public class ExpenseFragment extends Fragment {
                                         int delIdx = toDelete.get(j);
                                         expenseTypes.remove(delIdx);
                                         expenseAmounts.remove(delIdx);
+                                        if (delIdx < expenseIsOnline.size()) {
+                                            expenseIsOnline.remove(delIdx);
+                                        }
                                     }
                                     saveExpensesData();
                                     refreshExpensesUI();
@@ -298,14 +305,17 @@ public class ExpenseFragment extends Fragment {
         SharedPreferences prefs = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         JSONArray typesArr = new JSONArray();
         JSONArray amtsArr = new JSONArray();
+        JSONArray onlineArr = new JSONArray();
         for (int i = 0; i < expenseTypes.size(); i++) {
             typesArr.put(expenseTypes.get(i));
             amtsArr.put(expenseAmounts.get(i));
+            onlineArr.put(expenseIsOnline.get(i) ? 1 : 0);
         }
         JSONObject data = new JSONObject();
         try {
             data.put("types", typesArr);
             data.put("amounts", amtsArr);
+            data.put("onlineFlags", onlineArr);
         } catch (Exception ignored) { }
         prefs.edit().putString(EXPENSES_KEY, data.toString()).apply();
     }
@@ -315,14 +325,21 @@ public class ExpenseFragment extends Fragment {
         String json = prefs.getString(EXPENSES_KEY, null);
         expenseTypes.clear();
         expenseAmounts.clear();
+        expenseIsOnline.clear();
         if (json != null) {
             try {
                 JSONObject obj = new JSONObject(json);
                 JSONArray typesArr = obj.getJSONArray("types");
                 JSONArray amtsArr = obj.getJSONArray("amounts");
+                JSONArray onlineArr = obj.optJSONArray("onlineFlags");
                 for (int i = 0; i < typesArr.length(); i++) {
                     expenseTypes.add(typesArr.getString(i));
                     expenseAmounts.add(amtsArr.getDouble(i));
+                    boolean isOnline = false;
+                    if (onlineArr != null && i < onlineArr.length()) {
+                        isOnline = onlineArr.getInt(i) == 1;
+                    }
+                    expenseIsOnline.add(isOnline);
                 }
             } catch (Exception ignored) { }
         }
