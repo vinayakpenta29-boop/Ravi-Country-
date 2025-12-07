@@ -48,45 +48,67 @@ public class SummaryFragment extends Fragment {
     private void displaySummary() {
         summaryRootLayout.removeAllViews();
 
-        // FriendsFragment now returns Map<String, List<Double>>; convert to totals
-        Map<String, List<Double>> rawContributions = FriendsFragment.getContributions();
+        // ---- Friends: totals + cash/online split ----
+        Map<String, FriendsFragment.FriendTotals> rawContributions = FriendsFragment.getContributions();
         Map<String, Double> contributions = new LinkedHashMap<>();
-        for (Map.Entry<String, List<Double>> e : rawContributions.entrySet()) {
-            double total = 0.0;
-            for (double v : e.getValue()) total += v;
+        double totalCashGiven = 0.0;
+        double totalOnlineGiven = 0.0;
+
+        for (Map.Entry<String, FriendsFragment.FriendTotals> e : rawContributions.entrySet()) {
+            FriendsFragment.FriendTotals t = e.getValue();
+            double total = t.cash + t.online;
             contributions.put(e.getKey(), total);
+            totalCashGiven += t.cash;
+            totalOnlineGiven += t.online;
         }
 
-        double totalContribution = sum(contributions);
-        double totalExpense = sum(ExpenseFragment.getExpenseAmounts());
+        // ---- Expenses: totals + cash/online split ----
+        List<Double> expenseAmounts = ExpenseFragment.getExpenseAmounts();
+        List<Boolean> expenseIsOnline = ExpenseFragment.getExpenseIsOnline();
+
+        double totalExpense = 0.0;
+        double totalCashExpenses = 0.0;
+        double totalOnlineExpenses = 0.0;
+
+        for (int i = 0; i < expenseAmounts.size(); i++) {
+            double amt = expenseAmounts.get(i);
+            totalExpense += amt;
+            boolean isOnline = (i < expenseIsOnline.size()) && Boolean.TRUE.equals(expenseIsOnline.get(i));
+            if (isOnline) {
+                totalOnlineExpenses += amt;
+            } else {
+                totalCashExpenses += amt;
+            }
+        }
+
         int people = contributions.size();
         double perPerson = (people > 0) ? (totalExpense / people) : 0.0;
-        double overallBalance = totalContribution - totalExpense;
+        double overallBalance = totalCashGiven + totalOnlineGiven - totalExpense;
 
         // ---- Main Summary Box (All text in Lora_Bold) ----
         LinearLayout mainBox = getCurvedBox();
-        mainBox.addView(getLoraRow("Total Contributions", "₹" + String.format("%.2f", totalContribution), Color.BLACK));
+        mainBox.addView(getLoraRow("Total Contributions",
+                "₹" + String.format("%.2f", totalCashGiven + totalOnlineGiven), Color.BLACK));
         mainBox.addView(getDivider());
-        mainBox.addView(getLoraRow("Total Expenses",     "₹" + String.format("%.2f", totalExpense), Color.BLACK));
+        mainBox.addView(getLoraRow("Total Expenses",
+                "₹" + String.format("%.2f", totalExpense), Color.BLACK));
         mainBox.addView(getDivider());
         mainBox.addView(getLoraRow("Total Friends", String.valueOf(people), Color.BLACK));
         mainBox.addView(getDivider());
-        mainBox.addView(getLoraRow("Each Person Share",  "₹" + String.format("%.2f", perPerson), Color.BLACK));
+        mainBox.addView(getLoraRow("Each Person Share",
+                "₹" + String.format("%.2f", perPerson), Color.BLACK));
         summaryRootLayout.addView(mainBox);
 
-        // ---- Cash / Online Balance Box (for now uses same totals) ----
-        double totalCashGiven = totalContribution;      // later: only cash part
-        double totalOnlineGiven = 0.0;                  // later: only online part
-        double totalCashExpenses = totalExpense;        // later: only cash expenses
-        double totalOnlineExpenses = 0.0;               // later: only online expenses
-
+        // ---- Cash / Online Balance Box ----
         double cashBalance = totalCashGiven - totalCashExpenses;
         double onlineBalance = totalOnlineGiven - totalOnlineExpenses;
 
         LinearLayout cashOnlineBox = getCurvedBox();
-        cashOnlineBox.addView(getLoraRow("Cash Balance", "₹" + String.format("%.2f", cashBalance), Color.BLACK));
+        cashOnlineBox.addView(getLoraRow("Cash Balance",
+                "₹" + String.format("%.2f", cashBalance), Color.BLACK));
         cashOnlineBox.addView(getDivider());
-        cashOnlineBox.addView(getLoraRow("Online Balance", "₹" + String.format("%.2f", onlineBalance), Color.BLACK));
+        cashOnlineBox.addView(getLoraRow("Online Balance",
+                "₹" + String.format("%.2f", onlineBalance), Color.BLACK));
         summaryRootLayout.addView(cashOnlineBox);
 
         // ---- Friends Balance Box ----
@@ -258,19 +280,5 @@ public class SummaryFragment extends Fragment {
         params.setMargins(0, 10, 0, 10);
         divider.setLayoutParams(params);
         return divider;
-    }
-
-    private double sum(Map<String, Double> map) {
-        double s = 0.0;
-        for (double v : map.values()) {
-            s += v;
-        }
-        return s;
-    }
-
-    private double sum(List<Double> list) {
-        double s = 0.0;
-        for (double v : list) s += v;
-        return s;
     }
 }
