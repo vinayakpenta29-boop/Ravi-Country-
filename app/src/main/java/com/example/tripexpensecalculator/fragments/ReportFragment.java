@@ -76,7 +76,7 @@ public class ReportFragment extends Fragment {
         List<String> expenseTypes = ExpenseFragment.getExpenseTypes();
         List<Double> expenseAmounts = ExpenseFragment.getExpenseAmounts();
 
-        // FriendsFragment now returns Map<String, List<Double>>; convert to totals
+        // FriendsFragment now returns Map<String, FriendTotals>; convert to totals
         Map<String, FriendsFragment.FriendTotals> rawContributions = FriendsFragment.getContributions();
         Map<String, Double> contributions = new LinkedHashMap<>();
 
@@ -130,22 +130,25 @@ public class ReportFragment extends Fragment {
         }
         reportRootLayout.addView(categoryBox);
 
-        // Totals white curved box
-        LinearLayout whiteBox = new LinearLayout(getContext());
-        whiteBox.setOrientation(LinearLayout.VERTICAL);
-        whiteBox.setBackgroundResource(R.drawable.curved_gray_button);
-        whiteBox.setPadding(32, 22, 32, 22);
-        LinearLayout.LayoutParams whiteParams = new LinearLayout.LayoutParams(
+        // Totals curved box (use curved_box_with_border and smaller text)
+        LinearLayout totalsBox = new LinearLayout(getContext());
+        totalsBox.setOrientation(LinearLayout.VERTICAL);
+        totalsBox.setBackgroundResource(R.drawable.curved_box_with_border);
+        totalsBox.setPadding(32, 18, 32, 18);
+        LinearLayout.LayoutParams totalsParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        whiteParams.setMargins(32, 0, 32, 20);
-        whiteBox.setLayoutParams(whiteParams);
+        totalsParams.setMargins(32, 0, 32, 20);
+        totalsBox.setLayoutParams(totalsParams);
 
         int purple = getResources().getColor(R.color.purple_500);
 
-        whiteBox.addView(getLoraRowTextView("Total Expenses", "₹" + String.format("%.2f", totalExpense), purple));
-        whiteBox.addView(getDivider());
-        whiteBox.addView(getLoraRowTextView("Total Contributions", "₹" + String.format("%.2f", totalContribution), purple));
-        whiteBox.addView(getDivider());
+        totalsBox.addView(getLoraRowTextView("Total Expenses",
+                "₹" + String.format("%.2f", totalExpense), purple, 16f));
+        totalsBox.addView(getDivider());
+        totalsBox.addView(getLoraRowTextView("Total Contributions",
+                "₹" + String.format("%.2f", totalContribution), purple, 16f));
+        totalsBox.addView(getDivider());
+
         String balanceLabel;
         String balanceValue;
         if (balance > 0) {
@@ -158,8 +161,8 @@ public class ReportFragment extends Fragment {
             balanceLabel = "Balance";
             balanceValue = "Settled (0)";
         }
-        whiteBox.addView(getLoraRowTextView(balanceLabel, balanceValue, purple));
-        reportRootLayout.addView(whiteBox);
+        totalsBox.addView(getLoraRowTextView(balanceLabel, balanceValue, purple, 16f));
+        reportRootLayout.addView(totalsBox);
 
         // Reset button at the end
         reportRootLayout.addView(btnResetAllData);
@@ -266,14 +269,20 @@ public class ReportFragment extends Fragment {
         return row;
     }
 
+    // original helper (kept for other callers, textSize 18sp)
     private LinearLayout getLoraRowTextView(String left, String right, int color) {
+        return getLoraRowTextView(left, right, color, 18f);
+    }
+
+    // overloaded helper with custom text size
+    private LinearLayout getLoraRowTextView(String left, String right, int color, float textSizeSp) {
         LinearLayout row = new LinearLayout(getContext());
         row.setOrientation(LinearLayout.HORIZONTAL);
 
         TextView leftTv = new TextView(getContext());
         leftTv.setText(left);
         leftTv.setTextColor(color);
-        leftTv.setTextSize(18);
+        leftTv.setTextSize(textSizeSp);
         leftTv.setTypeface(loraBoldTypeface);
         LinearLayout.LayoutParams leftParams = new LinearLayout.LayoutParams(
                 0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
@@ -282,7 +291,7 @@ public class ReportFragment extends Fragment {
         TextView rightTv = new TextView(getContext());
         rightTv.setText(right);
         rightTv.setTextColor(color);
-        rightTv.setTextSize(18);
+        rightTv.setTextSize(textSizeSp);
         rightTv.setTypeface(loraBoldTypeface);
 
         row.addView(leftTv);
