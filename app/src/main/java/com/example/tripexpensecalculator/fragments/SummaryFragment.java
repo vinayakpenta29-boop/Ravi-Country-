@@ -102,16 +102,29 @@ public class SummaryFragment extends Fragment {
                 "₹" + String.format("%.2f", perPerson), Color.BLACK));
         summaryRootLayout.addView(mainBox);
 
-        // ---- Cash / Online Balance Box ----
+        // ---- Cash / Online Balance Box with icons + chips ----
         double cashBalance = totalCashGiven - totalCashExpenses;
         double onlineBalance = totalOnlineGiven - totalOnlineExpenses;
 
         LinearLayout cashOnlineBox = getCurvedBox();
-        cashOnlineBox.addView(getLoraRow("Cash Balance",
-                "₹" + String.format("%.2f", cashBalance), Color.BLACK));
+        cashOnlineBox.setPadding(28, 18, 28, 18);
+
+        // Cash row
+        cashOnlineBox.addView(buildBalanceLine(
+                R.drawable.ic_cash,      // your cash icon
+                "Cash",
+                totalCashGiven,
+                cashBalance));
+
         cashOnlineBox.addView(getDivider());
-        cashOnlineBox.addView(getLoraRow("Online Balance",
-                "₹" + String.format("%.2f", onlineBalance), Color.BLACK));
+
+        // Online row
+        cashOnlineBox.addView(buildBalanceLine(
+                R.drawable.ic_online,    // your online icon
+                "Online",
+                totalOnlineGiven,
+                onlineBalance));
+
         summaryRootLayout.addView(cashOnlineBox);
 
         // ---- Friends Balance Box ----
@@ -283,5 +296,69 @@ public class SummaryFragment extends Fragment {
         params.setMargins(0, 10, 0, 10);
         divider.setLayoutParams(params);
         return divider;
+    }
+
+    // ----- helper for cash/online chip row -----
+    private View buildBalanceLine(int iconResId,
+                                  String label,
+                                  double totalGiven,
+                                  double balance) {
+
+        LinearLayout row = new LinearLayout(getContext());
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setPadding(0, 4, 0, 4);
+        row.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        // icon
+        android.widget.ImageView icon = new android.widget.ImageView(getContext());
+        icon.setImageResource(iconResId);
+        LinearLayout.LayoutParams iconLp = new LinearLayout.LayoutParams(40, 40);
+        iconLp.setMargins(0, 0, 12, 0);
+        icon.setLayoutParams(iconLp);
+        row.addView(icon);
+
+        // green chip: "Cash : 5000"
+        TextView totalTv = new TextView(getContext());
+        totalTv.setText(label + " : " + String.format("%.0f", totalGiven));
+        totalTv.setTextColor(Color.WHITE);
+        totalTv.setTextSize(14);
+        totalTv.setTypeface(loraBoldTypeface);
+        totalTv.setGravity(android.view.Gravity.CENTER);
+        totalTv.setBackgroundResource(R.drawable.curved_green_chip);
+        totalTv.setPadding(22, 10, 22, 10);
+        LinearLayout.LayoutParams totalLp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        totalLp.setMargins(0, 0, 12, 0);
+        row.addView(totalTv, totalLp);
+
+        // "Balance :" label
+        TextView labelTv = new TextView(getContext());
+        labelTv.setText("Balance :");
+        labelTv.setTextColor(Color.BLACK);
+        labelTv.setTextSize(14);
+        labelTv.setTypeface(loraBoldTypeface);
+        row.addView(labelTv);
+
+        // pink chip with amount
+        TextView balTv = new TextView(getContext());
+        String balStr = "₹" + String.format("%.0f", Math.abs(balance));
+        if (balance < 0) balStr = "₹-" + String.format("%.0f", Math.abs(balance));
+        balTv.setText(balStr);
+        balTv.setTextColor(Color.WHITE);
+        balTv.setTextSize(14);
+        balTv.setTypeface(loraBoldTypeface);
+        balTv.setGravity(android.view.Gravity.CENTER);
+        balTv.setBackgroundResource(R.drawable.curved_pink_chip);
+        balTv.setPadding(22, 10, 22, 10);
+        LinearLayout.LayoutParams balLp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        balLp.setMargins(8, 0, 0, 0);
+        row.addView(balTv, balLp);
+
+        return row;
     }
 }
