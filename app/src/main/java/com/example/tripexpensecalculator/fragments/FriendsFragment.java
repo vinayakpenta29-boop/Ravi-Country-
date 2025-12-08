@@ -366,19 +366,38 @@ public class FriendsFragment extends Fragment {
                             return;
                         }
 
-                        new android.app.AlertDialog.Builder(requireContext())
-                                .setTitle("Payment Type")
-                                .setMessage("How did " + friendName + " give this amount?")
-                                .setNegativeButton("Cash", (d, w) -> {
+                        // Custom dialog with cash / online icons
+                        android.app.AlertDialog dialog =
+                                new android.app.AlertDialog.Builder(requireContext())
+                                        .setCancelable(true)
+                                        .create();
+
+                        dialog.setOnShowListener(dlg -> {
+                            dialog.setContentView(R.layout.dialog_payment_type);
+
+                            TextView btnCash = dialog.findViewById(R.id.btnCash);
+                            TextView btnOnline = dialog.findViewById(R.id.btnOnline);
+
+                            if (btnCash != null) {
+                                btnCash.setText("Cash");
+                                btnCash.setOnClickListener(v1 -> {
                                     totals.cash += addVal;
                                     finishFriendAddAmount(inputAmt);
-                                })
-                                .setPositiveButton("Online", (d, w) -> {
+                                    dialog.dismiss();
+                                });
+                            }
+
+                            if (btnOnline != null) {
+                                btnOnline.setText("Online");
+                                btnOnline.setOnClickListener(v12 -> {
                                     totals.online += addVal;
                                     finishFriendAddAmount(inputAmt);
-                                })
-                                .setCancelable(true)
-                                .show();
+                                    dialog.dismiss();
+                                });
+                            }
+                        });
+
+                        dialog.show();
 
                     } catch (NumberFormatException ignored) { }
                 });
