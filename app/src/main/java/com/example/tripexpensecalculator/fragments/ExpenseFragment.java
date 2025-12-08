@@ -133,16 +133,35 @@ public class ExpenseFragment extends Fragment {
             return;
         }
 
-        // If Online Payment mode is ON, ask Cash or Online and store flag
-        new AlertDialog.Builder(requireContext())
-                .setTitle("Payment Type")
-                .setMessage("How did you pay this expense?")
-                .setNegativeButton("Cash Payment", (d, w) ->
-                        saveExpenseSimple(category, amount, false))
-                .setPositiveButton("Online Payment", (d, w) ->
-                        saveExpenseSimple(category, amount, true))
+        // If Online Payment mode is ON, ask Cash or Online and store flag (with icons)
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
                 .setCancelable(false)
-                .show();
+                .create();
+
+        dialog.setOnShowListener(dlg -> {
+            dialog.setContentView(R.layout.dialog_payment_type);
+
+            TextView btnCash = dialog.findViewById(R.id.btnCash);
+            TextView btnOnline = dialog.findViewById(R.id.btnOnline);
+
+            if (btnCash != null) {
+                btnCash.setText("Cash Payment");
+                btnCash.setOnClickListener(v -> {
+                    saveExpenseSimple(category, amount, false);
+                    dialog.dismiss();
+                });
+            }
+
+            if (btnOnline != null) {
+                btnOnline.setText("Online Payment");
+                btnOnline.setOnClickListener(v -> {
+                    saveExpenseSimple(category, amount, true);
+                    dialog.dismiss();
+                });
+            }
+        });
+
+        dialog.show();
     }
 
     // common code to actually store the expense
@@ -264,6 +283,15 @@ public class ExpenseFragment extends Fragment {
                 row.setOrientation(LinearLayout.HORIZONTAL);
                 row.setPadding(0, 8, 0, 8);
 
+                // icon depending on payment type
+                android.widget.ImageView icon = new android.widget.ImageView(getContext());
+                int sizePx = (int) (20 * getResources().getDisplayMetrics().density);
+                LinearLayout.LayoutParams iconLp = new LinearLayout.LayoutParams(sizePx, sizePx);
+                iconLp.setMargins(0, 0, 16, 0);
+                icon.setLayoutParams(iconLp);
+                boolean isOnline = (i < expenseIsOnline.size()) && Boolean.TRUE.equals(expenseIsOnline.get(i));
+                icon.setImageResource(isOnline ? R.mipmap.ic_online : R.mipmap.ic_cash);
+
                 TextView typeView = new TextView(getContext());
                 typeView.setText(expenseTypes.get(i));
                 typeView.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
@@ -278,6 +306,7 @@ public class ExpenseFragment extends Fragment {
                 amtView.setTextColor(getResources().getColor(R.color.input_text));
                 amtView.setTextSize(16);
 
+                row.addView(icon);
                 row.addView(typeView);
                 row.addView(amtView);
 
