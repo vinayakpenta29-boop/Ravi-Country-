@@ -315,7 +315,7 @@ public class SummaryFragment extends Fragment {
         // icon - larger size (48dp)
         android.widget.ImageView icon = new android.widget.ImageView(getContext());
         icon.setImageResource(iconResId);
-        int sizePx = (int) (48 * getResources().getDisplayMetrics().density);
+        int sizePx = (int) (38 * getResources().getDisplayMetrics().density);
         LinearLayout.LayoutParams iconLp = new LinearLayout.LayoutParams(sizePx, sizePx);
         iconLp.setMargins(0, 0, 16, 0);
         icon.setLayoutParams(iconLp);
