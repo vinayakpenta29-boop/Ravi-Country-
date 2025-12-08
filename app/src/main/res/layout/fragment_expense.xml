@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_dark"
@@ -65,7 +66,21 @@
             android:textColorHint="@color/grey_hint" />
     </LinearLayout>
 
-    <!-- Add Expense Button: initially below inputCard, but move dynamically if expenses exist -->
+    <!-- Scrollable expenses list -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/expensesListLayout"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </ScrollView>
+
+    <!-- Add Expense Button fixed at bottom -->
     <Button
         android:id="@+id/btnAddExpense"
         android:layout_width="match_parent"
@@ -76,12 +91,7 @@
         android:textSize="18sp"
         android:fontFamily="@font/poppins_bold"
         android:background="@drawable/curved_orange_button"
-        android:layout_marginBottom="18dp"/>
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="18dp" />
 
-    <!-- Expenses List (big curved box) -->
-    <LinearLayout
-        android:id="@+id/expensesListLayout"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
 </LinearLayout>
