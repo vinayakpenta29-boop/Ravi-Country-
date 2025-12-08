@@ -73,7 +73,10 @@ public class SummaryFragment extends Fragment {
         for (int i = 0; i < expenseAmounts.size(); i++) {
             double amt = expenseAmounts.get(i);
             totalExpense += amt;
-            boolean isOnline = (i < expenseIsOnline.size()) && Boolean.TRUE.equals(expenseIsOnline.get(i));
+
+            boolean isOnline = (i < expenseIsOnline.size())
+                    && Boolean.TRUE.equals(expenseIsOnline.get(i));
+
             if (isOnline) {
                 totalOnlineExpenses += amt;
             } else {
