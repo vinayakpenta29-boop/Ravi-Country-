@@ -22,7 +22,7 @@ public class SplashActivity extends Activity {
 
         // Splash screen layout
         LinearLayout layout = new LinearLayout(this);
-        layout.setBackgroundColor(getResources().getColor(R.color.navy_blue));
+        layout.setBackgroundColor(getResources().getColor(R.color.skyblue));
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setGravity(Gravity.CENTER);
 
