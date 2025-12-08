@@ -111,7 +111,7 @@ public class SummaryFragment extends Fragment {
 
         // Cash row
         cashOnlineBox.addView(buildBalanceLine(
-                R.mipmap.ic_cash,      // your cash icon
+                R.mipmap.ic_cash,      // cash icon
                 "Cash",
                 totalCashGiven,
                 cashBalance));
@@ -120,7 +120,7 @@ public class SummaryFragment extends Fragment {
 
         // Online row
         cashOnlineBox.addView(buildBalanceLine(
-                R.mipmap.ic_online,    // your online icon
+                R.mipmap.ic_online,    // online icon
                 "Online",
                 totalOnlineGiven,
                 onlineBalance));
@@ -307,15 +307,17 @@ public class SummaryFragment extends Fragment {
         LinearLayout row = new LinearLayout(getContext());
         row.setOrientation(LinearLayout.HORIZONTAL);
         row.setPadding(0, 4, 0, 4);
-        row.setLayoutParams(new LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams rowLp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT));
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        row.setLayoutParams(rowLp);
 
-        // icon
+        // icon - larger size (48dp)
         android.widget.ImageView icon = new android.widget.ImageView(getContext());
         icon.setImageResource(iconResId);
-        LinearLayout.LayoutParams iconLp = new LinearLayout.LayoutParams(40, 40);
-        iconLp.setMargins(0, 0, 12, 0);
+        int sizePx = (int) (48 * getResources().getDisplayMetrics().density);
+        LinearLayout.LayoutParams iconLp = new LinearLayout.LayoutParams(sizePx, sizePx);
+        iconLp.setMargins(0, 0, 16, 0);
         icon.setLayoutParams(iconLp);
         row.addView(icon);
 
@@ -334,15 +336,24 @@ public class SummaryFragment extends Fragment {
         totalLp.setMargins(0, 0, 12, 0);
         row.addView(totalTv, totalLp);
 
-        // "Balance :" label
+        // spacer to push balance section to right
+        View spacer = new View(getContext());
+        LinearLayout.LayoutParams spacerLp = new LinearLayout.LayoutParams(
+                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+        row.addView(spacer, spacerLp);
+
+        // container for "Balance :  ₹xxx" aligned right
+        LinearLayout rightBox = new LinearLayout(getContext());
+        rightBox.setOrientation(LinearLayout.HORIZONTAL);
+        rightBox.setGravity(android.view.Gravity.END | android.view.Gravity.CENTER_VERTICAL);
+
         TextView labelTv = new TextView(getContext());
-        labelTv.setText("Balance :");
+        labelTv.setText("Balance : ");
         labelTv.setTextColor(Color.BLACK);
         labelTv.setTextSize(14);
         labelTv.setTypeface(loraBoldTypeface);
-        row.addView(labelTv);
+        rightBox.addView(labelTv);
 
-        // pink chip with amount
         TextView balTv = new TextView(getContext());
         String balStr = "₹" + String.format("%.0f", Math.abs(balance));
         if (balance < 0) balStr = "₹-" + String.format("%.0f", Math.abs(balance));
@@ -353,11 +364,9 @@ public class SummaryFragment extends Fragment {
         balTv.setGravity(android.view.Gravity.CENTER);
         balTv.setBackgroundResource(R.drawable.curved_pink_chip);
         balTv.setPadding(22, 10, 22, 10);
-        LinearLayout.LayoutParams balLp = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-        balLp.setMargins(8, 0, 0, 0);
-        row.addView(balTv, balLp);
+        rightBox.addView(balTv);
+
+        row.addView(rightBox);
 
         return row;
     }
