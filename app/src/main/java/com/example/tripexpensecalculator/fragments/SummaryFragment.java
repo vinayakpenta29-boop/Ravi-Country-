@@ -111,7 +111,7 @@ public class SummaryFragment extends Fragment {
 
         // Cash row
         cashOnlineBox.addView(buildBalanceLine(
-                R.drawable.ic_cash,      // your cash icon
+                R.mipmap.ic_cash,      // your cash icon
                 "Cash",
                 totalCashGiven,
                 cashBalance));
@@ -120,7 +120,7 @@ public class SummaryFragment extends Fragment {
 
         // Online row
         cashOnlineBox.addView(buildBalanceLine(
-                R.drawable.ic_online,    // your online icon
+                R.mipmap.ic_online,    // your online icon
                 "Online",
                 totalOnlineGiven,
                 onlineBalance));
