@@ -240,8 +240,7 @@ public class FriendsFragment extends Fragment {
 
                     StringBuilder msg = new StringBuilder();
                     if (pauseNames.length() > 0) {
-                        msg.append("Pause these friends from split?
-")
+                        msg.append("Pause these friends from split?")
                            .append(pauseNames);
                     }
                     if (resumeNames.length() > 0) {
