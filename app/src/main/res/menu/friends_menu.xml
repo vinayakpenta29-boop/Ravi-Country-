@@ -10,4 +10,9 @@
         android:title="Given Amount"
         android:showAsAction="never" />
 
+    <item
+        android:id="@+id/menu_pause_friends"
+        android:title="Pause Friends"
+        android:showAsAction="never" />
+
 </menu>
