@@ -23,13 +23,10 @@ import androidx.fragment.app.Fragment;
 
 import com.example.tripexpensecalculator.R;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 public class FriendsFragment extends Fragment {
@@ -41,10 +38,11 @@ public class FriendsFragment extends Fragment {
 
     public static FriendsFragment instance = null;
 
-    // Model: separate cash and online totals for each friend
+    // Model: separate cash and online totals + active flag for each friend
     public static class FriendTotals {
         public double cash = 0.0;
         public double online = 0.0;
+        public boolean active = true;   // true = participates in split
     }
 
     private static final Map<String, FriendTotals> contributions = new LinkedHashMap<>();
@@ -95,6 +93,9 @@ public class FriendsFragment extends Fragment {
                 return true;
             } else if (id == R.id.menu_given_amount) {
                 showGivenAmountDialog();
+                return true;
+            } else if (id == R.id.menu_pause_friends) {
+                showPauseFriendsDialog();
                 return true;
             }
             return false;
@@ -192,6 +193,85 @@ public class FriendsFragment extends Fragment {
                             .show();
                 })
                 .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    // Pause / resume multiple friends from split
+    private void showPauseFriendsDialog() {
+        if (contributions.isEmpty()) {
+            Toast.makeText(getContext(), "No friends available.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        final String[] friendNames = contributions.keySet().toArray(new String[0]);
+        final boolean[] checkedItems = new boolean[friendNames.length];
+
+        // Pre-check currently paused friends (active == false)
+        for (int i = 0; i < friendNames.length; i++) {
+            FriendTotals t = contributions.get(friendNames[i]);
+            checkedItems[i] = (t != null && !t.active);
+        }
+
+        new android.app.AlertDialog.Builder(requireContext())
+                .setTitle("Select Friends to Pause")
+                .setMultiChoiceItems(friendNames, checkedItems, (dialog, which, isChecked) ->
+                        checkedItems[which] = isChecked)
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("OK", (dialog, which) -> {
+
+                    StringBuilder pauseNames = new StringBuilder();
+                    StringBuilder resumeNames = new StringBuilder();
+
+                    for (int i = 0; i < friendNames.length; i++) {
+                        FriendTotals t = contributions.get(friendNames[i]);
+                        if (t == null) continue;
+
+                        boolean wantPaused = checkedItems[i];
+                        if (wantPaused && t.active) {
+                            if (pauseNames.length() > 0) pauseNames.append(", ");
+                            pauseNames.append(friendNames[i]);
+                        } else if (!wantPaused && !t.active) {
+                            if (resumeNames.length() > 0) resumeNames.append(", ");
+                            resumeNames.append(friendNames[i]);
+                        }
+                    }
+
+                    if (pauseNames.length() == 0 && resumeNames.length() == 0) return;
+
+                    StringBuilder msg = new StringBuilder();
+                    if (pauseNames.length() > 0) {
+                        msg.append("Pause these friends from split?
+")
+                           .append(pauseNames);
+                    }
+                    if (resumeNames.length() > 0) {
+                        if (msg.length() > 0) msg.append("
+
+");
+                        msg.append("Resume these friends in split?
+")
+                           .append(resumeNames);
+                    }
+
+                    new android.app.AlertDialog.Builder(requireContext())
+                            .setTitle("Confirm Changes")
+                            .setMessage(msg.toString())
+                            .setNegativeButton("Cancel", null)
+                            .setPositiveButton("OK", (d2, w2) -> {
+                                // Apply flags
+                                for (int i = 0; i < friendNames.length; i++) {
+                                    FriendTotals t = contributions.get(friendNames[i]);
+                                    if (t == null) continue;
+                                    t.active = !checkedItems[i];  // checked = paused
+                                }
+                                saveFriendsData();
+                                refreshUI();
+                                Toast.makeText(getContext(),
+                                        "Pause / resume updated.",
+                                        Toast.LENGTH_SHORT).show();
+                            })
+                            .show();
+                })
                 .show();
     }
 
@@ -431,6 +511,7 @@ public class FriendsFragment extends Fragment {
                 JSONObject o = new JSONObject();
                 o.put("cash", t.cash);
                 o.put("online", t.online);
+                o.put("active", t.active);
                 obj.put(entry.getKey(), o);
             }
         } catch (Exception ignored) { }
@@ -451,6 +532,7 @@ public class FriendsFragment extends Fragment {
                     FriendTotals t = new FriendTotals();
                     t.cash = o.optDouble("cash", 0.0);
                     t.online = o.optDouble("online", 0.0);
+                    t.active = o.optBoolean("active", true);
                     contributions.put(key, t);
                 }
             } catch (Exception ignored) { }
