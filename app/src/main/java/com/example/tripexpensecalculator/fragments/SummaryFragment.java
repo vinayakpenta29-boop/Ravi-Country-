@@ -84,7 +84,15 @@ public class SummaryFragment extends Fragment {
             }
         }
 
-        int people = contributions.size();
+        // count only active friends for split
+        int people = 0;
+        for (Map.Entry<String, FriendsFragment.FriendTotals> e : rawContributions.entrySet()) {
+            FriendsFragment.FriendTotals t = e.getValue();
+            if (t != null && t.active) {
+                people++;
+            }
+        }
+
         double perPerson = (people > 0) ? (totalExpense / people) : 0.0;
         double overallBalance = totalCashGiven + totalOnlineGiven - totalExpense;
 
@@ -133,10 +141,19 @@ public class SummaryFragment extends Fragment {
         List<Double> negativeBalances = new ArrayList<>();
         int fNo = 0;
         for (Map.Entry<String, Double> entry : contributions.entrySet()) {
+            FriendsFragment.FriendTotals t = rawContributions.get(entry.getKey());
+            boolean isActive = (t == null) || t.active; // default true if missing
+
             double bal = entry.getValue() - perPerson;
             String sign = (bal >= 0) ? "+" : "-";
             int color = (bal >= 0) ? Color.parseColor("#117c00") : Color.RED;
-            String balanceLabel = entry.getKey() + " Paid";
+
+            String nameLabel = entry.getKey();
+            if (!isActive) {
+                nameLabel = nameLabel + " (Paused)";
+            }
+
+            String balanceLabel = nameLabel + " Paid";
             String balanceValue = "₹" + String.format("%.2f", entry.getValue()) + "  |  " +
                     "Balance: " + sign + "₹" + String.format("%.2f", Math.abs(bal));
             balanceBox.addView(getRow(balanceLabel, balanceValue, color));
@@ -313,7 +330,7 @@ public class SummaryFragment extends Fragment {
                 LinearLayout.LayoutParams.WRAP_CONTENT);
         row.setLayoutParams(rowLp);
 
-        // icon - larger size (48dp)
+        // icon - 32dp
         android.widget.ImageView icon = new android.widget.ImageView(getContext());
         icon.setImageResource(iconResId);
         int sizePx = (int) (32 * getResources().getDisplayMetrics().density);
