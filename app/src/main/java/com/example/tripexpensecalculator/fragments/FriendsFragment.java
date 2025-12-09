@@ -245,11 +245,9 @@ public class FriendsFragment extends Fragment {
                            .append(pauseNames);
                     }
                     if (resumeNames.length() > 0) {
-                        if (msg.length() > 0) msg.append("
-
-");
-                        msg.append("Resume these friends in split?
-")
+                        if (msg.length() > 0) msg.append("\n");
+    
+                        msg.append("Resume these friends in split?")
                            .append(resumeNames);
                     }
 
