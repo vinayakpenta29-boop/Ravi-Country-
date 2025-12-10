@@ -24,6 +24,7 @@ import androidx.fragment.app.Fragment;
 import com.example.tripexpensecalculator.R;
 import com.example.tripexpensecalculator.TripManager;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -41,10 +42,13 @@ public class FriendsFragment extends Fragment {
 
     public static FriendsFragment instance = null;
 
-    // Model: separate cash and online totals for each friend
+    // Model: separate cash and online totals + history for each friend
     public static class FriendTotals {
         public double cash = 0.0;
         public double online = 0.0;
+
+        public List<Double> cashEntries = new ArrayList<>();
+        public List<Double> onlineEntries = new ArrayList<>();
     }
 
     private static final Map<String, FriendTotals> contributions = new LinkedHashMap<>();
@@ -200,7 +204,7 @@ public class FriendsFragment extends Fragment {
                 .show();
     }
 
-    // Show full history like Ravi = cash+online = total
+    // Show detailed history with colored cash/online lines
     private void showGivenAmountDialog() {
         if (contributions.isEmpty()) {
             Toast.makeText(getContext(), "No friends available.", Toast.LENGTH_SHORT).show();
@@ -217,26 +221,43 @@ public class FriendsFragment extends Fragment {
         for (Map.Entry<String, FriendTotals> entry : contributions.entrySet()) {
             String name = entry.getKey();
             FriendTotals t = entry.getValue();
-            double total = t.cash + t.online;
 
-            String expr = "";
-            if (t.cash > 0 && t.online > 0) {
-                expr = String.format("Cash %.2f + Online %.2f", t.cash, t.online);
-            } else if (t.cash > 0) {
-                expr = String.format("Cash %.2f", t.cash);
-            } else if (t.online > 0) {
-                expr = String.format("Online %.2f", t.online);
-            }
+            double cashTotal = t.cash;
+            double onlineTotal = t.online;
+            double total = cashTotal + onlineTotal;
+
+            String cashExpr = buildSumExpression(t.cashEntries);
+            String onlineExpr = buildSumExpression(t.onlineEntries);
 
             LinearLayout row = new LinearLayout(getContext());
             row.setOrientation(LinearLayout.VERTICAL);
             row.setPadding(0, 8, 0, 8);
 
-            TextView lineTv = new TextView(getContext());
-            lineTv.setText(name + " = " + expr + " = ₹" + String.format("%.2f", total));
-            lineTv.setTextSize(16);
-            lineTv.setTextColor(getResources().getColor(R.color.black));
-            row.addView(lineTv);
+            TextView nameTv = new TextView(getContext());
+            nameTv.setText(name);
+            nameTv.setTextSize(18);
+            nameTv.setTextColor(getResources().getColor(R.color.black));
+            nameTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+            row.addView(nameTv);
+
+            TextView cashTv = new TextView(getContext());
+            cashTv.setText("Cash = " + cashExpr + " = " + String.format("%.2f", cashTotal));
+            cashTv.setTextSize(16);
+            cashTv.setTextColor(android.graphics.Color.parseColor("#117c00")); // green
+            row.addView(cashTv);
+
+            TextView onlineTv = new TextView(getContext());
+            onlineTv.setText("Online = " + onlineExpr + " = " + String.format("%.2f", onlineTotal));
+            onlineTv.setTextSize(16);
+            onlineTv.setTextColor(android.graphics.Color.parseColor("#0066CC")); // blue
+            row.addView(onlineTv);
+
+            TextView totalTv = new TextView(getContext());
+            totalTv.setText("Total = ₹" + String.format("%.2f", total));
+            totalTv.setTextSize(16);
+            totalTv.setTextColor(getResources().getColor(R.color.black));
+            totalTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+            row.addView(totalTv);
 
             container.addView(row);
 
@@ -245,7 +266,7 @@ public class FriendsFragment extends Fragment {
                 divider.setBackgroundColor(getResources().getColor(R.color.divider));
                 LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT, 2);
-                p.setMargins(0, 4, 0, 4);
+                p.setMargins(0, 8, 0, 8);
                 divider.setLayoutParams(p);
                 container.addView(divider);
             }
@@ -257,6 +278,16 @@ public class FriendsFragment extends Fragment {
                 .setView(dialogView)
                 .setPositiveButton("OK", null)
                 .show();
+    }
+
+    private String buildSumExpression(List<Double> list) {
+        if (list == null || list.isEmpty()) return "0";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < list.size(); i++) {
+            if (i > 0) sb.append(" + ");
+            sb.append(String.format("%.2f", list.get(i)));
+        }
+        return sb.toString();
     }
 
     // ----- Trips -----
@@ -277,7 +308,6 @@ public class FriendsFragment extends Fragment {
                     }
                     TripManager.setCurrentTrip(requireContext(), name);
 
-                    // clear in‑memory data for this trip
                     contributions.clear();
                     saveFriendsData();
                     ExpenseFragment.clearExpensesForCurrentTrip(requireContext());
@@ -430,13 +460,12 @@ public class FriendsFragment extends Fragment {
 
                         boolean onlineMode = isOnlineMode(requireContext());
                         if (!onlineMode) {
-                            // toggle OFF: everything treated as cash
                             totals.cash += addVal;
+                            totals.cashEntries.add(addVal);
                             finishFriendAddAmount(inputAmt);
                             return;
                         }
 
-                        // Custom dialog with cash / online icons
                         android.app.AlertDialog dialog =
                                 new android.app.AlertDialog.Builder(requireContext())
                                         .setCancelable(true)
@@ -452,6 +481,7 @@ public class FriendsFragment extends Fragment {
                                 btnCash.setText("Cash");
                                 btnCash.setOnClickListener(v1 -> {
                                     totals.cash += addVal;
+                                    totals.cashEntries.add(addVal);
                                     finishFriendAddAmount(inputAmt);
                                     dialog.dismiss();
                                 });
@@ -461,6 +491,7 @@ public class FriendsFragment extends Fragment {
                                 btnOnline.setText("Online");
                                 btnOnline.setOnClickListener(v12 -> {
                                     totals.online += addVal;
+                                    totals.onlineEntries.add(addVal);
                                     finishFriendAddAmount(inputAmt);
                                     dialog.dismiss();
                                 });
@@ -504,6 +535,15 @@ public class FriendsFragment extends Fragment {
                 JSONObject o = new JSONObject();
                 o.put("cash", t.cash);
                 o.put("online", t.online);
+
+                JSONArray cashArr = new JSONArray();
+                for (Double d : t.cashEntries) cashArr.put(d);
+                JSONArray onlineArr = new JSONArray();
+                for (Double d : t.onlineEntries) onlineArr.put(d);
+
+                o.put("cashEntries", cashArr);
+                o.put("onlineEntries", onlineArr);
+
                 obj.put(entry.getKey(), o);
             }
         } catch (Exception ignored) { }
@@ -527,6 +567,22 @@ public class FriendsFragment extends Fragment {
                     FriendTotals t = new FriendTotals();
                     t.cash = o.optDouble("cash", 0.0);
                     t.online = o.optDouble("online", 0.0);
+
+                    t.cashEntries.clear();
+                    t.onlineEntries.clear();
+                    JSONArray cashArr = o.optJSONArray("cashEntries");
+                    JSONArray onlineArr = o.optJSONArray("onlineEntries");
+                    if (cashArr != null) {
+                        for (int i = 0; i < cashArr.length(); i++) {
+                            t.cashEntries.add(cashArr.getDouble(i));
+                        }
+                    }
+                    if (onlineArr != null) {
+                        for (int i = 0; i < onlineArr.length(); i++) {
+                            t.onlineEntries.add(onlineArr.getDouble(i));
+                        }
+                    }
+
                     contributions.put(k, t);
                 }
             } catch (Exception ignored) { }
