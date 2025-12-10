@@ -10,4 +10,14 @@
         android:title="Given Amount"
         android:showAsAction="never" />
 
+    <item
+        android:id="@+id/menu_new_trip"
+        android:title="New Trip"
+        android:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_trips"
+        android:title="Trips"
+        android:showAsAction="never" />
+
 </menu>
