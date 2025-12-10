@@ -25,8 +25,10 @@ import com.example.tripexpensecalculator.R;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class FriendsFragment extends Fragment {
@@ -46,8 +48,7 @@ public class FriendsFragment extends Fragment {
 
     private static final Map<String, FriendTotals> contributions = new LinkedHashMap<>();
     private static final String PREFS_NAME = "TripExpensePrefs";
-    private static final String FRIENDS_KEY = "FriendsList";
-    private static final String KEY_ONLINE_MODE = "OnlineMode"; // toggle flag
+    private static final String KEY_ONLINE_MODE = "OnlineMode"; // global toggle flag
 
     public static Map<String, FriendTotals> getContributions() {
         return contributions;
@@ -92,6 +93,12 @@ public class FriendsFragment extends Fragment {
                 return true;
             } else if (id == R.id.menu_given_amount) {
                 showGivenAmountDialog();
+                return true;
+            } else if (id == R.id.menu_new_trip) {
+                showNewTripDialog();
+                return true;
+            } else if (id == R.id.menu_trips) {
+                showTripsDialog();
                 return true;
             }
             return false;
@@ -248,6 +255,71 @@ public class FriendsFragment extends Fragment {
                 .setTitle("Given Amount")
                 .setView(dialogView)
                 .setPositiveButton("OK", null)
+                .show();
+    }
+
+    // ----- Trips -----
+
+    private void showNewTripDialog() {
+        final EditText input = new EditText(getContext());
+        input.setHint("Enter trip name");
+
+        new android.app.AlertDialog.Builder(requireContext())
+                .setTitle("New Trip")
+                .setView(input)
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("OK", (d, w) -> {
+                    String name = input.getText().toString().trim();
+                    if (name.isEmpty()) {
+                        Toast.makeText(getContext(), "Trip name required.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    TripManager.setCurrentTrip(requireContext(), name);
+
+                    // clear in‑memory data for this trip
+                    contributions.clear();
+                    saveFriendsData();
+                    ExpenseFragment.clearExpensesForCurrentTrip(requireContext());
+
+                    refreshUI();
+                    if (ExpenseFragment.instance != null) {
+                        ExpenseFragment.instance.safeRefreshExpensesUI();
+                    }
+                    Toast.makeText(getContext(), "Trip created: " + name, Toast.LENGTH_SHORT).show();
+                })
+                .show();
+    }
+
+    private void showTripsDialog() {
+        List<String> trips = TripManager.getAllTrips(requireContext());
+        if (trips.isEmpty()) {
+            Toast.makeText(getContext(), "No trips yet. Create a New Trip.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String current = TripManager.getCurrentTrip(requireContext());
+        int checked = Math.max(0, trips.indexOf(current));
+
+        new android.app.AlertDialog.Builder(requireContext())
+                .setTitle("Select Trip")
+                .setSingleChoiceItems(trips.toArray(new String[0]), checked, null)
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("OK", (dialog, which) -> {
+                    android.app.AlertDialog ad = (android.app.AlertDialog) dialog;
+                    int sel = ad.getListView().getCheckedItemPosition();
+                    if (sel < 0 || sel >= trips.size()) return;
+
+                    String chosen = trips.get(sel);
+                    TripManager.setCurrentTrip(requireContext(), chosen);
+
+                    loadFriendsData();
+                    refreshUI();
+                    if (ExpenseFragment.instance != null) {
+                        ExpenseFragment.instance.loadExpensesDataForCurrentTrip();
+                        ExpenseFragment.instance.safeRefreshExpensesUI();
+                    }
+                    Toast.makeText(getContext(), "Trip selected: " + chosen, Toast.LENGTH_SHORT).show();
+                })
                 .show();
     }
 
@@ -421,6 +493,9 @@ public class FriendsFragment extends Fragment {
 
     private void saveFriendsData() {
         SharedPreferences prefs = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        String trip = TripManager.getCurrentTrip(requireContext());
+        String key = TripManager.keyForFriends(trip);
+
         JSONObject obj = new JSONObject();
         try {
             for (Map.Entry<String, FriendTotals> entry : contributions.entrySet()) {
@@ -431,24 +506,27 @@ public class FriendsFragment extends Fragment {
                 obj.put(entry.getKey(), o);
             }
         } catch (Exception ignored) { }
-        prefs.edit().putString(FRIENDS_KEY, obj.toString()).apply();
+        prefs.edit().putString(key, obj.toString()).apply();
     }
 
     private void loadFriendsData() {
         SharedPreferences prefs = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        String json = prefs.getString(FRIENDS_KEY, null);
+        String trip = TripManager.getCurrentTrip(requireContext());
+        String key = TripManager.keyForFriends(trip);
+
+        String json = prefs.getString(key, null);
         contributions.clear();
         if (json != null) {
             try {
                 JSONObject obj = new JSONObject(json);
                 Iterator<String> keys = obj.keys();
                 while (keys.hasNext()) {
-                    String key = keys.next();
-                    JSONObject o = obj.getJSONObject(key);
+                    String k = keys.next();
+                    JSONObject o = obj.getJSONObject(k);
                     FriendTotals t = new FriendTotals();
                     t.cash = o.optDouble("cash", 0.0);
                     t.online = o.optDouble("online", 0.0);
-                    contributions.put(key, t);
+                    contributions.put(k, t);
                 }
             } catch (Exception ignored) { }
         }
