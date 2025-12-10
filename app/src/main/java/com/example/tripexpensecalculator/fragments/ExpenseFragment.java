@@ -42,7 +42,6 @@ public class ExpenseFragment extends Fragment {
     private static final List<Boolean> expenseIsOnline = new ArrayList<>();
 
     private static final String PREFS_NAME = "TripExpensePrefs";
-    private static final String EXPENSES_KEY = "ExpensesList";
 
     public static List<String> getExpenseTypes() {
         return expenseTypes;
@@ -94,7 +93,7 @@ public class ExpenseFragment extends Fragment {
 
         btnAddExpense.setOnClickListener(v -> addExpense());
 
-        loadExpensesData();
+        loadExpensesDataForCurrentTrip();
         refreshExpensesUI();
         return root;
     }
@@ -173,7 +172,7 @@ public class ExpenseFragment extends Fragment {
         inputCategory.setText("");
         inputAmount.setText("");
 
-        saveExpensesData();
+        saveExpensesDataForCurrentTrip();
         refreshExpensesUI();
         Toast.makeText(getContext(), "Expense added.", Toast.LENGTH_SHORT).show();
     }
@@ -232,7 +231,7 @@ public class ExpenseFragment extends Fragment {
                                             expenseIsOnline.remove(delIdx);
                                         }
                                     }
-                                    saveExpensesData();
+                                    saveExpensesDataForCurrentTrip();
                                     refreshExpensesUI();
                                     Toast.makeText(getContext(), "Expense(s) deleted.", Toast.LENGTH_SHORT).show();
                                 })
@@ -329,7 +328,14 @@ public class ExpenseFragment extends Fragment {
         }
     }
 
-    private void saveExpensesData() {
+    // ----- Trip‑specific persistence -----
+
+    private String getKeyForCurrentTrip() {
+        String trip = TripManager.getCurrentTrip(requireContext());
+        return TripManager.keyForExpenses(trip);
+    }
+
+    private void saveExpensesDataForCurrentTrip() {
         SharedPreferences prefs = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         JSONArray typesArr = new JSONArray();
         JSONArray amtsArr = new JSONArray();
@@ -345,12 +351,12 @@ public class ExpenseFragment extends Fragment {
             data.put("amounts", amtsArr);
             data.put("onlineFlags", onlineArr);
         } catch (Exception ignored) { }
-        prefs.edit().putString(EXPENSES_KEY, data.toString()).apply();
+        prefs.edit().putString(getKeyForCurrentTrip(), data.toString()).apply();
     }
 
-    private void loadExpensesData() {
+    public void loadExpensesDataForCurrentTrip() {
         SharedPreferences prefs = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        String json = prefs.getString(EXPENSES_KEY, null);
+        String json = prefs.getString(getKeyForCurrentTrip(), null);
         expenseTypes.clear();
         expenseAmounts.clear();
         expenseIsOnline.clear();
@@ -371,5 +377,14 @@ public class ExpenseFragment extends Fragment {
                 }
             } catch (Exception ignored) { }
         }
+    }
+
+    public static void clearExpensesForCurrentTrip(Context ctx) {
+        SharedPreferences prefs = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        String key = TripManager.keyForExpenses(TripManager.getCurrentTrip(ctx));
+        prefs.edit().remove(key).apply();
+        expenseTypes.clear();
+        expenseAmounts.clear();
+        expenseIsOnline.clear();
     }
 }
