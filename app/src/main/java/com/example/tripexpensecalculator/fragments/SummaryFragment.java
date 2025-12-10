@@ -84,14 +84,8 @@ public class SummaryFragment extends Fragment {
             }
         }
 
-        // count only active friends for split
-        int people = 0;
-        for (Map.Entry<String, FriendsFragment.FriendTotals> e : rawContributions.entrySet()) {
-            FriendsFragment.FriendTotals t = e.getValue();
-            if (t != null && t.active) {
-                people++;
-            }
-        }
+        // Total friends = all friends (no pause/resume)
+        int people = rawContributions.size();
 
         double perPerson = (people > 0) ? (totalExpense / people) : 0.0;
         double overallBalance = totalCashGiven + totalOnlineGiven - totalExpense;
@@ -141,17 +135,12 @@ public class SummaryFragment extends Fragment {
         List<Double> negativeBalances = new ArrayList<>();
         int fNo = 0;
         for (Map.Entry<String, Double> entry : contributions.entrySet()) {
-            FriendsFragment.FriendTotals t = rawContributions.get(entry.getKey());
-            boolean isActive = (t == null) || t.active; // default true if missing
 
             double bal = entry.getValue() - perPerson;
             String sign = (bal >= 0) ? "+" : "-";
             int color = (bal >= 0) ? Color.parseColor("#117c00") : Color.RED;
 
-            String nameLabel = entry.getKey();
-            if (!isActive) {
-                nameLabel = nameLabel + " (Paused)";
-            }
+            String nameLabel = entry.getKey(); // no "(Paused)" label
 
             String balanceLabel = nameLabel + " Paid";
             String balanceValue = "₹" + String.format("%.2f", entry.getValue()) + "  |  " +
