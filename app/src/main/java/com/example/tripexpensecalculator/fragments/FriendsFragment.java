@@ -93,12 +93,6 @@ public class FriendsFragment extends Fragment {
             } else if (id == R.id.menu_given_amount) {
                 showGivenAmountDialog();
                 return true;
-            } else if (id == R.id.menu_pause_friends) {
-                // Pause/Resume feature removed
-                Toast.makeText(getContext(),
-                        "Pause/Resume feature is disabled.",
-                        Toast.LENGTH_SHORT).show();
-                return true;
             }
             return false;
         });
