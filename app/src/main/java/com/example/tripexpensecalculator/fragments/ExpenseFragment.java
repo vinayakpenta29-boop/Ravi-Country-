@@ -39,6 +39,7 @@ public class ExpenseFragment extends Fragment {
 
     private static final List<String> expenseTypes = new ArrayList<>();
     private static final List<Double> expenseAmounts = new ArrayList<>();
+    private static final List<String> expensePaidBy = new ArrayList<>();
     // true = online payment, false = cash payment
     private static final List<Boolean> expenseIsOnline = new ArrayList<>();
 
@@ -50,6 +51,10 @@ public class ExpenseFragment extends Fragment {
 
     public static List<Double> getExpenseAmounts() {
         return expenseAmounts;
+    }
+
+    public static List<String> getExpensePaidBy() {
+        return expensePaidBy;
     }
 
     public static List<Boolean> getExpenseIsOnline() {
@@ -165,9 +170,10 @@ public class ExpenseFragment extends Fragment {
     }
 
     // common code to actually store the expense
-    private void saveExpenseSimple(String category, double amount, boolean isOnline) {
+    private void saveExpenseSimple(String category, double amount, String paidBy, boolean isOnline) {
         expenseTypes.add(category);
         expenseAmounts.add(amount);
+        expensePaidBy.add(paidBy);
         expenseIsOnline.add(isOnline);
 
         inputCategory.setText("");
@@ -293,7 +299,8 @@ public class ExpenseFragment extends Fragment {
                 icon.setImageResource(isOnline ? R.mipmap.ic_online : R.mipmap.ic_cash);
 
                 TextView typeView = new TextView(getContext());
-                typeView.setText(expenseTypes.get(i));
+                String paidBy = (i < expensePaidBy.size()) ? expensePaidBy.get(i) : "Unknown";
+                typeView.setText(expenseTypes.get(i) + " (Paid by " + paidBy + ")");
                 typeView.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
                 typeView.setTextColor(getResources().getColor(R.color.input_text));
                 typeView.setTextSize(16);
@@ -340,16 +347,19 @@ public class ExpenseFragment extends Fragment {
         SharedPreferences prefs = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         JSONArray typesArr = new JSONArray();
         JSONArray amtsArr = new JSONArray();
+        JSONArray paidByArr = new JSONArray();
         JSONArray onlineArr = new JSONArray();
         for (int i = 0; i < expenseTypes.size(); i++) {
             typesArr.put(expenseTypes.get(i));
             amtsArr.put(expenseAmounts.get(i));
+            paidByArr.put(expensePaidBy.get(i));
             onlineArr.put(expenseIsOnline.get(i) ? 1 : 0);
         }
         JSONObject data = new JSONObject();
         try {
             data.put("types", typesArr);
             data.put("amounts", amtsArr);
+            data.put("paidBy", paidByArr);
             data.put("onlineFlags", onlineArr);
         } catch (Exception ignored) { }
         prefs.edit().putString(getKeyForCurrentTrip(), data.toString()).apply();
@@ -360,16 +370,23 @@ public class ExpenseFragment extends Fragment {
         String json = prefs.getString(getKeyForCurrentTrip(), null);
         expenseTypes.clear();
         expenseAmounts.clear();
+        expensePaidBy.clear();
         expenseIsOnline.clear();
         if (json != null) {
             try {
                 JSONObject obj = new JSONObject(json);
                 JSONArray typesArr = obj.getJSONArray("types");
                 JSONArray amtsArr = obj.getJSONArray("amounts");
+                JSONArray paidByArr = obj.optJSONArray("paidBy");
                 JSONArray onlineArr = obj.optJSONArray("onlineFlags");
                 for (int i = 0; i < typesArr.length(); i++) {
                     expenseTypes.add(typesArr.getString(i));
                     expenseAmounts.add(amtsArr.getDouble(i));
+                    String paidBy = "Unknown";
+                    if (paidByArr != null && i < paidByArr.length()) {
+                        paidBy = paidByArr.getString(i);
+                    }
+                    expensePaidBy.add(paidBy);
                     boolean isOnline = false;
                     if (onlineArr != null && i < onlineArr.length()) {
                         isOnline = onlineArr.getInt(i) == 1;
