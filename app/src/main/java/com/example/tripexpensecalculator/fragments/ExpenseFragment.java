@@ -131,42 +131,63 @@ public class ExpenseFragment extends Fragment {
             return;
         }
 
-        // If Online Payment mode is OFF, treat everything as cash
-        boolean onlineMode = FriendsFragment.isOnlineMode(requireContext());
-        if (!onlineMode) {
-            saveExpenseSimple(category, amount, false);
+        // 🔥 STEP 1: Get friends
+        Map<String, FriendsFragment.FriendTotals> friends = FriendsFragment.getContributions();
+
+        if (friends.isEmpty()) {
+            Toast.makeText(getContext(), "Add friends first.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // If Online Payment mode is ON, ask Cash or Online and store flag (with icons)
-        AlertDialog dialog = new AlertDialog.Builder(requireContext())
-                .setCancelable(false)
-                .create();
+        String[] friendNames = friends.keySet().toArray(new String[0]);
 
-        dialog.setOnShowListener(dlg -> {
-            dialog.setContentView(R.layout.dialog_payment_type);
+        // 🔥 STEP 2: Ask who paid
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Who Paid?")
+                .setItems(friendNames, (dialog, which) -> {
 
-            TextView btnCash = dialog.findViewById(R.id.btnCash);
-            TextView btnOnline = dialog.findViewById(R.id.btnOnline);
+                    String selectedFriend = friendNames[which];
 
-            if (btnCash != null) {
-                btnCash.setText("Cash Payment");
-                btnCash.setOnClickListener(v -> {
-                    saveExpenseSimple(category, amount, false);
-                    dialog.dismiss();
-                });
-            }
+                    boolean onlineMode = FriendsFragment.isOnlineMode(requireContext());
 
-            if (btnOnline != null) {
-                btnOnline.setText("Online Payment");
-                btnOnline.setOnClickListener(v -> {
-                    saveExpenseSimple(category, amount, true);
-                    dialog.dismiss();
-                });
-            }
-        });
+                    // 🔥 STEP 3: If offline → direct save
+                    if (!onlineMode) {
+                        saveExpenseSimple(category, amount, selectedFriend, false);
+                        return;
+                    }
 
-        dialog.show();
+                    // 🔥 STEP 4: If online mode → ask payment type
+                    AlertDialog paymentDialog = new AlertDialog.Builder(requireContext())
+                            .setCancelable(false)
+                            .create();
+
+                    paymentDialog.setOnShowListener(dlg -> {
+                        paymentDialog.setContentView(R.layout.dialog_payment_type);
+
+                        TextView btnCash = paymentDialog.findViewById(R.id.btnCash);
+                        TextView btnOnline = paymentDialog.findViewById(R.id.btnOnline);
+
+                        if (btnCash != null) {
+                            btnCash.setText("Cash Payment");
+                            btnCash.setOnClickListener(v -> {
+                                saveExpenseSimple(category, amount, selectedFriend, false);
+                                paymentDialog.dismiss();
+                            });
+                        }
+
+                        if (btnOnline != null) {
+                            btnOnline.setText("Online Payment");
+                            btnOnline.setOnClickListener(v -> {
+                                saveExpenseSimple(category, amount, selectedFriend, true);
+                                paymentDialog.dismiss();
+                            });
+                        }
+                    });
+
+                    paymentDialog.show();
+
+                })
+                .show();
     }
 
     // common code to actually store the expense
@@ -403,6 +424,7 @@ public class ExpenseFragment extends Fragment {
         prefs.edit().remove(key).apply();
         expenseTypes.clear();
         expenseAmounts.clear();
+        expensePaidBy.clear();
         expenseIsOnline.clear();
     }
 }
