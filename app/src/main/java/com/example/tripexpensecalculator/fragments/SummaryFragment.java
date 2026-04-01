@@ -158,7 +158,7 @@ public class SummaryFragment extends Fragment {
         }
 
         // ---- Friends Balance Box ----
-        LinearLayout balanceBox = getCurvedBox();
+        
         List<String> negativeMembers = new ArrayList<>();
         List<Double> negativeBalances = new ArrayList<>();
         int fNo = 0;
