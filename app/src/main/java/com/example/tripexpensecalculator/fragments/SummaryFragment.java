@@ -136,7 +136,29 @@ public class SummaryFragment extends Fragment {
         int fNo = 0;
         for (Map.Entry<String, Double> entry : contributions.entrySet()) {
 
-            double bal = entry.getValue() - perPerson;
+             Map<String, Double> finalBalances = new LinkedHashMap<>();
+
+             for (String name : contributions.keySet()) {
+                  finalBalances.put(name, 0.0);
+             }
+
+             // Add paid amounts
+             for (int i = 0; i < ExpenseFragment.getExpenseAmounts().size(); i++) {
+
+                  double amt = ExpenseFragment.getExpenseAmounts().get(i);
+                  String paidBy = ExpenseFragment.getExpensePaidBy().get(i);
+                  List<String> splitPeople = ExpenseFragment.getExpenseSplitBetween().get(i);
+
+                  double perHead = amt / splitPeople.size();
+
+                  // subtract from each participant
+                  for (String person : splitPeople) {
+                       finalBalances.put(person, finalBalances.get(person) - perHead);
+                  }
+
+                  // add to payer
+                  finalBalances.put(paidBy, finalBalances.get(paidBy) + amt);
+            }
             String sign = (bal >= 0) ? "+" : "-";
             int color = (bal >= 0) ? Color.parseColor("#117c00") : Color.RED;
 
