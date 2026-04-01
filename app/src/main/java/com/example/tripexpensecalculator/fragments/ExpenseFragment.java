@@ -41,8 +41,12 @@ public class ExpenseFragment extends Fragment {
     private static final List<String> expenseTypes = new ArrayList<>();
     private static final List<Double> expenseAmounts = new ArrayList<>();
     private static final List<String> expensePaidBy = new ArrayList<>();
-    // true = online payment, false = cash payment
     private static final List<Boolean> expenseIsOnline = new ArrayList<>();
+    private static final List<List<String>> expenseSplitBetween = new ArrayList<>();
+
+    public static List<List<String>> getExpenseSplitBetween() {
+        return expenseSplitBetween;
+    }
 
     private static final String PREFS_NAME = "TripExpensePrefs";
 
@@ -149,46 +153,63 @@ public class ExpenseFragment extends Fragment {
 
                     String selectedFriend = friendNames[which];
 
-                    boolean onlineMode = FriendsFragment.isOnlineMode(requireContext());
+                    // 🔥 STEP: Select people to split with
+                    boolean[] checkedItems = new boolean[friendNames.length];
 
-                    // 🔥 STEP 3: If offline → direct save
-                    if (!onlineMode) {
-                        saveExpenseSimple(category, amount, selectedFriend, false);
-                        return;
-                    }
+                    new AlertDialog.Builder(requireContext())
+                            .setTitle("Split Between")
+                            .setMultiChoiceItems(friendNames, checkedItems, null)
+                            .setPositiveButton("OK", (d, w) -> {
 
-                    // 🔥 STEP 4: If online mode → ask payment type
-                    AlertDialog paymentDialog = new AlertDialog.Builder(requireContext())
-                            .setCancelable(false)
-                            .create();
+                                List<String> selectedPeople = new ArrayList<>();
 
-                    paymentDialog.setOnShowListener(dlg -> {
-                        paymentDialog.setContentView(R.layout.dialog_payment_type);
+                                for (int i = 0; i < checkedItems.length; i++) {
+                                     if (checkedItems[i]) {
+                                         selectedPeople.add(friendNames[i]);
+                                     }
+                                 }
 
-                        TextView btnCash = paymentDialog.findViewById(R.id.btnCash);
-                        TextView btnOnline = paymentDialog.findViewById(R.id.btnOnline);
+                                if (selectedPeople.isEmpty()) {
+                                    Toast.makeText(getContext(), "Select at least one person", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
 
-                        if (btnCash != null) {
-                            btnCash.setText("Cash Payment");
-                            btnCash.setOnClickListener(v -> {
-                                saveExpenseSimple(category, amount, selectedFriend, false);
-                                paymentDialog.dismiss();
-                            });
-                        }
+                                boolean onlineMode = FriendsFragment.isOnlineMode(requireContext());
 
-                        if (btnOnline != null) {
-                            btnOnline.setText("Online Payment");
-                            btnOnline.setOnClickListener(v -> {
-                                saveExpenseSimple(category, amount, selectedFriend, true);
-                                paymentDialog.dismiss();
-                            });
-                        }
-                    });
+                                if (!onlineMode) {
+                                    saveExpenseWithSplit(category, amount, selectedFriend, false, selectedPeople);
+                                    return;
+                                }
 
-                    paymentDialog.show();
+                                // Payment dialog
+                                AlertDialog paymentDialog = new AlertDialog.Builder(requireContext())
+                                        .setCancelable(false)
+                                        .create();
 
-                })
-                .show();
+                                paymentDialog.setOnShowListener(dlg -> {
+                                paymentDialog.setContentView(R.layout.dialog_payment_type);
+
+                                    TextView btnCash = paymentDialog.findViewById(R.id.btnCash);
+                                    TextView btnOnline = paymentDialog.findViewById(R.id.btnOnline);
+
+                                    if (btnCash != null) {
+                                        btnCash.setOnClickListener(v -> {
+                                            saveExpenseWithSplit(category, amount, selectedFriend, false, selectedPeople);
+                                            paymentDialog.dismiss();
+                                        });
+                                    }
+
+                                    if (btnOnline != null) {
+                                        btnOnline.setOnClickListener(v -> {
+                                            saveExpenseWithSplit(category, amount, selectedFriend, true, selectedPeople);
+                                            paymentDialog.dismiss();
+                                        });
+                                    }
+                                });
+
+                                paymentDialog.show();
+                            })
+                            .show();
     }
 
     // common code to actually store the expense
@@ -203,6 +224,23 @@ public class ExpenseFragment extends Fragment {
 
         saveExpensesDataForCurrentTrip();
         refreshExpensesUI();
+        Toast.makeText(getContext(), "Expense added.", Toast.LENGTH_SHORT).show();
+    }
+
+    private void saveExpenseWithSplit(String category, double amount, String paidBy, boolean isOnline, List<String> splitPeople) {
+
+        expenseTypes.add(category);
+        expenseAmounts.add(amount);
+        expensePaidBy.add(paidBy);
+        expenseIsOnline.add(isOnline);
+        expenseSplitBetween.add(splitPeople);
+
+        inputCategory.setText("");
+        inputAmount.setText("");
+
+        saveExpensesDataForCurrentTrip();
+        refreshExpensesUI();
+
         Toast.makeText(getContext(), "Expense added.", Toast.LENGTH_SHORT).show();
     }
 
@@ -371,6 +409,13 @@ public class ExpenseFragment extends Fragment {
         JSONArray amtsArr = new JSONArray();
         JSONArray paidByArr = new JSONArray();
         JSONArray onlineArr = new JSONArray();
+        JSONArray splitArr = new JSONArray();
+
+        for (List<String> group : expenseSplitBetween) {
+            JSONArray inner = new JSONArray();
+            for (String name : group) inner.put(name);
+            splitArr.put(inner);
+        }
         for (int i = 0; i < expenseTypes.size(); i++) {
             typesArr.put(expenseTypes.get(i));
             amtsArr.put(expenseAmounts.get(i));
@@ -383,6 +428,7 @@ public class ExpenseFragment extends Fragment {
             data.put("amounts", amtsArr);
             data.put("paidBy", paidByArr);
             data.put("onlineFlags", onlineArr);
+            data.put("splitBetween", splitArr);
         } catch (Exception ignored) { }
         prefs.edit().putString(getKeyForCurrentTrip(), data.toString()).apply();
     }
@@ -401,6 +447,8 @@ public class ExpenseFragment extends Fragment {
                 JSONArray amtsArr = obj.getJSONArray("amounts");
                 JSONArray paidByArr = obj.optJSONArray("paidBy");
                 JSONArray onlineArr = obj.optJSONArray("onlineFlags");
+                JSONArray splitArr = obj.optJSONArray("splitBetween");
+                
                 for (int i = 0; i < typesArr.length(); i++) {
                     expenseTypes.add(typesArr.getString(i));
                     expenseAmounts.add(amtsArr.getDouble(i));
@@ -414,7 +462,18 @@ public class ExpenseFragment extends Fragment {
                         isOnline = onlineArr.getInt(i) == 1;
                     }
                     expenseIsOnline.add(isOnline);
-                }
+                    }
+
+                    List<String> splitList = new ArrayList<>();
+
+                    if (splitArr != null && i < splitArr.length()) {
+                        JSONArray inner = splitArr.getJSONArray(i);
+                        for (int j = 0; j < inner.length(); j++) {
+                            splitList.add(inner.getString(j));
+                        }
+                    }
+
+                    expenseSplitBetween.add(splitList);
             } catch (Exception ignored) { }
         }
     }
