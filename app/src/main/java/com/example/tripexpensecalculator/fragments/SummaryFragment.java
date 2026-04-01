@@ -154,6 +154,68 @@ public class SummaryFragment extends Fragment {
         }
         summaryRootLayout.addView(balanceBox);
 
+        // ---- Settlement Box (Who Pays Whom) ----
+        List<Map.Entry<String, Double>> positive = new ArrayList<>();
+        List<Map.Entry<String, Double>> negative = new ArrayList<>();
+
+        // Separate positive and negative balances
+        for (Map.Entry<String, Double> entry : contributions.entrySet()) {
+             double bal = entry.getValue() - perPerson;
+
+             if (bal > 0) {
+                 positive.add(new java.util.AbstractMap.SimpleEntry<>(entry.getKey(), bal));
+             } else if (bal < 0) {
+                 negative.add(new java.util.AbstractMap.SimpleEntry<>(entry.getKey(), bal));
+             }
+         }
+
+         // If settlements exist
+         if (!positive.isEmpty() && !negative.isEmpty()) {
+
+             LinearLayout settlementBox = getCurvedBox();
+
+             // Title
+             TextView title = new TextView(getContext());
+             title.setText("Settlement (Who Pays Whom)");
+             title.setTextSize(18);
+             title.setTypeface(loraBoldTypeface);
+             title.setTextColor(Color.BLACK);
+             title.setPadding(0, 0, 0, 12);
+             settlementBox.addView(title);
+
+             int i = 0, j = 0;
+
+             while (i < negative.size() && j < positive.size()) {
+
+                 String debtor = negative.get(i).getKey();
+                 double debt = Math.abs(negative.get(i).getValue());
+
+                 String creditor = positive.get(j).getKey();
+                 double credit = positive.get(j).getValue();
+
+                 double settleAmount = Math.min(debt, credit);
+
+                 // Create row
+                 String label = debtor + " → " + creditor;
+                 String value = "₹" + String.format("%.2f", settleAmount);
+
+                 settlementBox.addView(getRow(label, value, Color.RED));
+                 settlementBox.addView(getDivider());
+
+                 // Update balances
+                 debt -= settleAmount;
+                 credit -= settleAmount;
+
+                 negative.set(i, new java.util.AbstractMap.SimpleEntry<>(debtor, -debt));
+                 positive.set(j, new java.util.AbstractMap.SimpleEntry<>(creditor, credit));
+
+                 if (debt == 0) i++;
+                 if (credit == 0) j++;
+             }
+
+             summaryRootLayout.addView(settlementBox);
+         }
+
         // ---- Negative Balance Box ----
         if (!negativeMembers.isEmpty()) {
             LinearLayout negativeBox = getCurvedBox();
