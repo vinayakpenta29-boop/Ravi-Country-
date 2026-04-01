@@ -129,36 +129,39 @@ public class SummaryFragment extends Fragment {
 
         summaryRootLayout.addView(cashOnlineBox);
 
+        // 🔥 FINAL BALANCES (SPLIT LOGIC)
+        Map<String, Double> finalBalances = new LinkedHashMap<>();
+
+        // initialize all friends
+        for (String name : contributions.keySet()) {
+            finalBalances.put(name, 0.0);
+        }
+
+        // apply expense split logic
+        for (int i = 0; i < ExpenseFragment.getExpenseAmounts().size(); i++) {
+
+            double amt = ExpenseFragment.getExpenseAmounts().get(i);
+            String paidBy = ExpenseFragment.getExpensePaidBy().get(i);
+            List<String> splitPeople = ExpenseFragment.getExpenseSplitBetween().get(i);
+
+            double perHead = amt / splitPeople.size();
+
+            // subtract from each participant
+            for (String person : splitPeople) {
+                finalBalances.put(person, finalBalances.get(person) - perHead);
+            }
+
+            // add to payer
+            finalBalances.put(paidBy, finalBalances.get(paidBy) + amt);
+        }
+
         // ---- Friends Balance Box ----
         LinearLayout balanceBox = getCurvedBox();
         List<String> negativeMembers = new ArrayList<>();
         List<Double> negativeBalances = new ArrayList<>();
         int fNo = 0;
-        for (Map.Entry<String, Double> entry : contributions.entrySet()) {
+        for (Map.Entry<String, Double> entry : finalBalances.entrySet()) {
 
-             Map<String, Double> finalBalances = new LinkedHashMap<>();
-
-             for (String name : contributions.keySet()) {
-                  finalBalances.put(name, 0.0);
-             }
-
-             // Add paid amounts
-             for (int i = 0; i < ExpenseFragment.getExpenseAmounts().size(); i++) {
-
-                  double amt = ExpenseFragment.getExpenseAmounts().get(i);
-                  String paidBy = ExpenseFragment.getExpensePaidBy().get(i);
-                  List<String> splitPeople = ExpenseFragment.getExpenseSplitBetween().get(i);
-
-                  double perHead = amt / splitPeople.size();
-
-                  // subtract from each participant
-                  for (String person : splitPeople) {
-                       finalBalances.put(person, finalBalances.get(person) - perHead);
-                  }
-
-                  // add to payer
-                  finalBalances.put(paidBy, finalBalances.get(paidBy) + amt);
-            }
             String sign = (bal >= 0) ? "+" : "-";
             int color = (bal >= 0) ? Color.parseColor("#117c00") : Color.RED;
 
@@ -181,8 +184,8 @@ public class SummaryFragment extends Fragment {
         List<Map.Entry<String, Double>> negative = new ArrayList<>();
 
         // Separate positive and negative balances
-        for (Map.Entry<String, Double> entry : contributions.entrySet()) {
-             double bal = entry.getValue() - perPerson;
+        for (Map.Entry<String, Double> entry : finalBalances.entrySet()) {
+            double bal = entry.getValue();
 
              if (bal > 0) {
                  positive.add(new java.util.AbstractMap.SimpleEntry<>(entry.getKey(), bal));
