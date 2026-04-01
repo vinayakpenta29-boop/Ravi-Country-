@@ -129,6 +129,8 @@ public class SummaryFragment extends Fragment {
 
         summaryRootLayout.addView(cashOnlineBox);
 
+        LinearLayout balanceBox = getCurvedBox();
+
         // 🔥 FINAL BALANCES (SPLIT LOGIC)
         Map<String, Double> finalBalances = new LinkedHashMap<>();
 
@@ -161,6 +163,8 @@ public class SummaryFragment extends Fragment {
         List<Double> negativeBalances = new ArrayList<>();
         int fNo = 0;
         for (Map.Entry<String, Double> entry : finalBalances.entrySet()) {
+
+            double bal = entry.getValue();
 
             String sign = (bal >= 0) ? "+" : "-";
             int color = (bal >= 0) ? Color.parseColor("#117c00") : Color.RED;
