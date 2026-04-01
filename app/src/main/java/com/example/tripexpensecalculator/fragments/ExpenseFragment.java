@@ -210,6 +210,8 @@ public class ExpenseFragment extends Fragment {
                                 paymentDialog.show();
                             })
                             .show();
+                    })
+            .show();
     }
 
     // common code to actually store the expense
@@ -440,6 +442,7 @@ public class ExpenseFragment extends Fragment {
         expenseAmounts.clear();
         expensePaidBy.clear();
         expenseIsOnline.clear();
+        expenseSplitBetween.clear();
         if (json != null) {
             try {
                 JSONObject obj = new JSONObject(json);
@@ -462,7 +465,7 @@ public class ExpenseFragment extends Fragment {
                         isOnline = onlineArr.getInt(i) == 1;
                     }
                     expenseIsOnline.add(isOnline);
-                    }
+                    
 
                     List<String> splitList = new ArrayList<>();
 
@@ -474,6 +477,7 @@ public class ExpenseFragment extends Fragment {
                     }
 
                     expenseSplitBetween.add(splitList);
+                }
             } catch (Exception ignored) { }
         }
     }
@@ -486,5 +490,6 @@ public class ExpenseFragment extends Fragment {
         expenseAmounts.clear();
         expensePaidBy.clear();
         expenseIsOnline.clear();
+        expenseSplitBetween.clear();
     }
 }
