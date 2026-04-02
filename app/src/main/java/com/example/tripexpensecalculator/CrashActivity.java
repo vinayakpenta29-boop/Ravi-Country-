@@ -62,10 +62,26 @@ public class CrashActivity extends AppCompatActivity {
         });
 
         // Add views
+        // Give ScrollView proper height using weight
+        LinearLayout.LayoutParams scrollParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                0,
+                1f   // 🔥 THIS FIXES THE ISSUE
+        );
+        scrollView.setLayoutParams(scrollParams);
+
+        // Button layout
+        LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        btnParams.setMargins(0, 20, 0, 0);
+        copyBtn.setLayoutParams(btnParams);
+
+        // Add views
         root.addView(title);
         root.addView(scrollView);
         root.addView(copyBtn);
-
         setContentView(root);
     }
 }
