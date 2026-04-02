@@ -139,6 +139,13 @@ public class SummaryFragment extends Fragment {
             finalBalances.put(name, 0.0);
         }
 
+        // ensure all paidBy & split users exist
+        for (String name : ExpenseFragment.getExpensePaidBy()) {
+            if (!finalBalances.containsKey(name)) {
+                finalBalances.put(name, 0.0);
+            }
+        }
+
         // apply expense split logic
         for (int i = 0; i < ExpenseFragment.getExpenseAmounts().size(); i++) {
 
@@ -160,13 +167,18 @@ public class SummaryFragment extends Fragment {
 
             // subtract from each participant
             for (String person : splitPeople) {
-                finalBalances.put(person, finalBalances.get(person) - perHead);
+                Double current = finalBalances.get(person);
+                if (current == null) current = 0.0;
+
+                finalBalances.put(person, current - perHead);
             }
 
-            // add to payer
-            finalBalances.put(paidBy, finalBalances.get(paidBy) + amt);
-        }
+            Double payerCurrent = finalBalances.get(paidBy);
+            if (payerCurrent == null) payerCurrent = 0.0;
 
+            finalBalances.put(paidBy, payerCurrent + amt);
+
+        }
         // ---- Friends Balance Box ----
         
         List<String> negativeMembers = new ArrayList<>();
