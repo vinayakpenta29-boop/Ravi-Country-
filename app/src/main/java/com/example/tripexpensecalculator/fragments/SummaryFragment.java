@@ -144,7 +144,17 @@ public class SummaryFragment extends Fragment {
 
             double amt = ExpenseFragment.getExpenseAmounts().get(i);
             String paidBy = ExpenseFragment.getExpensePaidBy().get(i);
-            List<String> splitPeople = ExpenseFragment.getExpenseSplitBetween().get(i);
+            List<List<String>> allSplits = ExpenseFragment.getExpenseSplitBetween();
+
+            List<String> splitPeople;
+
+            // ✅ SAFE CHECK
+            if (i < allSplits.size() && allSplits.get(i) != null && !allSplits.get(i).isEmpty()) {
+                splitPeople = allSplits.get(i);
+            } else {
+                // fallback → split among ALL friends
+                splitPeople = new ArrayList<>(contributions.keySet());
+            }
 
             double perHead = amt / splitPeople.size();
 
