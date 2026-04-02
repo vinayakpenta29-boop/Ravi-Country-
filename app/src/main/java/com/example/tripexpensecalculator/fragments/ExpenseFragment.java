@@ -296,6 +296,9 @@ public class ExpenseFragment extends Fragment {
                                         int delIdx = toDelete.get(j);
                                         expenseTypes.remove(delIdx);
                                         expenseAmounts.remove(delIdx);
+                                        if (delIdx < expenseSplitBetween.size()) {
+                                            expenseSplitBetween.remove(delIdx);
+                                        }
                                         if (delIdx < expenseIsOnline.size()) {
                                             expenseIsOnline.remove(delIdx);
                                         }
