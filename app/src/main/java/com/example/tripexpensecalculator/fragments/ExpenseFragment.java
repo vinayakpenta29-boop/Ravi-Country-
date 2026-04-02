@@ -479,6 +479,10 @@ public class ExpenseFragment extends Fragment {
                         }
                     }
 
+                    if (splitList.isEmpty()) {
+                        splitList = new ArrayList<>(FriendsFragment.getContributions().keySet());
+                    }
+
                     expenseSplitBetween.add(splitList);
                 }
             } catch (Exception ignored) { }
