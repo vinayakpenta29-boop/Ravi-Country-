@@ -19,6 +19,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Thread.setDefaultUncaughtExceptionHandler(new CrashHandler(getApplicationContext()));
+        
         setContentView(R.layout.activity_main);
 
         // Status bar color to match your app
