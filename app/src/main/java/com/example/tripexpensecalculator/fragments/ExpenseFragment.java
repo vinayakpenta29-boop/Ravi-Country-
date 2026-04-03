@@ -154,22 +154,40 @@ public class ExpenseFragment extends Fragment {
                     String selectedFriend = friendNames[which];
 
                     // 🔥 STEP: Select people to split with
-                    boolean[] checkedItems = new boolean[friendNames.length];
+                    // 🔥 Add "Select All"
+                    String[] namesWithSelectAll = new String[friendNames.length + 1];
+                    namesWithSelectAll[0] = "Select All";
+                    System.arraycopy(friendNames, 0, namesWithSelectAll, 1, friendNames.length);
+
+                    boolean[] checkedItems = new boolean[namesWithSelectAll.length];
 
                     new AlertDialog.Builder(requireContext())
                             .setTitle("Split Between")
-                            .setMultiChoiceItems(friendNames, checkedItems, (d, index, isChecked) -> {
-                             checkedItems[index] = isChecked;
-                        })
+                            .setMultiChoiceItems(namesWithSelectAll, checkedItems, (dlg, index, isChecked) -> {
+
+                                if (index == 0) {
+                                    // ✅ Select All clicked
+                                   for (int i = 0; i < checkedItems.length; i++) {
+                                        checkedItems[i] = isChecked;
+                                        ((AlertDialog) dlg).getListView().setItemChecked(i, isChecked);
+                                    }
+                                } else {
+                                    // ❌ If any unchecked → uncheck Select All
+                                    if (!isChecked) {
+                                        checkedItems[0] = false;
+                                        ((AlertDialog) dlg).getListView().setItemChecked(0, false);
+                                    }
+                                }
+                            })
                             .setPositiveButton("OK", (d, w) -> {
 
                                 List<String> selectedPeople = new ArrayList<>();
 
-                                for (int i = 0; i < checkedItems.length; i++) {
-                                     if (checkedItems[i]) {
-                                         selectedPeople.add(friendNames[i]);
-                                     }
-                                 }
+                                for (int i = 1; i < checkedItems.length; i++) { // skip "Select All"
+                                    if (checkedItems[i]) {
+                                        selectedPeople.add(namesWithSelectAll[i]);
+                                    }
+                                }
 
                                 if (selectedPeople.isEmpty()) {
                                     Toast.makeText(getContext(), "Select at least one person", Toast.LENGTH_SHORT).show();
