@@ -158,7 +158,9 @@ public class ExpenseFragment extends Fragment {
 
                     new AlertDialog.Builder(requireContext())
                             .setTitle("Split Between")
-                            .setMultiChoiceItems(friendNames, checkedItems, null)
+                            .setMultiChoiceItems(friendNames, checkedItems, (dialog, which, isChecked) -> {
+                             checkedItems[which] = isChecked;
+                        })
                             .setPositiveButton("OK", (d, w) -> {
 
                                 List<String> selectedPeople = new ArrayList<>();
