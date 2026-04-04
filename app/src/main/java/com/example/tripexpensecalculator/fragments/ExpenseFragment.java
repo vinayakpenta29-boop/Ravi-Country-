@@ -391,12 +391,12 @@ public class ExpenseFragment extends Fragment {
 
                 // Find "Paid by" part
                 int start = fullText.indexOf("Paid by");
-                int end = fullText.length[];
+                int end = fullText.length();
 
                 // Apply RED color
                 spannable.setSpan(
                         new android.text.style.ForegroundColorSpan(
-                                getResources().getColor(android.R.color.holo_red_dark)
+                                getResources().getColor(Color.parseColor("#990F4B")
                         ),
                         start,
                         end,
