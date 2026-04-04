@@ -385,7 +385,25 @@ public class ExpenseFragment extends Fragment {
 
                 TextView typeView = new TextView(getContext());
                 String paidBy = (i < expensePaidBy.size()) ? expensePaidBy.get(i) : "Unknown";
-                typeView.setText(expenseTypes.get(i) + " (Paid by " + paidBy + ")");
+                String fullText = expenseTypes.get(i) + " [Paid by " + paidBy + "]";
+
+                android.text.SpannableString spannable = new android.text.SpannableString(fullText);
+
+                // Find "Paid by" part
+                int start = fullText.indexOf("Paid by");
+                int end = fullText.length[];
+
+                // Apply RED color
+                spannable.setSpan(
+                        new android.text.style.ForegroundColorSpan(
+                                getResources().getColor(android.R.color.holo_red_dark)
+                        ),
+                        start,
+                        end,
+                        android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                );
+
+                typeView.setText(spannable);
                 typeView.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
                 typeView.setTextColor(getResources().getColor(R.color.input_text));
                 typeView.setTextSize(16);
