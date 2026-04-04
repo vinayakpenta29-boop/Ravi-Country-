@@ -396,7 +396,7 @@ public class ExpenseFragment extends Fragment {
                 // Apply RED color
                 spannable.setSpan(
                         new android.text.style.ForegroundColorSpan(
-                                getResources().getColor(Color.parseColor("#990F4B")
+                                Color.parseColor("#990F4B")
                         ),
                         start,
                         end,
