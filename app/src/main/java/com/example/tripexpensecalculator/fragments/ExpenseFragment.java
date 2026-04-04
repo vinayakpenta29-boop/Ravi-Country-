@@ -386,25 +386,42 @@ public class ExpenseFragment extends Fragment {
 
                 TextView typeView = new TextView(getContext());
                 String paidBy = (i < expensePaidBy.size()) ? expensePaidBy.get(i) : "Unknown";
-                String fullText = expenseTypes.get(i) + " [Paid by " + paidBy + "]";
+                
+                LinearLayout textContainer = new LinearLayout(getContext());
+                textContainer.setOrientation(LinearLayout.HORIZONTAL);
+                textContainer.setLayoutParams(new LinearLayout.LayoutParams(
+                        0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
+                ));
 
-                android.text.SpannableString spannable = new android.text.SpannableString(fullText);
+                // 🔹 Expense Name
+                TextView typeView = new TextView(getContext());
+                typeView.setText(expenseTypes.get(i));
+                typeView.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+                typeView.setTextColor(getResources().getColor(R.color.input_text));
+                typeView.setTextSize(16);
 
-                // Find "Paid by" part
-                int start = fullText.indexOf("Paid by");
-                int end = fullText.length();
+                // 🔹 Badge (Paid by)
+                TextView paidBadge = new TextView(getContext());
+                String paidBy = (i < expensePaidBy.size()) ? expensePaidBy.get(i) : "Unknown";
+                paidBadge.setText(" Paid by " + paidBy + " ");
+                paidBadge.setTextSize(12);
+                paidBadge.setTextColor(android.graphics.Color.WHITE);
+                paidBadge.setPadding(20, 6, 20, 6);
 
-                // Apply RED color
-                spannable.setSpan(
-                        new android.text.style.ForegroundColorSpan(
-                                Color.parseColor("#990F4B")
-                        ),
-                        start,
-                        end,
-                        android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                // 👉 Background (we will create this next)
+                paidBadge.setBackgroundResource(R.drawable.bg_paid_badge);
+
+                // margin between text and badge
+                LinearLayout.LayoutParams badgeParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
                 );
+                badgeParams.setMargins(16, 0, 0, 0);
+                paidBadge.setLayoutParams(badgeParams);
 
-                typeView.setText(spannable);
+                // add both
+                textContainer.addView(typeView);
+                textContainer.addView(paidBadge);
                 typeView.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
                 typeView.setTextColor(getResources().getColor(R.color.input_text));
                 typeView.setTextSize(16);
@@ -418,7 +435,7 @@ public class ExpenseFragment extends Fragment {
                 amtView.setTextSize(16);
 
                 row.addView(icon);
-                row.addView(typeView);
+                row.addView(textContainer);
                 row.addView(amtView);
 
                 outerBox.addView(row);
