@@ -384,9 +384,6 @@ public class ExpenseFragment extends Fragment {
                 boolean isOnline = (i < expenseIsOnline.size()) && Boolean.TRUE.equals(expenseIsOnline.get(i));
                 icon.setImageResource(isOnline ? R.mipmap.ic_online : R.mipmap.ic_cash);
 
-                TextView typeView = new TextView(getContext());
-                String paidBy = (i < expensePaidBy.size()) ? expensePaidBy.get(i) : "Unknown";
-                
                 LinearLayout textContainer = new LinearLayout(getContext());
                 textContainer.setOrientation(LinearLayout.HORIZONTAL);
                 textContainer.setLayoutParams(new LinearLayout.LayoutParams(
@@ -422,13 +419,7 @@ public class ExpenseFragment extends Fragment {
                 // add both
                 textContainer.addView(typeView);
                 textContainer.addView(paidBadge);
-                typeView.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
-                typeView.setTextColor(getResources().getColor(R.color.input_text));
-                typeView.setTextSize(16);
-                LinearLayout.LayoutParams leftParams = new LinearLayout.LayoutParams(
-                        0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
-                typeView.setLayoutParams(leftParams);
-
+                
                 TextView amtView = new TextView(getContext());
                 amtView.setText("₹" + String.format("%.2f", expenseAmounts.get(i)));
                 amtView.setTextColor(getResources().getColor(R.color.input_text));
