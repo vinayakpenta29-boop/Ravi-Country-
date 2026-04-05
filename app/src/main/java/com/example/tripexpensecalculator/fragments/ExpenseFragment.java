@@ -393,6 +393,10 @@ public class ExpenseFragment extends Fragment {
                 // 🔹 Expense Name
                 TextView typeView = new TextView(getContext());
                 typeView.setText(expenseTypes.get(i));
+                typeView.setSingleLine(true);
+                typeView.setEllipsize(android.text.TextUtils.TruncateAt.MARQUEE);
+                typeView.setMarqueeRepeatLimit(-1); // infinite scroll
+                typeView.setSelected(true); // VERY IMPORTANT
                 typeView.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
                 typeView.setTextColor(getResources().getColor(R.color.input_text));
                 typeView.setTextSize(16);
@@ -400,7 +404,7 @@ public class ExpenseFragment extends Fragment {
                 // 🔹 Badge (Paid by)
                 TextView paidBadge = new TextView(getContext());
                 String paidBy = (i < expensePaidBy.size()) ? expensePaidBy.get(i) : "Unknown";
-                paidBadge.setText(" Paid by " + paidBy + " ");
+                paidBadge.setText(" " + paidBy + " ");
                 paidBadge.setTextSize(12);
                 paidBadge.setTextColor(android.graphics.Color.WHITE);
                 paidBadge.setPadding(20, 6, 20, 6);
