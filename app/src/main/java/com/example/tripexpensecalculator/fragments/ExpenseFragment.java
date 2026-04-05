@@ -401,6 +401,11 @@ public class ExpenseFragment extends Fragment {
                 typeView.setTextColor(getResources().getColor(R.color.input_text));
                 typeView.setTextSize(16);
 
+                LinearLayout.LayoutParams leftParams = new LinearLayout.LayoutParams(
+                        0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
+                );
+                typeView.setLayoutParams(leftParams);
+
                 // 🔹 Badge (Paid by)
                 TextView paidBadge = new TextView(getContext());
                 String paidBy = (i < expensePaidBy.size()) ? expensePaidBy.get(i) : "Unknown";
