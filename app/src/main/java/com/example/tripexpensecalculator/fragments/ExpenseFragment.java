@@ -406,38 +406,59 @@ public class ExpenseFragment extends Fragment {
                 );
                 typeView.setLayoutParams(leftParams);
 
-                // 🔹 Badge (Paid by)
-                TextView paidBadge = new TextView(getContext());
+                // 🔹 Combined Badge (Name + Amount)
+                LinearLayout badgeContainer = new LinearLayout(getContext());
+                badgeContainer.setOrientation(LinearLayout.HORIZONTAL);
+
+                // 👉 Rounded background
+                badgeContainer.setBackgroundResource(R.drawable.bg_combined_badge);
+
+                // 👉 Name part
+                TextView namePart = new TextView(getContext());
                 String paidBy = (i < expensePaidBy.size()) ? expensePaidBy.get(i) : "Unknown";
-                paidBadge.setText(" " + paidBy + " ");
-                paidBadge.setTextSize(12);
-                paidBadge.setTextColor(android.graphics.Color.WHITE);
-                paidBadge.setPadding(20, 6, 20, 6);
+                namePart.setText(" " + paidBy + " ");
+                namePart.setTextSize(12);
+                namePart.setTextColor(Color.BLACK);
+                namePart.setPadding(20, 8, 20, 8);
 
-                // 👉 Background (we will create this next)
-                paidBadge.setBackgroundResource(R.drawable.bg_paid_badge);
+                // 👉 Divider line
+                View dividerLine = new View(getContext());
+                LinearLayout.LayoutParams dividerParams = new LinearLayout.LayoutParams(2, LinearLayout.LayoutParams.MATCH_PARENT);
+                dividerLine.setLayoutParams(dividerParams);
+                dividerLine.setBackgroundColor(Color.DKGRAY);
 
-                // margin between text and badge
+                // 👉 Amount part
+                TextView amountPart = new TextView(getContext());
+                amountPart.setText(" ₹" + String.format("%.0f", expenseAmounts.get(i)) + " ");
+                amountPart.setTextSize(12);
+                amountPart.setTextColor(Color.WHITE);
+                amountPart.setPadding(20, 8, 20, 8);
+
+                // 👉 Background for amount side
+                amountPart.setBackgroundResource(R.drawable.bg_amount_part);
+
+                // add all
+                badgeContainer.addView(namePart);
+                badgeContainer.addView(dividerLine);
+                badgeContainer.addView(amountPart);
+
+                // margin
                 LinearLayout.LayoutParams badgeParams = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
                 badgeParams.setMargins(16, 0, 0, 0);
-                paidBadge.setLayoutParams(badgeParams);
+                badgeContainer.setLayoutParams(badgeParams);
+
+                
 
                 // add both
                 textContainer.addView(typeView);
-                textContainer.addView(paidBadge);
+                textContainer.addView(badgeContainer);
                 
-                TextView amtView = new TextView(getContext());
-                amtView.setText("₹" + String.format("%.2f", expenseAmounts.get(i)));
-                amtView.setTextColor(getResources().getColor(R.color.input_text));
-                amtView.setTextSize(16);
-
                 row.addView(icon);
                 row.addView(textContainer);
-                row.addView(amtView);
-
+        
                 outerBox.addView(row);
 
                 if (i < expenseTypes.size() - 1) {
