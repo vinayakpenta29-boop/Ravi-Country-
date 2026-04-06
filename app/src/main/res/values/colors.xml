@@ -1,5 +1,5 @@
 <resources>
-    <color name="background_dark">#f0f6fb</color>
+    <color name="background_dark">#FEF6DD</color>
     <color name="input_box">#FFFFFF</color>
     <color name="card_light">#FFFFFF</color>
     <color name="primary_orange">#FF7F00</color> <!-- Used for splash background -->
