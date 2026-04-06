@@ -186,17 +186,31 @@ public class SummaryFragment extends Fragment {
         int fNo = 0;
         for (Map.Entry<String, Double> entry : finalBalances.entrySet()) {
 
-            double bal = entry.getValue();
+            String name = entry.getKey();
 
-            String sign = (bal >= 0) ? "+" : "-";
-            int color = (bal >= 0) ? Color.parseColor("#117c00") : Color.RED;
+            double finalBal = entry.getValue(); // this is already correct balance
 
-            String nameLabel = entry.getKey(); // no "(Paused)" label
+            // ✅ GET TOTAL PAID (from contributions map)
+            double totalPaid = contributions.containsKey(name) ? contributions.get(name) : 0.0;
 
-            String balanceLabel = nameLabel + " Paid";
-            String balanceValue = "₹" + String.format("%.2f", entry.getValue()) + "  |  " +
-                    "Balance: " + sign + "₹" + String.format("%.2f", Math.abs(bal));
-            balanceBox.addView(getRow(balanceLabel, balanceValue, color));
+            // ✅ COLOR
+            int color = (finalBal >= 0) ? Color.parseColor("#117c00") : Color.RED;
+
+            // ✅ FORMAT
+            String paidStr = "₹" + String.format("%.2f", totalPaid);
+
+            String balanceStr;
+            if (finalBal >= 0) {
+                balanceStr = "+₹" + String.format("%.2f", finalBal);
+            } else {
+                balanceStr = "-₹" + String.format("%.2f", Math.abs(finalBal));
+            }
+
+            // ✅ FINAL TEXT (YOUR REQUIRED FORMAT)
+            String label = name + " Paid";
+            String value = paidStr + "  |  Balance: " + balanceStr;
+
+            balanceBox.addView(getRow(label, value, color));
             if (fNo++ < contributions.size() - 1) balanceBox.addView(getDivider());
             if (bal < 0) {
                 negativeMembers.add(entry.getKey());
