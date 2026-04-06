@@ -212,9 +212,9 @@ public class SummaryFragment extends Fragment {
 
             balanceBox.addView(getRow(label, value, color));
             if (fNo++ < contributions.size() - 1) balanceBox.addView(getDivider());
-            if (bal < 0) {
-                negativeMembers.add(entry.getKey());
-                negativeBalances.add(bal);
+            if (finalBal < 0) {
+                negativeMembers.add(name);
+                negativeBalances.add(finalBal);
             }
         }
         summaryRootLayout.addView(balanceBox);
