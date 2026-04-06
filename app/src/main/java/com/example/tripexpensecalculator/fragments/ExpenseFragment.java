@@ -362,8 +362,8 @@ public class ExpenseFragment extends Fragment {
             // Show expenses list
             LinearLayout outerBox = new LinearLayout(getContext());
             outerBox.setOrientation(LinearLayout.VERTICAL);
-            outerBox.setBackgroundColor(Color.TRANSPARENT);
-            outerBox.setPadding(0, 0, 0, 0);
+            outerBox.setBackgroundResource(R.drawable.curved_box_with_border);
+            outerBox.setPadding(45, 28, 45, 28);
 
             LinearLayout.LayoutParams outerParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -373,17 +373,8 @@ public class ExpenseFragment extends Fragment {
             for (int i = 0; i < expenseTypes.size(); i++) {
                 LinearLayout row = new LinearLayout(getContext());
                 row.setOrientation(LinearLayout.HORIZONTAL);
-                row.setPadding(24, 20, 24, 20);
-                row.setBackgroundResource(R.drawable.bg_expense_card);
-                row.setElevation(8f);
+                row.setPadding(0, 8, 0, 8);
 
-                LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-                rowParams.setMargins(0, 0, 0, 20);
-                row.setLayoutParams(rowParams);
-                
                 // icon depending on payment type
                 android.widget.ImageView icon = new android.widget.ImageView(getContext());
                 int sizePx = (int) (20 * getResources().getDisplayMetrics().density);
@@ -408,7 +399,7 @@ public class ExpenseFragment extends Fragment {
                 typeView.setSelected(true); // VERY IMPORTANT
                 typeView.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
                 typeView.setTextColor(getResources().getColor(R.color.input_text));
-                typeView.setTextSize(17);
+                typeView.setTextSize(16);
 
                 LinearLayout.LayoutParams leftParams = new LinearLayout.LayoutParams(
                         0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
@@ -418,10 +409,10 @@ public class ExpenseFragment extends Fragment {
                 // 🔹 Badge (Paid by)
                 TextView paidBadge = new TextView(getContext());
                 String paidBy = (i < expensePaidBy.size()) ? expensePaidBy.get(i) : "Unknown";
-                paidBadge.setText(paidBy);
-                paidBadge.setTextSize(11);
-                paidBadge.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
-                paidBadge.setPadding(28, 10, 28, 10);
+                paidBadge.setText(" " + paidBy + " ");
+                paidBadge.setTextSize(12);
+                paidBadge.setTextColor(android.graphics.Color.WHITE);
+                paidBadge.setPadding(20, 6, 20, 6);
 
                 // 👉 Background (we will create this next)
                 paidBadge.setBackgroundResource(R.drawable.bg_paid_badge);
@@ -441,15 +432,23 @@ public class ExpenseFragment extends Fragment {
                 TextView amtView = new TextView(getContext());
                 amtView.setText("₹" + String.format("%.2f", expenseAmounts.get(i)));
                 amtView.setTextColor(getResources().getColor(R.color.input_text));
-                amtView.setTextSize(17);
-                amtView.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+                amtView.setTextSize(16);
 
                 row.addView(icon);
                 row.addView(textContainer);
                 row.addView(amtView);
 
                 outerBox.addView(row);
-                
+
+                if (i < expenseTypes.size() - 1) {
+                    View divider = new View(getContext());
+                    divider.setBackgroundColor(getResources().getColor(R.color.divider));
+                    LinearLayout.LayoutParams dividParams = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT, 1);
+                    dividParams.setMargins(0, 12, 0, 12);
+                    divider.setLayoutParams(dividParams);
+                    outerBox.addView(divider);
+                }
             }
             expensesListLayout.addView(outerBox);
 
