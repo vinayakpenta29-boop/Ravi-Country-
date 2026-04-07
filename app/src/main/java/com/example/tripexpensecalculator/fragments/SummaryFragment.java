@@ -165,18 +165,42 @@ public class SummaryFragment extends Fragment {
 
             double perHead = amt / splitPeople.size();
 
-            // subtract from each participant
-            for (String person : splitPeople) {
-                Double current = finalBalances.get(person);
-                if (current == null) current = 0.0;
+            // Track each person's expense share
+            Map<String, Double> expenseShareMap = new LinkedHashMap<>();
 
-                finalBalances.put(person, current - perHead);
+            for (String name : contributions.keySet()) {
+                expenseShareMap.put(name, 0.0);
             }
 
-            Double payerCurrent = finalBalances.get(paidBy);
-            if (payerCurrent == null) payerCurrent = 0.0;
+            for (int i = 0; i < ExpenseFragment.getExpenseAmounts().size(); i++) {
 
-            finalBalances.put(paidBy, payerCurrent + amt);
+                double amt = ExpenseFragment.getExpenseAmounts().get(i);
+                List<List<String>> allSplits = ExpenseFragment.getExpenseSplitBetween();
+
+                List<String> splitPeople;
+
+                if (i < allSplits.size() && allSplits.get(i) != null && !allSplits.get(i).isEmpty()) {
+                    splitPeople = allSplits.get(i);
+                } else {
+                    splitPeople = new ArrayList<>(contributions.keySet());
+                }
+
+                double perHead = amt / splitPeople.size();
+
+                for (String person : splitPeople) {
+                    double current = expenseShareMap.containsKey(person) ? expenseShareMap.get(person) : 0.0;
+                    expenseShareMap.put(person, current + perHead);
+                }
+            }
+
+            // ✅ FINAL BALANCE = PAID - SHARE
+            for (String name : contributions.keySet()) {
+
+                double paid = contributions.get(name);
+                double share = expenseShareMap.containsKey(name) ? expenseShareMap.get(name) : 0.0;
+
+                finalBalances.put(name, paid - share);
+            }
 
         }
         // ---- Friends Balance Box ----
