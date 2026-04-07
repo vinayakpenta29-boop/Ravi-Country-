@@ -144,35 +144,15 @@ public class SummaryFragment extends Fragment {
             if (!finalBalances.containsKey(name)) {
                 finalBalances.put(name, 0.0);
             }
-        }
 
-        // apply expense split logic
-        for (int i = 0; i < ExpenseFragment.getExpenseAmounts().size(); i++) {
-
-            double amt = ExpenseFragment.getExpenseAmounts().get(i);
-            String paidBy = ExpenseFragment.getExpensePaidBy().get(i);
-            List<List<String>> allSplits = ExpenseFragment.getExpenseSplitBetween();
-
-            List<String> splitPeople;
-
-            // ✅ SAFE CHECK
-            if (i < allSplits.size() && allSplits.get(i) != null && !allSplits.get(i).isEmpty()) {
-                splitPeople = allSplits.get(i);
-            } else {
-                // fallback → split among ALL friends
-                splitPeople = new ArrayList<>(contributions.keySet());
-            }
-
-            double perHead = amt / splitPeople.size();
-
-            // Track each person's expense share
+            // 👉 Track each person's expense share
             Map<String, Double> expenseShareMap = new LinkedHashMap<>();
 
             for (String name : contributions.keySet()) {
                 expenseShareMap.put(name, 0.0);
             }
 
-            // 👉 use DIFFERENT variable names
+            // 👉 Calculate total split expenses
             for (int idx = 0; idx < ExpenseFragment.getExpenseAmounts().size(); idx++) {
 
                 double amount = ExpenseFragment.getExpenseAmounts().get(idx);
@@ -189,21 +169,20 @@ public class SummaryFragment extends Fragment {
                 double perHeadShare = amount / splitList.size();
 
                 for (String person : splitList) {
-                    double current = expenseShareMap.containsKey(person) ? expenseShareMap.get(person) : 0.0;
+                    double current = expenseShareMap.get(person);
                     expenseShareMap.put(person, current + perHeadShare);
                 }
             }
 
-            // ✅ FINAL BALANCE = PAID - SHARE
+            // 👉 FINAL BALANCE = PAID - EXPENSE
             for (String name : contributions.keySet()) {
-
                 double paid = contributions.get(name);
-                double share = expenseShareMap.containsKey(name) ? expenseShareMap.get(name) : 0.0;
-
-                finalBalances.put(name, paid - share);
+                double expense = expenseShareMap.get(name);
+                finalBalances.put(name, paid - expense);
             }
-
         }
+
+        
         // ---- Friends Balance Box ----
         
         List<String> negativeMembers = new ArrayList<>();
@@ -232,10 +211,17 @@ public class SummaryFragment extends Fragment {
             }
 
             // ✅ FINAL TEXT (YOUR REQUIRED FORMAT)
-            String label = name + " Paid";
-            String value = paidStr + "  |  Balance: " + balanceStr;
+            // Table Header Row
+            LinearLayout headerRow = new LinearLayout(getContext());
+            headerRow.setOrientation(LinearLayout.HORIZONTAL);
 
-            balanceBox.addView(getRow(label, value, color));
+            headerRow.addView(createCell("Name", true));
+            headerRow.addView(createCell("Paid", true));
+            headerRow.addView(createCell("Expense", true));
+            headerRow.addView(createCell("Balance", true));
+
+            balanceBox.addView(headerRow);
+            balanceBox.addView(getDivider());
             if (fNo++ < contributions.size() - 1) balanceBox.addView(getDivider());
             if (finalBal < 0) {
                 negativeMembers.add(name);
@@ -529,4 +515,21 @@ public class SummaryFragment extends Fragment {
 
         return row;
     }
+
+    private TextView createCell(String text, boolean isHeader) {
+    TextView tv = new TextView(getContext());
+    tv.setText(text);
+    tv.setTextSize(14);
+    tv.setPadding(8, 8, 8, 8);
+    tv.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+
+    if (isHeader) {
+        tv.setTypeface(Typeface.DEFAULT_BOLD);
+        tv.setTextColor(Color.BLACK);
+    } else {
+        tv.setTextColor(Color.BLACK);
+    }
+
+    return tv;
+}
 }
