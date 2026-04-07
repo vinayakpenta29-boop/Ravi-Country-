@@ -131,6 +131,42 @@ public class SummaryFragment extends Fragment {
 
         LinearLayout balanceBox = getCurvedBox();
 
+        // 👉 Track each person's expense share
+        Map<String, Double> expenseShareMap = new LinkedHashMap<>();
+
+        for (String name : contributions.keySet()) {
+            expenseShareMap.put(name, 0.0);
+        }
+
+        // 👉 Calculate total split expenses
+        for (int idx = 0; idx < ExpenseFragment.getExpenseAmounts().size(); idx++) {
+
+            double amount = ExpenseFragment.getExpenseAmounts().get(idx);
+            List<List<String>> splitsList = ExpenseFragment.getExpenseSplitBetween();
+
+            List<String> splitList;
+
+            if (idx < splitsList.size() && splitsList.get(idx) != null && !splitsList.get(idx).isEmpty()) {
+                splitList = splitsList.get(idx);
+            } else {
+                splitList = new ArrayList<>(contributions.keySet());
+            }
+
+            double perHeadShare = amount / splitList.size();
+
+            for (String person : splitList) {
+                double current = expenseShareMap.get(person);
+                expenseShareMap.put(person, current + perHeadShare);
+            }
+        }
+
+        // 👉 FINAL BALANCE
+        for (String name : contributions.keySet()) {
+            double paid = contributions.get(name);
+            double expense = expenseShareMap.get(name);
+            finalBalances.put(name, paid - expense);
+        }
+
         // 🔥 FINAL BALANCES (SPLIT LOGIC)
         Map<String, Double> finalBalances = new LinkedHashMap<>();
 
@@ -138,48 +174,7 @@ public class SummaryFragment extends Fragment {
         for (String name : contributions.keySet()) {
             finalBalances.put(name, 0.0);
         }
-
-        // ensure all paidBy & split users exist
-        for (String name : ExpenseFragment.getExpensePaidBy()) {
-            if (!finalBalances.containsKey(name)) {
-                finalBalances.put(name, 0.0);
-            }
-
-            // 👉 Track each person's expense share
-            Map<String, Double> expenseShareMap = new LinkedHashMap<>();
-
-            for (String name : contributions.keySet()) {
-                expenseShareMap.put(name, 0.0);
-            }
-
-            // 👉 Calculate total split expenses
-            for (int idx = 0; idx < ExpenseFragment.getExpenseAmounts().size(); idx++) {
-
-                double amount = ExpenseFragment.getExpenseAmounts().get(idx);
-                List<List<String>> splitsList = ExpenseFragment.getExpenseSplitBetween();
-
-                List<String> splitList;
-
-                if (idx < splitsList.size() && splitsList.get(idx) != null && !splitsList.get(idx).isEmpty()) {
-                    splitList = splitsList.get(idx);
-                } else {
-                    splitList = new ArrayList<>(contributions.keySet());
-                }
-
-                double perHeadShare = amount / splitList.size();
-
-                for (String person : splitList) {
-                    double current = expenseShareMap.get(person);
-                    expenseShareMap.put(person, current + perHeadShare);
-                }
-            }
-
-            // 👉 FINAL BALANCE = PAID - EXPENSE
-            for (String name : contributions.keySet()) {
-                double paid = contributions.get(name);
-                double expense = expenseShareMap.get(name);
-                finalBalances.put(name, paid - expense);
-            }
+        
         }
 
         
@@ -234,16 +229,6 @@ public class SummaryFragment extends Fragment {
         List<Map.Entry<String, Double>> positive = new ArrayList<>();
         List<Map.Entry<String, Double>> negative = new ArrayList<>();
 
-        // Separate positive and negative balances
-        for (Map.Entry<String, Double> entry : finalBalances.entrySet()) {
-            double bal = entry.getValue();
-
-             if (bal > 0) {
-                 positive.add(new java.util.AbstractMap.SimpleEntry<>(entry.getKey(), bal));
-             } else if (bal < 0) {
-                 negative.add(new java.util.AbstractMap.SimpleEntry<>(entry.getKey(), bal));
-             }
-         }
 
          // If settlements exist
          if (!positive.isEmpty() && !negative.isEmpty()) {
