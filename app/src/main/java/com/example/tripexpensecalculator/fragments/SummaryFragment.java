@@ -172,15 +172,15 @@ public class SummaryFragment extends Fragment {
                 expenseShareMap.put(name, 0.0);
             }
 
-            for (int i = 0; i < ExpenseFragment.getExpenseAmounts().size(); i++) {
+            for (int idx = 0; idx < ExpenseFragment.getExpenseAmounts().size(); idx++) {
 
-                double amt = ExpenseFragment.getExpenseAmounts().get(i);
+                double amt = ExpenseFragment.getExpenseAmounts().get(idx);
                 List<List<String>> allSplits = ExpenseFragment.getExpenseSplitBetween();
 
                 List<String> splitPeople;
 
-                if (i < allSplits.size() && allSplits.get(i) != null && !allSplits.get(i).isEmpty()) {
-                    splitPeople = allSplits.get(i);
+                if (idx < allSplits.size() && allSplits.get(idx) != null && !allSplits.get(idx).isEmpty()) {
+                    splitPeople = allSplits.get(idx);
                 } else {
                     splitPeople = new ArrayList<>(contributions.keySet());
                 }
