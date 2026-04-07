@@ -172,24 +172,25 @@ public class SummaryFragment extends Fragment {
                 expenseShareMap.put(name, 0.0);
             }
 
+            // 👉 use DIFFERENT variable names
             for (int idx = 0; idx < ExpenseFragment.getExpenseAmounts().size(); idx++) {
 
-                double amt = ExpenseFragment.getExpenseAmounts().get(idx);
-                List<List<String>> allSplits = ExpenseFragment.getExpenseSplitBetween();
+                double amount = ExpenseFragment.getExpenseAmounts().get(idx);
+                List<List<String>> splitsList = ExpenseFragment.getExpenseSplitBetween();
 
-                List<String> splitPeople;
+                List<String> splitList;
 
-                if (idx < allSplits.size() && allSplits.get(idx) != null && !allSplits.get(idx).isEmpty()) {
-                    splitPeople = allSplits.get(idx);
+                if (idx < splitsList.size() && splitsList.get(idx) != null && !splitsList.get(idx).isEmpty()) {
+                    splitList = splitsList.get(idx);
                 } else {
-                    splitPeople = new ArrayList<>(contributions.keySet());
+                    splitList = new ArrayList<>(contributions.keySet());
                 }
 
-                double perHead = amt / splitPeople.size();
+                double perHeadShare = amount / splitList.size();
 
-                for (String person : splitPeople) {
+                for (String person : splitList) {
                     double current = expenseShareMap.containsKey(person) ? expenseShareMap.get(person) : 0.0;
-                    expenseShareMap.put(person, current + perHead);
+                    expenseShareMap.put(person, current + perHeadShare);
                 }
             }
 
