@@ -168,6 +168,10 @@ public class SummaryFragment extends Fragment {
         TextView balCell = createCell(balText, false);
         balCell.setTextColor(balance >= 0 ? Color.parseColor("#117c00") : Color.RED);
 
+        balCell.setOnClickListener(v -> {
+            showExpensePopup(name);
+        });
+
         row.addView(balCell);
 
         balanceBox.addView(row);
@@ -409,5 +413,62 @@ public class SummaryFragment extends Fragment {
     }
 
     return tv;
+}
+
+    private void showExpensePopup(String memberName) {
+
+    android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
+
+    LinearLayout layout = new LinearLayout(getContext());
+    layout.setOrientation(LinearLayout.VERTICAL);
+    layout.setPadding(40, 30, 40, 30);
+
+    // 🔹 TITLE (Member Name)
+    TextView title = new TextView(getContext());
+    title.setText(memberName);
+    title.setTextSize(20);
+    title.setTypeface(Typeface.DEFAULT_BOLD);
+    title.setGravity(android.view.Gravity.CENTER);
+    title.setPadding(0, 0, 0, 20);
+
+    layout.addView(title);
+
+    // 🔹 Expense Lists
+    List<String> expenseNames = ExpenseFragment.getExpenseNames();
+    List<Double> expenseAmounts = ExpenseFragment.getExpenseAmounts();
+    List<List<String>> splits = ExpenseFragment.getExpenseSplitBetween();
+
+    for (int i = 0; i < expenseAmounts.size(); i++) {
+
+        List<String> splitList;
+
+        if (i < splits.size() && splits.get(i) != null && !splits.get(i).isEmpty()) {
+            splitList = splits.get(i);
+        } else {
+            splitList = new ArrayList<>(FriendsFragment.getContributions().keySet());
+        }
+
+        // 👉 Check if member is part of this expense
+        if (splitList.contains(memberName)) {
+
+            double amount = expenseAmounts.get(i);
+            double share = amount / splitList.size();
+
+            String expenseName = (i < expenseNames.size())
+                    ? expenseNames.get(i)
+                    : "Expense " + (i + 1);
+
+            TextView item = new TextView(getContext());
+            item.setText(expenseName + " : ₹" + String.format("%.2f", share));
+            item.setTextSize(16);
+            item.setPadding(0, 8, 0, 8);
+
+            layout.addView(item);
+        }
+    }
+
+    builder.setView(layout);
+    builder.setPositiveButton("Close", null);
+    builder.show();
 }
 }
