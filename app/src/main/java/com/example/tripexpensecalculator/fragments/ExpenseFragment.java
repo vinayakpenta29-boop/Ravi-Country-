@@ -372,6 +372,11 @@ public class ExpenseFragment extends Fragment {
 
             for (int i = 0; i < expenseTypes.size(); i++) {
                 LinearLayout row = new LinearLayout(getContext());
+                int position = i; // IMPORTANT (for click reference)
+
+                row.setOnClickListener(v -> {
+                    showExpenseDetailsPopup(position);
+                });
                 row.setOrientation(LinearLayout.HORIZONTAL);
                 row.setPadding(0, 8, 0, 8);
 
@@ -484,6 +489,76 @@ public class ExpenseFragment extends Fragment {
         String trip = TripManager.getCurrentTrip(requireContext());
         return TripManager.keyForExpenses(trip);
     }
+
+    private void showExpenseDetailsPopup(int index) {
+
+    AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+
+    LinearLayout layout = new LinearLayout(getContext());
+    layout.setOrientation(LinearLayout.VERTICAL);
+    layout.setPadding(40, 40, 40, 40);
+
+    // 🔹 Title (Category)
+    TextView title = new TextView(getContext());
+    title.setText(expenseTypes.get(index));
+    title.setTextSize(20);
+    title.setTypeface(Typeface.DEFAULT_BOLD);
+    title.setGravity(android.view.Gravity.CENTER);
+    title.setTextColor(Color.BLACK);
+    title.setPadding(0, 0, 0, 20);
+    layout.addView(title);
+
+    // 🔹 Amount
+    TextView amountTv = new TextView(getContext());
+    amountTv.setText("Amount : ₹" + String.format("%.2f", expenseAmounts.get(index)));
+    amountTv.setTextSize(16);
+    amountTv.setTextColor(Color.BLACK);
+    amountTv.setPadding(0, 10, 0, 10);
+    layout.addView(amountTv);
+
+    // 🔹 Paid By
+    String paidBy = (index < expensePaidBy.size()) ? expensePaidBy.get(index) : "Unknown";
+
+    TextView paidByTv = new TextView(getContext());
+    paidByTv.setText("Paid by : " + paidBy);
+    paidByTv.setTextSize(16);
+    paidByTv.setTextColor(Color.BLACK);
+    paidByTv.setPadding(0, 10, 0, 20);
+    layout.addView(paidByTv);
+
+    // 🔹 Split Members Title
+    TextView splitTitle = new TextView(getContext());
+    splitTitle.setText("Split Between");
+    splitTitle.setTextSize(16);
+    splitTitle.setTypeface(Typeface.DEFAULT_BOLD);
+    splitTitle.setTextColor(Color.BLACK);
+    splitTitle.setPadding(0, 10, 0, 10);
+    layout.addView(splitTitle);
+
+    // 🔹 Get Split List
+    List<List<String>> splits = getExpenseSplitBetween();
+    List<String> splitList;
+
+    if (index < splits.size() && splits.get(index) != null && !splits.get(index).isEmpty()) {
+        splitList = splits.get(index);
+    } else {
+        splitList = new ArrayList<>(FriendsFragment.getContributions().keySet());
+    }
+
+    // 🔹 Show Members
+    for (String member : splitList) {
+        TextView memberTv = new TextView(getContext());
+        memberTv.setText("• " + member);
+        memberTv.setTextSize(14);
+        memberTv.setTextColor(Color.DKGRAY);
+        memberTv.setPadding(0, 4, 0, 4);
+        layout.addView(memberTv);
+    }
+
+    builder.setView(layout);
+    builder.setPositiveButton("OK", null);
+    builder.show();
+}
 
     private void saveExpensesDataForCurrentTrip() {
         SharedPreferences prefs = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
