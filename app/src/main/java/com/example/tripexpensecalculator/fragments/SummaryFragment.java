@@ -416,88 +416,122 @@ public class SummaryFragment extends Fragment {
     return tv;
 }
 
-    private void showMemberExpensePopup(String memberName) {
-        
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+    private TextView createTableCell(String text, boolean isHeader) {
+    TextView tv = new TextView(getContext());
+    tv.setText(text);
+    tv.setPadding(16, 12, 16, 12);
+    tv.setTextSize(14);
+    tv.setGravity(android.view.Gravity.CENTER);
 
-        LinearLayout layout = new LinearLayout(getContext());
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(40, 40, 40, 40);
+    LinearLayout.LayoutParams params =
+            new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+    params.setMargins(2, 2, 2, 2);
+    tv.setLayoutParams(params);
 
-        // 🔹 Title (Centered Name)
-        TextView title = new TextView(getContext());
-        title.setText(memberName);
-        title.setTextSize(20);
-        title.setTypeface(Typeface.DEFAULT_BOLD);
-        title.setGravity(android.view.Gravity.CENTER);
-        title.setTextColor(Color.BLACK);
-        title.setPadding(0, 0, 0, 20);
-
-        layout.addView(title);
-
-        // 🔹 Get expenses data
-        List<String> types = ExpenseFragment.getExpenseTypes();
-        List<Double> amounts = ExpenseFragment.getExpenseAmounts();
-        List<List<String>> splits = ExpenseFragment.getExpenseSplitBetween();
-
-        boolean hasExpense = false;
-
-        for (int i = 0; i < types.size(); i++) {
-
-            List<String> splitList;
-
-            if (i < splits.size() && splits.get(i) != null && !splits.get(i).isEmpty()) {
-                splitList = splits.get(i);
-            } else {
-                splitList = new ArrayList<>(FriendsFragment.getContributions().keySet());
-            }
-
-            // ✅ If this member is part of this expense
-            if (splitList.contains(memberName)) {
-
-                hasExpense = true;
-
-                LinearLayout row = new LinearLayout(getContext());
-                row.setOrientation(LinearLayout.HORIZONTAL);
-
-                TextView nameTv = new TextView(getContext());
-                nameTv.setText(types.get(i));
-                nameTv.setTextSize(14);
-                nameTv.setTextColor(Color.BLACK);
-
-                TextView amtTv = new TextView(getContext());
-                amtTv.setText("₹" + String.format("%.2f", amounts.get(i)));
-                amtTv.setTextSize(14);
-                amtTv.setTextColor(Color.BLACK);
-                amtTv.setTypeface(Typeface.DEFAULT_BOLD);
-
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
-                nameTv.setLayoutParams(lp);
-
-                row.addView(nameTv);
-                row.addView(amtTv);
-
-                layout.addView(row);
-
-                // divider
-                View divider = new View(getContext());
-                divider.setBackgroundColor(Color.LTGRAY);
-                divider.setLayoutParams(new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT, 1));
-                layout.addView(divider);
-            }
-        }
-
-        if (!hasExpense) {
-            TextView empty = new TextView(getContext());
-            empty.setText("No expenses found");
-            empty.setGravity(android.view.Gravity.CENTER);
-            empty.setTextColor(Color.GRAY);
-            layout.addView(empty);
-        }
-
-        builder.setView(layout);
-        builder.setPositiveButton("OK", null);
-        builder.show();
+    if (isHeader) {
+        tv.setTypeface(Typeface.DEFAULT_BOLD);
+        tv.setTextColor(Color.RED);
+    } else {
+        tv.setTextColor(Color.BLACK);
     }
+
+    tv.setBackgroundColor(Color.WHITE);
+
+    return tv;
+}
+    
+    
+    private void showMemberExpensePopup(String memberName) {
+
+    AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+
+    LinearLayout mainLayout = new LinearLayout(getContext());
+    mainLayout.setOrientation(LinearLayout.VERTICAL);
+    mainLayout.setPadding(30, 30, 30, 30);
+
+    // 🔹 Title (Name Centered)
+    TextView title = new TextView(getContext());
+    title.setText(memberName);
+    title.setTextSize(20);
+    title.setTypeface(Typeface.DEFAULT_BOLD);
+    title.setGravity(android.view.Gravity.CENTER);
+    title.setTextColor(Color.BLACK);
+    title.setPadding(0, 0, 0, 20);
+
+    mainLayout.addView(title);
+
+    // 🔹 Table Layout
+    LinearLayout table = new LinearLayout(getContext());
+    table.setOrientation(LinearLayout.VERTICAL);
+    table.setBackgroundColor(Color.LTGRAY);
+
+    // 🔹 HEADER ROW
+    LinearLayout header = new LinearLayout(getContext());
+    header.setOrientation(LinearLayout.HORIZONTAL);
+    header.setBackgroundColor(Color.WHITE);
+
+    header.addView(createTableCell("Category", true));
+    header.addView(createTableCell("Split Share", true));
+    header.addView(createTableCell("Expense", true));
+    header.addView(createTableCell("Paid by", true));
+
+    table.addView(header);
+
+    // 🔹 DATA
+    List<String> types = ExpenseFragment.getExpenseTypes();
+    List<Double> amounts = ExpenseFragment.getExpenseAmounts();
+    List<String> paidByList = ExpenseFragment.getExpensePaidBy();
+    List<List<String>> splits = ExpenseFragment.getExpenseSplitBetween();
+
+    boolean hasExpense = false;
+
+    for (int i = 0; i < types.size(); i++) {
+
+        List<String> splitList;
+
+        if (i < splits.size() && splits.get(i) != null && !splits.get(i).isEmpty()) {
+            splitList = splits.get(i);
+        } else {
+            splitList = new ArrayList<>(FriendsFragment.getContributions().keySet());
+        }
+
+        if (splitList.contains(memberName)) {
+
+            hasExpense = true;
+
+            double total = amounts.get(i);
+            double share = total / splitList.size();
+            String paidBy = (i < paidByList.size()) ? paidByList.get(i) : "Unknown";
+
+            LinearLayout row = new LinearLayout(getContext());
+            row.setOrientation(LinearLayout.HORIZONTAL);
+            row.setBackgroundColor(Color.WHITE);
+
+            row.addView(createTableCell(types.get(i), false));
+            row.addView(createTableCell("₹" + String.format("%.0f", share), false));
+            row.addView(createTableCell("₹" + String.format("%.0f", total), false));
+            row.addView(createTableCell(paidBy, false));
+
+            table.addView(row);
+        }
+    }
+
+    if (!hasExpense) {
+        TextView empty = new TextView(getContext());
+        empty.setText("No expenses found");
+        empty.setGravity(android.view.Gravity.CENTER);
+        empty.setPadding(20, 20, 20, 20);
+        mainLayout.addView(empty);
+    } else {
+        mainLayout.addView(table);
+    }
+
+    // 🔥 Scroll Support
+    android.widget.ScrollView scrollView = new android.widget.ScrollView(getContext());
+    scrollView.addView(mainLayout);
+
+    builder.setView(scrollView);
+    builder.setPositiveButton("OK", null);
+    builder.show();
+}
 }
