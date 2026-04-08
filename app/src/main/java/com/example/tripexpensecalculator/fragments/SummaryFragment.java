@@ -161,7 +161,6 @@ public class SummaryFragment extends Fragment {
         row.setOrientation(LinearLayout.HORIZONTAL);
 
         row.addView(createCell(name, false));
-        row.setTypeface(Typeface.DEFAULT_BOLD);
         row.addView(createCell("₹" + String.format("%.2f", paid), false));
         row.addView(createCell("₹" + String.format("%.2f", expense), false));
 
