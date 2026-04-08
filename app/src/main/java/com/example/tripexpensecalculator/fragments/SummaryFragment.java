@@ -235,12 +235,14 @@ public class SummaryFragment extends Fragment {
     labelTv.setTextColor(Color.WHITE);
     labelTv.setTextSize(20);
     labelTv.setTypeface(Typeface.DEFAULT_BOLD);
+    labelTv.setGravity(android.view.Gravity.CENTER);
 
     TextView amtTv = new TextView(getContext());
     amtTv.setText("₹" + String.format("%.2f", overallBalance));
     amtTv.setTextColor(Color.WHITE);
     amtTv.setTextSize(32);
     amtTv.setTypeface(Typeface.DEFAULT_BOLD);
+    amtTv.setGravity(android.view.Gravity.CENTER);
 
     orangeBox.addView(labelTv);
     orangeBox.addView(amtTv);
