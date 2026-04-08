@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.app.AlertDialog;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -415,7 +416,7 @@ public class SummaryFragment extends Fragment {
     return tv;
 }
 
-    private void showMemberExpensePopup(String memberName) {
+    private void showMemberExpensePopup(name) {
 
     AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
 
