@@ -415,30 +415,33 @@ public class SummaryFragment extends Fragment {
     return tv;
 }
 
-    private void showExpensePopup(String memberName) {
+    private void showMemberExpensePopup(String memberName) {
 
-    android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
+    AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
 
     LinearLayout layout = new LinearLayout(getContext());
     layout.setOrientation(LinearLayout.VERTICAL);
-    layout.setPadding(40, 30, 40, 30);
+    layout.setPadding(40, 40, 40, 40);
 
-    // 🔹 TITLE (Member Name)
+    // 🔹 Title (Centered Name)
     TextView title = new TextView(getContext());
     title.setText(memberName);
     title.setTextSize(20);
     title.setTypeface(Typeface.DEFAULT_BOLD);
     title.setGravity(android.view.Gravity.CENTER);
+    title.setTextColor(Color.BLACK);
     title.setPadding(0, 0, 0, 20);
 
     layout.addView(title);
 
-    // 🔹 Expense Lists
-    List<String> expenseNames = ExpenseFragment.getExpenseNames();
-    List<Double> expenseAmounts = ExpenseFragment.getExpenseAmounts();
+    // 🔹 Get expenses data
+    List<String> types = ExpenseFragment.getExpenseTypes();
+    List<Double> amounts = ExpenseFragment.getExpenseAmounts();
     List<List<String>> splits = ExpenseFragment.getExpenseSplitBetween();
 
-    for (int i = 0; i < expenseAmounts.size(); i++) {
+    boolean hasExpense = false;
+
+    for (int i = 0; i < types.size(); i++) {
 
         List<String> splitList;
 
@@ -448,27 +451,52 @@ public class SummaryFragment extends Fragment {
             splitList = new ArrayList<>(FriendsFragment.getContributions().keySet());
         }
 
-        // 👉 Check if member is part of this expense
+        // ✅ If this member is part of this expense
         if (splitList.contains(memberName)) {
 
-            double amount = expenseAmounts.get(i);
-            double share = amount / splitList.size();
+            hasExpense = true;
 
-            String expenseName = (i < expenseNames.size())
-                    ? expenseNames.get(i)
-                    : "Expense " + (i + 1);
+            LinearLayout row = new LinearLayout(getContext());
+            row.setOrientation(LinearLayout.HORIZONTAL);
 
-            TextView item = new TextView(getContext());
-            item.setText(expenseName + " : ₹" + String.format("%.2f", share));
-            item.setTextSize(16);
-            item.setPadding(0, 8, 0, 8);
+            TextView nameTv = new TextView(getContext());
+            nameTv.setText(types.get(i));
+            nameTv.setTextSize(14);
+            nameTv.setTextColor(Color.BLACK);
 
-            layout.addView(item);
+            TextView amtTv = new TextView(getContext());
+            amtTv.setText("₹" + String.format("%.2f", amounts.get(i)));
+            amtTv.setTextSize(14);
+            amtTv.setTextColor(Color.BLACK);
+            amtTv.setTypeface(Typeface.DEFAULT_BOLD);
+
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+            nameTv.setLayoutParams(lp);
+
+            row.addView(nameTv);
+            row.addView(amtTv);
+
+            layout.addView(row);
+
+            // divider
+            View divider = new View(getContext());
+            divider.setBackgroundColor(Color.LTGRAY);
+            divider.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, 1));
+            layout.addView(divider);
         }
     }
 
+    if (!hasExpense) {
+        TextView empty = new TextView(getContext());
+        empty.setText("No expenses found");
+        empty.setGravity(android.view.Gravity.CENTER);
+        empty.setTextColor(Color.GRAY);
+        layout.addView(empty);
+    }
+
     builder.setView(layout);
-    builder.setPositiveButton("Close", null);
+    builder.setPositiveButton("OK", null);
     builder.show();
 }
 }
