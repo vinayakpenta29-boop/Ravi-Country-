@@ -46,316 +46,207 @@ public class SummaryFragment extends Fragment {
     }
 
     private void displaySummary() {
-        summaryRootLayout.removeAllViews();
-
-        // ---- Friends: totals + cash/online split ----
-        Map<String, FriendsFragment.FriendTotals> rawContributions = FriendsFragment.getContributions();
-        Map<String, Double> contributions = new LinkedHashMap<>();
-        double totalCashGiven = 0.0;
-        double totalOnlineGiven = 0.0;
-
-        for (Map.Entry<String, FriendsFragment.FriendTotals> e : rawContributions.entrySet()) {
-            FriendsFragment.FriendTotals t = e.getValue();
-            double total = t.cash + t.online;
-            contributions.put(e.getKey(), total);
-            totalCashGiven += t.cash;
-            totalOnlineGiven += t.online;
-        }
-
-        // ---- Expenses: totals + cash/online split ----
-        List<Double> expenseAmounts = ExpenseFragment.getExpenseAmounts();
-        List<Boolean> expenseIsOnline = ExpenseFragment.getExpenseIsOnline();
-
-        double totalExpense = 0.0;
-        double totalCashExpenses = 0.0;
-        double totalOnlineExpenses = 0.0;
-
-        for (int i = 0; i < expenseAmounts.size(); i++) {
-            double amt = expenseAmounts.get(i);
-            totalExpense += amt;
-
-            boolean isOnline = (i < expenseIsOnline.size())
-                    && Boolean.TRUE.equals(expenseIsOnline.get(i));
-
-            if (isOnline) {
-                totalOnlineExpenses += amt;
-            } else {
-                totalCashExpenses += amt;
-            }
-        }
-
-        // Total friends = all friends (no pause/resume)
-        int people = rawContributions.size();
-
-        double perPerson = (people > 0) ? (totalExpense / people) : 0.0;
-        double overallBalance = totalCashGiven + totalOnlineGiven - totalExpense;
-
-        // ---- Main Summary Box (All text in Lora_Bold) ----
-        LinearLayout mainBox = getCurvedBox();
-        mainBox.addView(getLoraRow("Total Contributions",
-                "₹" + String.format("%.2f", totalCashGiven + totalOnlineGiven), Color.BLACK));
-        mainBox.addView(getDivider());
-        mainBox.addView(getLoraRow("Total Expenses",
-                "₹" + String.format("%.2f", totalExpense), Color.BLACK));
-        mainBox.addView(getDivider());
-        mainBox.addView(getLoraRow("Total Friends", String.valueOf(people), Color.BLACK));
-        mainBox.addView(getDivider());
-        mainBox.addView(getLoraRow("Each Person Share",
-                "₹" + String.format("%.2f", perPerson), Color.BLACK));
-        summaryRootLayout.addView(mainBox);
-
-        // ---- Cash / Online Balance Box with icons + chips ----
-        double cashBalance = totalCashGiven - totalCashExpenses;
-        double onlineBalance = totalOnlineGiven - totalOnlineExpenses;
-
-        LinearLayout cashOnlineBox = getCurvedBox();
-        cashOnlineBox.setPadding(28, 18, 28, 18);
-
-        // Cash row
-        cashOnlineBox.addView(buildBalanceLine(
-                R.mipmap.ic_cash,      // cash icon
-                "Cash",
-                totalCashGiven,
-                cashBalance));
-
-        cashOnlineBox.addView(getDivider());
-
-        // Online row
-        cashOnlineBox.addView(buildBalanceLine(
-                R.mipmap.ic_online,    // online icon
-                "Online",
-                totalOnlineGiven,
-                onlineBalance));
-
-        summaryRootLayout.addView(cashOnlineBox);
-
-        LinearLayout balanceBox = getCurvedBox();
-
-        // 👉 Track each person's expense share
-        Map<String, Double> expenseShareMap = new LinkedHashMap<>();
-
-        for (String name : contributions.keySet()) {
-            expenseShareMap.put(name, 0.0);
-        }
-
-        // 👉 Calculate total split expenses
-        for (int idx = 0; idx < ExpenseFragment.getExpenseAmounts().size(); idx++) {
-
-            double amount = ExpenseFragment.getExpenseAmounts().get(idx);
-            List<List<String>> splitsList = ExpenseFragment.getExpenseSplitBetween();
-
-            List<String> splitList;
-
-            if (idx < splitsList.size() && splitsList.get(idx) != null && !splitsList.get(idx).isEmpty()) {
-                splitList = splitsList.get(idx);
-            } else {
-                splitList = new ArrayList<>(contributions.keySet());
-            }
-
-            double perHeadShare = amount / splitList.size();
-
-            for (String person : splitList) {
-                double current = expenseShareMap.get(person);
-                expenseShareMap.put(person, current + perHeadShare);
-            }
-        }
-
-        // 👉 FINAL BALANCE
-        for (String name : contributions.keySet()) {
-            double paid = contributions.get(name);
-            double expense = expenseShareMap.get(name);
-            finalBalances.put(name, paid - expense);
-        }
-
-        // 🔥 FINAL BALANCES (SPLIT LOGIC)
-        Map<String, Double> finalBalances = new LinkedHashMap<>();
-
-        // initialize all friends
-        for (String name : contributions.keySet()) {
-            finalBalances.put(name, 0.0);
-        }
-        
-        }
-
-        
-        // ---- Friends Balance Box ----
-        
-        List<String> negativeMembers = new ArrayList<>();
-        List<Double> negativeBalances = new ArrayList<>();
-        int fNo = 0;
-        for (Map.Entry<String, Double> entry : finalBalances.entrySet()) {
-
-            String name = entry.getKey();
-
-            double finalBal = entry.getValue(); // this is already correct balance
-
-            // ✅ GET TOTAL PAID (from contributions map)
-            double totalPaid = contributions.containsKey(name) ? contributions.get(name) : 0.0;
-
-            // ✅ COLOR
-            int color = (finalBal >= 0) ? Color.parseColor("#117c00") : Color.RED;
-
-            // ✅ FORMAT
-            String paidStr = "₹" + String.format("%.2f", totalPaid);
-
-            String balanceStr;
-            if (finalBal >= 0) {
-                balanceStr = "+₹" + String.format("%.2f", finalBal);
-            } else {
-                balanceStr = "-₹" + String.format("%.2f", Math.abs(finalBal));
-            }
-
-            // ✅ FINAL TEXT (YOUR REQUIRED FORMAT)
-            // Table Header Row
-            LinearLayout headerRow = new LinearLayout(getContext());
-            headerRow.setOrientation(LinearLayout.HORIZONTAL);
-
-            headerRow.addView(createCell("Name", true));
-            headerRow.addView(createCell("Paid", true));
-            headerRow.addView(createCell("Expense", true));
-            headerRow.addView(createCell("Balance", true));
-
-            balanceBox.addView(headerRow);
-            balanceBox.addView(getDivider());
-            if (fNo++ < contributions.size() - 1) balanceBox.addView(getDivider());
-            if (finalBal < 0) {
-                negativeMembers.add(name);
-                negativeBalances.add(finalBal);
-            }
-        }
-        summaryRootLayout.addView(balanceBox);
-
-        // ---- Settlement Box (Who Pays Whom) ----
-        List<Map.Entry<String, Double>> positive = new ArrayList<>();
-        List<Map.Entry<String, Double>> negative = new ArrayList<>();
-
-
-         // If settlements exist
-         if (!positive.isEmpty() && !negative.isEmpty()) {
-
-             LinearLayout settlementBox = getCurvedBox();
-
-             // Title
-             TextView title = new TextView(getContext());
-             title.setText("Settlement (Who Pays Whom)");
-             title.setTextSize(18);
-             title.setTypeface(loraBoldTypeface);
-             title.setTextColor(Color.BLACK);
-             title.setPadding(0, 0, 0, 12);
-             settlementBox.addView(title);
-
-             int i = 0, j = 0;
-
-             while (i < negative.size() && j < positive.size()) {
-
-                 String debtor = negative.get(i).getKey();
-                 double debt = Math.abs(negative.get(i).getValue());
-
-                 String creditor = positive.get(j).getKey();
-                 double credit = positive.get(j).getValue();
-
-                 double settleAmount = Math.min(debt, credit);
-
-                 // Create row
-                 String label = debtor + " → " + creditor;
-                 String value = "₹" + String.format("%.2f", settleAmount);
-
-                 settlementBox.addView(getRow(label, value, Color.RED));
-                 settlementBox.addView(getDivider());
-
-                 // Update balances
-                 debt -= settleAmount;
-                 credit -= settleAmount;
-
-                 negative.set(i, new java.util.AbstractMap.SimpleEntry<>(debtor, -debt));
-                 positive.set(j, new java.util.AbstractMap.SimpleEntry<>(creditor, credit));
-
-                 if (debt == 0) i++;
-                 if (credit == 0) j++;
-             }
-
-             summaryRootLayout.addView(settlementBox);
-         }
-
-        // ---- Negative Balance Box ----
-        if (!negativeMembers.isEmpty()) {
-            LinearLayout negativeBox = getCurvedBox();
-
-            // Title sub-box
-            LinearLayout subBox = new LinearLayout(getContext());
-            subBox.setOrientation(LinearLayout.HORIZONTAL);
-            subBox.setBackgroundResource(R.drawable.curved_box_gray_with_border);
-            subBox.setPadding(25, 10, 25, 10);
-            LinearLayout.LayoutParams subBoxParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            int marginBottomPx = (int) (getResources().getDisplayMetrics().density * 12);
-            subBoxParams.setMargins(0, 0, 0, marginBottomPx);
-            subBox.setLayoutParams(subBoxParams);
-
-            TextView titleTv = new TextView(getContext());
-            titleTv.setText("Take The Balance Amount in This Friends This has a Nagative(-) Balance:");
-            titleTv.setTextColor(Color.WHITE);
-            titleTv.setTextSize(18);
-            titleTv.setTypeface(loraBoldTypeface);
-            titleTv.setGravity(android.view.Gravity.CENTER);
-            titleTv.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-            subBox.addView(titleTv);
-
-            negativeBox.addView(subBox);
-
-            // Negative friends list
-            for (int i = 0; i < negativeMembers.size(); i++) {
-                String label = negativeMembers.get(i);
-                String val = "-₹" + String.format("%.2f", Math.abs(negativeBalances.get(i)));
-                negativeBox.addView(getRow(label, val, Color.RED));
-                if (i < negativeMembers.size() - 1) negativeBox.addView(getDivider());
-            }
-            summaryRootLayout.addView(negativeBox);
-        }
-
-        // ---- Overall Balance (Big Orange Box) ----
-        LinearLayout orangeBox = new LinearLayout(getContext());
-        orangeBox.setOrientation(LinearLayout.VERTICAL);
-        orangeBox.setBackgroundResource(R.drawable.curved_orange_button);
-        orangeBox.setPadding(32, 21, 32, 21);
-        orangeBox.setGravity(android.view.Gravity.CENTER);
-        LinearLayout.LayoutParams orangeParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        orangeParams.setMargins(24, 18, 24, 18);
-        orangeBox.setLayoutParams(orangeParams);
-
-        TextView labelTv = new TextView(getContext());
-        labelTv.setText("Extra Money Left:");
-        labelTv.setTextColor(Color.WHITE);
-        labelTv.setTextSize(20);
-        labelTv.setTypeface(Typeface.DEFAULT_BOLD);
-        labelTv.setGravity(android.view.Gravity.CENTER);
-
-        TextView amtTv = new TextView(getContext());
-        String amtStr = "₹" + String.format("%.2f", Math.abs(overallBalance));
-        if (overallBalance < 0) amtStr = "₹-" + String.format("%.2f", Math.abs(overallBalance));
-        amtTv.setText(amtStr);
-        amtTv.setTextColor(Color.WHITE);
-        amtTv.setTextSize(32);
-        amtTv.setTypeface(Typeface.DEFAULT_BOLD);
-        amtTv.setGravity(android.view.Gravity.CENTER);
-
-        orangeBox.addView(labelTv);
-        orangeBox.addView(amtTv);
-
-        if (overallBalance < 0) {
-            TextView warningTv = new TextView(getContext());
-            warningTv.setText("(You Need More Money)");
-            warningTv.setTextColor(Color.WHITE);
-            warningTv.setTextSize(16);
-            warningTv.setGravity(android.view.Gravity.CENTER);
-            warningTv.setTypeface(Typeface.DEFAULT_BOLD);
-            orangeBox.addView(warningTv);
-        }
-
-        summaryRootLayout.addView(orangeBox);
+    summaryRootLayout.removeAllViews();
+
+    // ---- Friends ----
+    Map<String, FriendsFragment.FriendTotals> rawContributions = FriendsFragment.getContributions();
+    Map<String, Double> contributions = new LinkedHashMap<>();
+
+    double totalCashGiven = 0.0;
+    double totalOnlineGiven = 0.0;
+
+    for (Map.Entry<String, FriendsFragment.FriendTotals> e : rawContributions.entrySet()) {
+        double total = e.getValue().cash + e.getValue().online;
+        contributions.put(e.getKey(), total);
+        totalCashGiven += e.getValue().cash;
+        totalOnlineGiven += e.getValue().online;
     }
+
+    // ---- Expenses ----
+    List<Double> expenseAmounts = ExpenseFragment.getExpenseAmounts();
+    List<Boolean> expenseIsOnline = ExpenseFragment.getExpenseIsOnline();
+
+    double totalExpense = 0.0;
+    double totalCashExpenses = 0.0;
+    double totalOnlineExpenses = 0.0;
+
+    for (int i = 0; i < expenseAmounts.size(); i++) {
+        double amt = expenseAmounts.get(i);
+        totalExpense += amt;
+
+        boolean isOnline = (i < expenseIsOnline.size()) && Boolean.TRUE.equals(expenseIsOnline.get(i));
+
+        if (isOnline) totalOnlineExpenses += amt;
+        else totalCashExpenses += amt;
+    }
+
+    int people = contributions.size();
+    double perPerson = (people > 0) ? totalExpense / people : 0.0;
+    double overallBalance = totalCashGiven + totalOnlineGiven - totalExpense;
+
+    // ---- Main Box ----
+    LinearLayout mainBox = getCurvedBox();
+    mainBox.addView(getLoraRow("Total Contributions", "₹" + String.format("%.2f", totalCashGiven + totalOnlineGiven), Color.BLACK));
+    mainBox.addView(getDivider());
+    mainBox.addView(getLoraRow("Total Expenses", "₹" + String.format("%.2f", totalExpense), Color.BLACK));
+    mainBox.addView(getDivider());
+    mainBox.addView(getLoraRow("Total Friends", String.valueOf(people), Color.BLACK));
+    mainBox.addView(getDivider());
+    mainBox.addView(getLoraRow("Each Person Share", "₹" + String.format("%.2f", perPerson), Color.BLACK));
+    summaryRootLayout.addView(mainBox);
+
+    // ---- Cash / Online ----
+    LinearLayout cashOnlineBox = getCurvedBox();
+    cashOnlineBox.addView(buildBalanceLine(R.mipmap.ic_cash, "Cash", totalCashGiven, totalCashGiven - totalCashExpenses));
+    cashOnlineBox.addView(getDivider());
+    cashOnlineBox.addView(buildBalanceLine(R.mipmap.ic_online, "Online", totalOnlineGiven, totalOnlineGiven - totalOnlineExpenses));
+    summaryRootLayout.addView(cashOnlineBox);
+
+    // ---- Expense Share Calculation ----
+    Map<String, Double> expenseShareMap = new LinkedHashMap<>();
+    for (String name : contributions.keySet()) {
+        expenseShareMap.put(name, 0.0);
+    }
+
+    for (int i = 0; i < expenseAmounts.size(); i++) {
+        double amount = expenseAmounts.get(i);
+
+        List<List<String>> splits = ExpenseFragment.getExpenseSplitBetween();
+        List<String> splitList;
+
+        if (i < splits.size() && splits.get(i) != null && !splits.get(i).isEmpty()) {
+            splitList = splits.get(i);
+        } else {
+            splitList = new ArrayList<>(contributions.keySet());
+        }
+
+        double perHead = amount / splitList.size();
+
+        for (String person : splitList) {
+            expenseShareMap.put(person, expenseShareMap.get(person) + perHead);
+        }
+    }
+
+    // ---- Final Balances ----
+    Map<String, Double> finalBalances = new LinkedHashMap<>();
+    for (String name : contributions.keySet()) {
+        double paid = contributions.get(name);
+        double expense = expenseShareMap.get(name);
+        finalBalances.put(name, paid - expense);
+    }
+
+    // ---- TABLE UI ----
+    LinearLayout balanceBox = getCurvedBox();
+
+    LinearLayout header = new LinearLayout(getContext());
+    header.setOrientation(LinearLayout.HORIZONTAL);
+    header.addView(createCell("Name", true));
+    header.addView(createCell("Paid", true));
+    header.addView(createCell("Expense", true));
+    header.addView(createCell("Balance", true));
+
+    balanceBox.addView(header);
+    balanceBox.addView(getDivider());
+
+    List<String> negativeMembers = new ArrayList<>();
+    List<Double> negativeBalances = new ArrayList<>();
+
+    for (String name : contributions.keySet()) {
+
+        double paid = contributions.get(name);
+        double expense = expenseShareMap.get(name);
+        double balance = paid - expense;
+
+        LinearLayout row = new LinearLayout(getContext());
+        row.setOrientation(LinearLayout.HORIZONTAL);
+
+        row.addView(createCell(name, false));
+        row.addView(createCell("₹" + String.format("%.2f", paid), false));
+        row.addView(createCell("₹" + String.format("%.2f", expense), false));
+
+        String balText = (balance >= 0 ? "+₹" : "-₹") + String.format("%.2f", Math.abs(balance));
+        TextView balCell = createCell(balText, false);
+        balCell.setTextColor(balance >= 0 ? Color.parseColor("#117c00") : Color.RED);
+
+        row.addView(balCell);
+
+        balanceBox.addView(row);
+        balanceBox.addView(getDivider());
+
+        if (balance < 0) {
+            negativeMembers.add(name);
+            negativeBalances.add(balance);
+        }
+    }
+
+    summaryRootLayout.addView(balanceBox);
+
+    // ---- Settlement ----
+    List<Map.Entry<String, Double>> positive = new ArrayList<>();
+    List<Map.Entry<String, Double>> negative = new ArrayList<>();
+
+    for (Map.Entry<String, Double> e : finalBalances.entrySet()) {
+        if (e.getValue() > 0) positive.add(e);
+        else if (e.getValue() < 0) negative.add(e);
+    }
+
+    if (!positive.isEmpty() && !negative.isEmpty()) {
+
+        LinearLayout settlementBox = getCurvedBox();
+
+        int i = 0, j = 0;
+
+        while (i < negative.size() && j < positive.size()) {
+
+            String debtor = negative.get(i).getKey();
+            double debt = Math.abs(negative.get(i).getValue());
+
+            String creditor = positive.get(j).getKey();
+            double credit = positive.get(j).getValue();
+
+            double amount = Math.min(debt, credit);
+
+            settlementBox.addView(getRow(debtor + " → " + creditor,
+                    "₹" + String.format("%.2f", amount), Color.RED));
+            settlementBox.addView(getDivider());
+
+            debt -= amount;
+            credit -= amount;
+
+            negative.set(i, new java.util.AbstractMap.SimpleEntry<>(debtor, -debt));
+            positive.set(j, new java.util.AbstractMap.SimpleEntry<>(creditor, credit));
+
+            if (debt == 0) i++;
+            if (credit == 0) j++;
+        }
+
+        summaryRootLayout.addView(settlementBox);
+    }
+
+    // ---- Orange Box ----
+    LinearLayout orangeBox = new LinearLayout(getContext());
+    orangeBox.setOrientation(LinearLayout.VERTICAL);
+    orangeBox.setBackgroundResource(R.drawable.curved_orange_button);
+    orangeBox.setPadding(32, 21, 32, 21);
+    orangeBox.setGravity(android.view.Gravity.CENTER);
+
+    TextView labelTv = new TextView(getContext());
+    labelTv.setText("Extra Money Left:");
+    labelTv.setTextColor(Color.WHITE);
+    labelTv.setTextSize(20);
+    labelTv.setTypeface(Typeface.DEFAULT_BOLD);
+
+    TextView amtTv = new TextView(getContext());
+    amtTv.setText("₹" + String.format("%.2f", overallBalance));
+    amtTv.setTextColor(Color.WHITE);
+    amtTv.setTextSize(32);
+    amtTv.setTypeface(Typeface.DEFAULT_BOLD);
+
+    orangeBox.addView(labelTv);
+    orangeBox.addView(amtTv);
+
+    summaryRootLayout.addView(orangeBox);
+}
 
     private LinearLayout getCurvedBox() {
         LinearLayout box = new LinearLayout(getContext());
