@@ -170,7 +170,7 @@ public class SummaryFragment extends Fragment {
         balCell.setTextColor(balance >= 0 ? Color.parseColor("#117c00") : Color.RED);
 
         balCell.setOnClickListener(v -> {
-            showExpensePopup(name);
+            showMemberExpensePopup(name);
         });
 
         row.addView(balCell);
@@ -416,88 +416,88 @@ public class SummaryFragment extends Fragment {
     return tv;
 }
 
-    private void showMemberExpensePopup(name) {
+    private void showMemberExpensePopup(String memberName) {
+        
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
 
-    AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        LinearLayout layout = new LinearLayout(getContext());
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(40, 40, 40, 40);
 
-    LinearLayout layout = new LinearLayout(getContext());
-    layout.setOrientation(LinearLayout.VERTICAL);
-    layout.setPadding(40, 40, 40, 40);
+        // 🔹 Title (Centered Name)
+        TextView title = new TextView(getContext());
+        title.setText(memberName);
+        title.setTextSize(20);
+        title.setTypeface(Typeface.DEFAULT_BOLD);
+        title.setGravity(android.view.Gravity.CENTER);
+        title.setTextColor(Color.BLACK);
+        title.setPadding(0, 0, 0, 20);
 
-    // 🔹 Title (Centered Name)
-    TextView title = new TextView(getContext());
-    title.setText(memberName);
-    title.setTextSize(20);
-    title.setTypeface(Typeface.DEFAULT_BOLD);
-    title.setGravity(android.view.Gravity.CENTER);
-    title.setTextColor(Color.BLACK);
-    title.setPadding(0, 0, 0, 20);
+        layout.addView(title);
 
-    layout.addView(title);
+        // 🔹 Get expenses data
+        List<String> types = ExpenseFragment.getExpenseTypes();
+        List<Double> amounts = ExpenseFragment.getExpenseAmounts();
+        List<List<String>> splits = ExpenseFragment.getExpenseSplitBetween();
 
-    // 🔹 Get expenses data
-    List<String> types = ExpenseFragment.getExpenseTypes();
-    List<Double> amounts = ExpenseFragment.getExpenseAmounts();
-    List<List<String>> splits = ExpenseFragment.getExpenseSplitBetween();
+        boolean hasExpense = false;
 
-    boolean hasExpense = false;
+        for (int i = 0; i < types.size(); i++) {
 
-    for (int i = 0; i < types.size(); i++) {
+            List<String> splitList;
 
-        List<String> splitList;
+            if (i < splits.size() && splits.get(i) != null && !splits.get(i).isEmpty()) {
+                splitList = splits.get(i);
+            } else {
+                splitList = new ArrayList<>(FriendsFragment.getContributions().keySet());
+            }
 
-        if (i < splits.size() && splits.get(i) != null && !splits.get(i).isEmpty()) {
-            splitList = splits.get(i);
-        } else {
-            splitList = new ArrayList<>(FriendsFragment.getContributions().keySet());
+            // ✅ If this member is part of this expense
+            if (splitList.contains(memberName)) {
+
+                hasExpense = true;
+
+                LinearLayout row = new LinearLayout(getContext());
+                row.setOrientation(LinearLayout.HORIZONTAL);
+
+                TextView nameTv = new TextView(getContext());
+                nameTv.setText(types.get(i));
+                nameTv.setTextSize(14);
+                nameTv.setTextColor(Color.BLACK);
+
+                TextView amtTv = new TextView(getContext());
+                amtTv.setText("₹" + String.format("%.2f", amounts.get(i)));
+                amtTv.setTextSize(14);
+                amtTv.setTextColor(Color.BLACK);
+                amtTv.setTypeface(Typeface.DEFAULT_BOLD);
+
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+                nameTv.setLayoutParams(lp);
+
+                row.addView(nameTv);
+                row.addView(amtTv);
+
+                layout.addView(row);
+
+                // divider
+                View divider = new View(getContext());
+                divider.setBackgroundColor(Color.LTGRAY);
+                divider.setLayoutParams(new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT, 1));
+                layout.addView(divider);
+            }
         }
 
-        // ✅ If this member is part of this expense
-        if (splitList.contains(memberName)) {
-
-            hasExpense = true;
-
-            LinearLayout row = new LinearLayout(getContext());
-            row.setOrientation(LinearLayout.HORIZONTAL);
-
-            TextView nameTv = new TextView(getContext());
-            nameTv.setText(types.get(i));
-            nameTv.setTextSize(14);
-            nameTv.setTextColor(Color.BLACK);
-
-            TextView amtTv = new TextView(getContext());
-            amtTv.setText("₹" + String.format("%.2f", amounts.get(i)));
-            amtTv.setTextSize(14);
-            amtTv.setTextColor(Color.BLACK);
-            amtTv.setTypeface(Typeface.DEFAULT_BOLD);
-
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
-            nameTv.setLayoutParams(lp);
-
-            row.addView(nameTv);
-            row.addView(amtTv);
-
-            layout.addView(row);
-
-            // divider
-            View divider = new View(getContext());
-            divider.setBackgroundColor(Color.LTGRAY);
-            divider.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, 1));
-            layout.addView(divider);
+        if (!hasExpense) {
+            TextView empty = new TextView(getContext());
+            empty.setText("No expenses found");
+            empty.setGravity(android.view.Gravity.CENTER);
+            empty.setTextColor(Color.GRAY);
+            layout.addView(empty);
         }
-    }
 
-    if (!hasExpense) {
-        TextView empty = new TextView(getContext());
-        empty.setText("No expenses found");
-        empty.setGravity(android.view.Gravity.CENTER);
-        empty.setTextColor(Color.GRAY);
-        layout.addView(empty);
+        builder.setView(layout);
+        builder.setPositiveButton("OK", null);
+        builder.show();
     }
-
-    builder.setView(layout);
-    builder.setPositiveButton("OK", null);
-    builder.show();
-}
 }
