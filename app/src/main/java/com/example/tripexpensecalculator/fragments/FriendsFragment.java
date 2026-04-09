@@ -229,37 +229,55 @@ public class FriendsFragment extends Fragment {
             String cashExpr = buildSumExpression(t.cashEntries);
             String onlineExpr = buildSumExpression(t.onlineEntries);
 
-            LinearLayout row = new LinearLayout(getContext());
-            row.setOrientation(LinearLayout.VERTICAL);
-            row.setPadding(0, 8, 0, 8);
+            LinearLayout card = new LinearLayout(getContext());
+            card.setOrientation(LinearLayout.VERTICAL);
+            card.setPadding(32, 28, 32, 28);
+            card.setBackgroundResource(R.drawable.white_rounded_card); // create this drawable
+
+            LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            cardParams.setMargins(0, 0, 0, 28);
+            card.setLayoutParams(cardParams);
+            card.setElevation(8f);
 
             TextView nameTv = new TextView(getContext());
             nameTv.setText(name);
             nameTv.setTextSize(18);
             nameTv.setTextColor(getResources().getColor(R.color.black));
             nameTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
-            row.addView(nameTv);
+            card.addView(nameTv);
 
             TextView cashTv = new TextView(getContext());
-            cashTv.setText("Cash = " + cashExpr + " = " + String.format("%.2f", cashTotal));
-            cashTv.setTextSize(16);
-            cashTv.setTextColor(android.graphics.Color.parseColor("#117c00")); // green
-            row.addView(cashTv);
+            cashTv.setText("Cash: ₹" + String.format("%.2f", cashTotal));
+            cashTv.setTextSize(15);
+            cashTv.setTextColor(android.graphics.Color.parseColor("#2E7D32"));
+            cashTv.setPadding(0, 12, 0, 4);
+            cashTv.addView(cashTv);
 
             TextView onlineTv = new TextView(getContext());
-            onlineTv.setText("Online = " + onlineExpr + " = " + String.format("%.2f", onlineTotal));
-            onlineTv.setTextSize(16);
-            onlineTv.setTextColor(android.graphics.Color.parseColor("#0066CC")); // blue
-            row.addView(onlineTv);
+            onlineTv.setText("Online: ₹" + String.format("%.2f", onlineTotal));
+            onlineTv.setTextSize(15);
+            onlineTv.setTextColor(android.graphics.Color.parseColor("#1565C0"));
+            card.addView(onlineTv);
+
+            View divider = new View(getContext());
+            divider.setBackgroundColor(getResources().getColor(R.color.divider));
+            LinearLayout.LayoutParams dParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, 2);
+            dParams.setMargins(0, 16, 0, 16);
+            divider.setLayoutParams(dParams);
+            card.addView(divider);
 
             TextView totalTv = new TextView(getContext());
-            totalTv.setText("Total = ₹" + String.format("%.2f", total));
-            totalTv.setTextSize(16);
+            totalTv.setText("Total: ₹" + String.format("%.2f", total));
+            totalTv.setTextSize(17);
             totalTv.setTextColor(getResources().getColor(R.color.black));
             totalTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
-            row.addView(totalTv);
+            card.addView(totalTv);
 
-            container.addView(row);
+            container.addView(card);
 
             if (index < size - 1) {
                 View divider = new View(getContext());
@@ -273,12 +291,14 @@ public class FriendsFragment extends Fragment {
             index++;
         }
 
-        new android.app.AlertDialog.Builder(requireContext())
-                .setTitle("Given Amount")
+        android.app.AlertDialog dialog = new android.app.AlertDialog.Builder(requireContext())
+                .setTitle("Given Amount Summary")
                 .setView(dialogView)
-                .setPositiveButton("OK", null)
-                .show();
-    }
+                .setPositiveButton("Close", null)
+                .create();
+
+        dialog.show();
+   }
 
     private String buildSumExpression(List<Double> list) {
         if (list == null || list.isEmpty()) return "0";
