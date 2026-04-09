@@ -430,12 +430,12 @@ public class SummaryFragment extends Fragment {
 
     if (isHeader) {
         tv.setTypeface(Typeface.DEFAULT_BOLD);
-        tv.setTextColor(Color.RED);
+        tv.setTextColor(Color.parseColor("#FFFFFF"));
     } else {
         tv.setTextColor(Color.BLACK);
     }
 
-    tv.setBackgroundColor(Color.WHITE);
+    tv.setBackgroundResource(R.drawable.bg_popup_card);
 
     return tv;
 }
@@ -468,7 +468,6 @@ public class SummaryFragment extends Fragment {
     // 🔹 HEADER ROW
     LinearLayout header = new LinearLayout(getContext());
     header.setOrientation(LinearLayout.HORIZONTAL);
-    header.setTextColor(Color.parseColor("#FFFFFF"));
     header.setBackgroundColor(Color.parseColor("#c01587"));
     
 
