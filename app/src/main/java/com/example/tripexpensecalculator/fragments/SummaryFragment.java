@@ -453,7 +453,7 @@ public class SummaryFragment extends Fragment {
     TextView title = new TextView(getContext());
     title.setText(memberName);
     title.setTextSize(20);
-    title.setTypeface(Typeface.DEFAULT_BOLD);
+    title.setTypeface.createFromAsset(requireContext().getAssets(), "fonts/Lora_Bold.ttf");
     title.setGravity(android.view.Gravity.CENTER);
     title.setTextColor(Color.parseColor("#990F4B"));
     title.setPadding(0, 0, 0, 20);
