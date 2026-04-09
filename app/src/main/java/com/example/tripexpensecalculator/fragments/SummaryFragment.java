@@ -422,6 +422,7 @@ public class SummaryFragment extends Fragment {
     tv.setPadding(16, 12, 16, 12);
     tv.setTextSize(14);
     tv.setGravity(android.view.Gravity.CENTER);
+    tv.setBackgroundResource(R.drawable.bg_popup_card);
 
     LinearLayout.LayoutParams params =
             new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
@@ -435,7 +436,7 @@ public class SummaryFragment extends Fragment {
         tv.setTextColor(Color.BLACK);
     }
 
-    tv.setBackgroundResource(R.drawable.bg_popup_card);
+    tv.setTextColor(Color.WHITE);
 
     return tv;
 }
