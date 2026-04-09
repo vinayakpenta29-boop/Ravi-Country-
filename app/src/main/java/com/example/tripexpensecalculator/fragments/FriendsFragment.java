@@ -289,6 +289,10 @@ public class FriendsFragment extends Fragment {
                 .create();
 
         dialog.show();
+
+        if (dialog.getWindow() != null) {
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.bg_popup_card);
+    }
    }
 
     private String buildSumExpression(List<Double> list) {
