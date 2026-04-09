@@ -254,7 +254,7 @@ public class FriendsFragment extends Fragment {
             cashTv.setTextSize(15);
             cashTv.setTextColor(android.graphics.Color.parseColor("#2E7D32"));
             cashTv.setPadding(0, 12, 0, 4);
-            cashTv.addView(cashTv);
+            card.addView(cashTv);
 
             TextView onlineTv = new TextView(getContext());
             onlineTv.setText("Online: ₹" + String.format("%.2f", onlineTotal));
@@ -279,15 +279,6 @@ public class FriendsFragment extends Fragment {
 
             container.addView(card);
 
-            if (index < size - 1) {
-                View divider = new View(getContext());
-                divider.setBackgroundColor(getResources().getColor(R.color.divider));
-                LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT, 2);
-                p.setMargins(0, 8, 0, 8);
-                divider.setLayoutParams(p);
-                container.addView(divider);
-            }
             index++;
         }
 
