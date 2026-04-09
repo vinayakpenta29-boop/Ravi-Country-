@@ -455,7 +455,7 @@ public class SummaryFragment extends Fragment {
     title.setTextSize(20);
     title.setTypeface(Typeface.DEFAULT_BOLD);
     title.setGravity(android.view.Gravity.CENTER);
-    title.setTextColor(Color.BLACK);
+    title.setTextColor(Color.parseColor("#990F4B"));
     title.setPadding(0, 0, 0, 20);
 
     mainLayout.addView(title);
@@ -468,7 +468,9 @@ public class SummaryFragment extends Fragment {
     // 🔹 HEADER ROW
     LinearLayout header = new LinearLayout(getContext());
     header.setOrientation(LinearLayout.HORIZONTAL);
-    header.setBackgroundColor(Color.WHITE);
+    header.setTextColor(Color.parseColor("#FFFFFF"));
+    header.setBackgroundColor(Color.parseColor("#c01587"));
+    
 
     header.addView(createTableCell("Category", true));
     header.addView(createTableCell("Split Share", true));
