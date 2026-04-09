@@ -259,11 +259,31 @@ public class ExpenseFragment extends Fragment {
         expenseIsOnline.add(isOnline);
         expenseSplitBetween.add(splitPeople);
 
+        // 🔥 UPDATE FRIEND PAID AMOUNT
+        Map<String, FriendsFragment.FriendTotals> friends = FriendsFragment.getContributions();
+
+        if (friends.containsKey(paidBy)) {
+            FriendsFragment.FriendTotals totals = friends.get(paidBy);
+
+            if (isOnline) {
+                totals.online += amount;
+                totals.onlineEntries.add(amount);
+            } else {
+                totals.cash += amount;
+                totals.cashEntries.add(amount);
+            }
+        }
+
         inputCategory.setText("");
         inputAmount.setText("");
 
         saveExpensesDataForCurrentTrip();
         refreshExpensesUI();
+
+        // 🔄 Save updated friend data
+        if (FriendsFragment.instance != null) {
+            FriendsFragment.instance.safeRefreshUI();
+        }
 
         Toast.makeText(getContext(), "Expense added.", Toast.LENGTH_SHORT).show();
     }
