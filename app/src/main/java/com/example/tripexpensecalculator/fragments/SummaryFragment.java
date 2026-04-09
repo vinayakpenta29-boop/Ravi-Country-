@@ -436,7 +436,7 @@ public class SummaryFragment extends Fragment {
         tv.setTextColor(Color.BLACK);
     }
 
-    tv.setTextColor(Color.WHITE);
+    tv.setBackgroundColor(Color.WHITE);
 
     return tv;
 }
