@@ -255,7 +255,7 @@ public class FriendsFragment extends Fragment {
 
                 container.addView(tableView);
             }
-        }
+        
 
         android.app.AlertDialog dialog = new android.app.AlertDialog.Builder(requireContext())
                 .setTitle("Given Amount Summary")
