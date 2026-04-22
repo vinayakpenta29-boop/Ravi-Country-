@@ -211,24 +211,6 @@ public class FriendsFragment extends Fragment {
             return;
         }
 
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        View dialogView = inflater.inflate(R.layout.dialog_given_amount, null);
-        LinearLayout container = dialogView.findViewById(R.id.givenAmountContainer);
-
-        int index = 0;
-        int size = contributions.size();
-
-        for (Map.Entry<String, FriendTotals> entry : contributions.entrySet()) {
-            String name = entry.getKey();
-            FriendTotals t = entry.getValue();
-
-            double cashTotal = t.cash;
-            double onlineTotal = t.online;
-            double total = cashTotal + onlineTotal;
-
-            String cashExpr = buildSumExpression(t.cashEntries);
-            String onlineExpr = buildSumExpression(t.onlineEntries);
-
             LayoutInflater inflater = LayoutInflater.from(getContext());
 
             for (Map.Entry<String, FriendTotals> entry : contributions.entrySet()) {
@@ -273,8 +255,6 @@ public class FriendsFragment extends Fragment {
 
                 container.addView(tableView);
             }
-
-            index++;
         }
 
         android.app.AlertDialog dialog = new android.app.AlertDialog.Builder(requireContext())
