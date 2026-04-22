@@ -229,55 +229,50 @@ public class FriendsFragment extends Fragment {
             String cashExpr = buildSumExpression(t.cashEntries);
             String onlineExpr = buildSumExpression(t.onlineEntries);
 
-            LinearLayout card = new LinearLayout(getContext());
-            card.setOrientation(LinearLayout.VERTICAL);
-            card.setPadding(32, 28, 32, 28);
-            card.setBackgroundResource(R.drawable.white_rounded_card); // create this drawable
+            LayoutInflater inflater = LayoutInflater.from(getContext());
 
-            LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-            );
-            cardParams.setMargins(0, 0, 0, 28);
-            card.setLayoutParams(cardParams);
-            card.setElevation(8f);
+            for (Map.Entry<String, FriendTotals> entry : contributions.entrySet()) {
 
-            TextView nameTv = new TextView(getContext());
-            nameTv.setText(name);
-            nameTv.setTextSize(18);
-            nameTv.setTextColor(getResources().getColor(R.color.black));
-            nameTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
-            card.addView(nameTv);
+                String name = entry.getKey();
+                FriendTotals t = entry.getValue();
 
-            TextView cashTv = new TextView(getContext());
-            cashTv.setText("Cash: ₹" + String.format("%.2f", cashTotal));
-            cashTv.setTextSize(15);
-            cashTv.setTextColor(android.graphics.Color.parseColor("#2E7D32"));
-            cashTv.setPadding(0, 12, 0, 4);
-            card.addView(cashTv);
+                View tableView = inflater.inflate(R.layout.item_given_amount_table, container, false);
 
-            TextView onlineTv = new TextView(getContext());
-            onlineTv.setText("Online: ₹" + String.format("%.2f", onlineTotal));
-            onlineTv.setTextSize(15);
-            onlineTv.setTextColor(android.graphics.Color.parseColor("#1565C0"));
-            card.addView(onlineTv);
+                TextView tvName = tableView.findViewById(R.id.tvFriendName);
+                LinearLayout rowsContainer = tableView.findViewById(R.id.tableRowsContainer);
+                TextView tvTotalCash = tableView.findViewById(R.id.tvTotalCash);
+                TextView tvTotalOnline = tableView.findViewById(R.id.tvTotalOnline);
 
-            View divider = new View(getContext());
-            divider.setBackgroundColor(getResources().getColor(R.color.divider));
-            LinearLayout.LayoutParams dParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, 2);
-            dParams.setMargins(0, 16, 0, 16);
-            divider.setLayoutParams(dParams);
-            card.addView(divider);
+                tvName.setText(name);
 
-            TextView totalTv = new TextView(getContext());
-            totalTv.setText("Total: ₹" + String.format("%.2f", total));
-            totalTv.setTextSize(17);
-            totalTv.setTextColor(getResources().getColor(R.color.black));
-            totalTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
-            card.addView(totalTv);
+                int maxSize = Math.max(t.cashEntries.size(), t.onlineEntries.size());
 
-            container.addView(card);
+                for (int i = 0; i < maxSize; i++) {
+                    View row = inflater.inflate(R.layout.item_table_row, rowsContainer, false);
+
+                    TextView cashTv = row.findViewById(R.id.tvCash);
+                    TextView onlineTv = row.findViewById(R.id.tvOnline);
+
+                    if (i < t.cashEntries.size()) {
+                        cashTv.setText(String.valueOf(t.cashEntries.get(i)));
+                    } else {
+                        cashTv.setText("-");
+                    }
+
+                    if (i < t.onlineEntries.size()) {
+                        onlineTv.setText(String.valueOf(t.onlineEntries.get(i)));
+                    } else {
+                        onlineTv.setText("-");
+                    }
+
+                    rowsContainer.addView(row);
+                }
+
+                tvTotalCash.setText("₹" + t.cash);
+                tvTotalOnline.setText("₹" + t.online);
+
+                container.addView(tableView);
+            }
 
             index++;
         }
