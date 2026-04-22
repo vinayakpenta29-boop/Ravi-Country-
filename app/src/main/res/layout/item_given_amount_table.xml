@@ -1,0 +1,67 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_table_card"
+    android:padding="16dp"
+    android:layout_marginBottom="20dp">
+
+    <!-- Friend Name -->
+    <TextView
+        android:id="@+id/tvFriendName"
+        android:text="Ravi"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- Table Header -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:background="@drawable/bg_table_header"
+        android:padding="10dp">
+
+        <TextView
+            android:layout_weight="1"
+            android:text="Cash"
+            android:textStyle="bold"
+            android:gravity="center"/>
+
+        <TextView
+            android:layout_weight="1"
+            android:text="Online"
+            android:textStyle="bold"
+            android:gravity="center"/>
+    </LinearLayout>
+
+    <!-- Data Container -->
+    <LinearLayout
+        android:id="@+id/tableRowsContainer"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <!-- Total -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:background="@drawable/bg_table_footer"
+        android:padding="10dp"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:layout_weight="1"
+            android:text="Total Paid"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/tvTotalCash"
+            android:layout_weight="1"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/tvTotalOnline"
+            android:layout_weight="1"
+            android:gravity="center"/>
+    </LinearLayout>
+
+</LinearLayout>
