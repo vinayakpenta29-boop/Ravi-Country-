@@ -274,6 +274,11 @@ public class ExpenseFragment extends Fragment {
             }
         }
 
+        // ✅ VERY IMPORTANT (THIS FIXES YOUR BUG)
+        if (FriendsFragment.instance != null) {
+            FriendsFragment.instance.saveFriendsData();   // 🔥 SAVE DATA
+        }
+
         inputCategory.setText("");
         inputAmount.setText("");
 
