@@ -213,6 +213,9 @@ public class FriendsFragment extends Fragment {
 
             LayoutInflater inflater = LayoutInflater.from(getContext());
 
+            View dialogView = inflater.inflate(R.layout.dialog_given_amount, null);
+            LinearLayout container = dialogView.findViewById(R.id.givenAmountContainer);
+
             for (Map.Entry<String, FriendTotals> entry : contributions.entrySet()) {
 
                 String name = entry.getKey();
@@ -236,22 +239,22 @@ public class FriendsFragment extends Fragment {
                     TextView onlineTv = row.findViewById(R.id.tvOnline);
 
                     if (i < t.cashEntries.size()) {
-                        cashTv.setText(String.valueOf(t.cashEntries.get(i)));
+                        cashTv.setText("₹" + String.format("%.2f", t.cashEntries.get(i)));
                     } else {
-                        cashTv.setText("-");
+                        cashTv.setText("—");
                     }
 
                     if (i < t.onlineEntries.size()) {
-                        onlineTv.setText(String.valueOf(t.onlineEntries.get(i)));
+                        onlineTv.setText("₹" + String.format("%.2f", t.onlineEntries.get(i)));
                     } else {
-                        onlineTv.setText("-");
+                        onlineTv.setText("—");
                     }
 
                     rowsContainer.addView(row);
                 }
 
-                tvTotalCash.setText("₹" + t.cash);
-                tvTotalOnline.setText("₹" + t.online);
+                tvTotalCash.setText("₹" + String.format("%.2f", t.cash));
+                tvTotalOnline.setText("₹" + String.format("%.2f", t.online));
 
                 container.addView(tableView);
             }
