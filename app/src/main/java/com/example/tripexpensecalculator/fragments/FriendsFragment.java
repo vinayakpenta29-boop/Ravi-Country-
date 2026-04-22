@@ -538,7 +538,7 @@ public class FriendsFragment extends Fragment {
         Toast.makeText(getContext(), "Amount added.", Toast.LENGTH_SHORT).show();
     }
 
-    private void saveFriendsData() {
+    public void saveFriendsData() {
         SharedPreferences prefs = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         String trip = TripManager.getCurrentTrip(requireContext());
         String key = TripManager.keyForFriends(trip);
