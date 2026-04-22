@@ -1,0 +1,15 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:padding="10dp"
+    android:background="@drawable/bg_table_row">
+
+    <TextView
+        android:id="@+id/tvCash"
+        android:layout_weight="1"
+        android:gravity="center"/>
+
+    <TextView
+        android:id="@+id/tvOnline"
+        android:layout_weight="1"
+        android:gravity="center"/>
+</LinearLayout>
