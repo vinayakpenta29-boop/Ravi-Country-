@@ -573,7 +573,7 @@ public class ExpenseFragment extends Fragment {
 
     // 🔹 Members Container (CHIP STYLE)
     LinearLayout chipContainer = new LinearLayout(getContext());
-    chipContainer.setOrientation(LinearLayout.WRAP_CONTENT);
+    chipContainer.setOrientation(LinearLayout.HORIZONTAL);
     chipContainer.setPadding(0, 0, 0, 20);
     layout.addView(chipContainer);
 
