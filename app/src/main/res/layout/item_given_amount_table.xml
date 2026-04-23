@@ -14,7 +14,7 @@
         android:text="Ravi"
         android:textStyle="bold"
         android:textSize="18sp"
-        android:textColor="@color/black"
+        android:textColor="#990F4B"
         android:layout_marginBottom="12dp"/>
 
     <!-- Table Header -->
@@ -49,35 +49,62 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <!-- Total -->
+    <!-- ✅ TOTAL SECTION (UPDATED) -->
     <LinearLayout
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_table_footer"
-        android:padding="10dp"
         android:layout_marginTop="10dp">
 
+        <!-- CENTERED LABEL -->
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="Total Paid"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textSize="15sp"
+            android:textColor="#888888"
+            android:padding="10dp"/>
 
-        <TextView
-            android:id="@+id/tvTotalCash"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"/>
+        <!-- OPTIONAL DIVIDER -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#DDDDDD"/>
 
-        <TextView
-            android:id="@+id/tvTotalOnline"
-            android:layout_width="0dp"
+        <!-- TOTAL VALUES ROW -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"/>
+            android:padding="10dp">
+
+            <!-- CASH TOTAL -->
+            <TextView
+                android:id="@+id/tvTotalCash"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="@color/black"/>
+
+            <!-- ONLINE TOTAL -->
+            <TextView
+                android:id="@+id/tvTotalOnline"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="@color/black"/>
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>
