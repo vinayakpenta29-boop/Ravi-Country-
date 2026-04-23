@@ -518,29 +518,39 @@ public class ExpenseFragment extends Fragment {
 
     private void showExpenseDetailsPopup(int index) {
 
-    AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+    AlertDialog dialog = new AlertDialog.Builder(requireContext()).create();
 
     LinearLayout layout = new LinearLayout(getContext());
     layout.setOrientation(LinearLayout.VERTICAL);
-    layout.setPadding(40, 40, 40, 40);
+    layout.setPadding(50, 50, 50, 40);
+    layout.setBackgroundResource(R.drawable.bg_popup_premium);
 
-    // 🔹 Title (Category)
+    // 🔥 TITLE
     TextView title = new TextView(getContext());
     title.setText(expenseTypes.get(index));
-    title.setTextSize(20);
+    title.setTextSize(22);
     title.setTypeface(Typeface.DEFAULT_BOLD);
     title.setGravity(android.view.Gravity.CENTER);
     title.setTextColor(Color.BLACK);
-    title.setPadding(0, 0, 0, 20);
+    title.setPadding(0, 0, 0, 25);
     layout.addView(title);
 
-    // 🔹 Amount
+    // 🔥 AMOUNT (HIGHLIGHT STYLE)
     TextView amountTv = new TextView(getContext());
-    amountTv.setText("Amount : ₹" + String.format("%.2f", expenseAmounts.get(index)));
-    amountTv.setTextSize(16);
-    amountTv.setTextColor(Color.BLACK);
-    amountTv.setPadding(0, 10, 0, 10);
+    amountTv.setText("₹ " + String.format("%.2f", expenseAmounts.get(index)));
+    amountTv.setTextSize(24);
+    amountTv.setTypeface(Typeface.DEFAULT_BOLD);
+    amountTv.setTextColor(Color.parseColor("#2E7D32")); // premium green
+    amountTv.setGravity(android.view.Gravity.CENTER);
+    amountTv.setPadding(0, 10, 0, 25);
     layout.addView(amountTv);
+
+    // 🔹 Divider
+    View divider1 = new View(getContext());
+    divider1.setBackgroundColor(Color.LTGRAY);
+    divider1.setLayoutParams(new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, 1));
+    layout.addView(divider1);
 
     // 🔹 Paid By
     String paidBy = (index < expensePaidBy.size()) ? expensePaidBy.get(index) : "Unknown";
@@ -548,20 +558,25 @@ public class ExpenseFragment extends Fragment {
     TextView paidByTv = new TextView(getContext());
     paidByTv.setText("Paid by : " + paidBy);
     paidByTv.setTextSize(16);
-    paidByTv.setTextColor(Color.BLACK);
-    paidByTv.setPadding(0, 10, 0, 20);
+    paidByTv.setTextColor(Color.DKGRAY);
+    paidByTv.setPadding(0, 20, 0, 20);
     layout.addView(paidByTv);
 
-    // 🔹 Split Members Title
+    // 🔹 Split Title
     TextView splitTitle = new TextView(getContext());
     splitTitle.setText("Split Between");
     splitTitle.setTextSize(16);
     splitTitle.setTypeface(Typeface.DEFAULT_BOLD);
     splitTitle.setTextColor(Color.BLACK);
-    splitTitle.setPadding(0, 10, 0, 10);
+    splitTitle.setPadding(0, 10, 0, 15);
     layout.addView(splitTitle);
 
-    // 🔹 Get Split List
+    // 🔹 Members Container (CHIP STYLE)
+    LinearLayout chipContainer = new LinearLayout(getContext());
+    chipContainer.setOrientation(LinearLayout.WRAP_CONTENT);
+    chipContainer.setPadding(0, 0, 0, 20);
+    layout.addView(chipContainer);
+
     List<List<String>> splits = getExpenseSplitBetween();
     List<String> splitList;
 
@@ -571,19 +586,32 @@ public class ExpenseFragment extends Fragment {
         splitList = new ArrayList<>(FriendsFragment.getContributions().keySet());
     }
 
-    // 🔹 Show Members
     for (String member : splitList) {
-        TextView memberTv = new TextView(getContext());
-        memberTv.setText("• " + member);
-        memberTv.setTextSize(14);
-        memberTv.setTextColor(Color.DKGRAY);
-        memberTv.setPadding(0, 4, 0, 4);
-        layout.addView(memberTv);
+
+        TextView chip = new TextView(getContext());
+        chip.setText(member);
+        chip.setTextSize(13);
+        chip.setTextColor(Color.BLACK);
+        chip.setPadding(25, 10, 25, 10);
+        chip.setBackgroundResource(R.drawable.bg_chip_member);
+
+        LinearLayout.LayoutParams chipParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        chipParams.setMargins(10, 5, 10, 5);
+
+        chip.setLayoutParams(chipParams);
+        chipContainer.addView(chip);
     }
 
-    builder.setView(layout);
-    builder.setPositiveButton("OK", null);
-    builder.show();
+    dialog.setView(layout);
+    dialog.show();
+
+    // 🔥 Transparent corners fix
+    if (dialog.getWindow() != null) {
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+    }
 }
 
     private void saveExpensesDataForCurrentTrip() {
