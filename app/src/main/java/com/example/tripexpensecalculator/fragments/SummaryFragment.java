@@ -426,7 +426,7 @@ public class SummaryFragment extends Fragment {
 
     LinearLayout.LayoutParams params =
             new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
-    params.setMargins(8, 8, 8, 8);
+    params.setMargins(2, 2, 2, 2);
     tv.setLayoutParams(params);
 
     if (isCategory && !isHeader) {
@@ -467,7 +467,7 @@ public class SummaryFragment extends Fragment {
     title.setTextSize(22);
     title.setTypeface(loraBoldTypeface);
     title.setGravity(android.view.Gravity.CENTER);
-    title.setTextColor(Color.BLACK);
+    title.setTextColor(Color.parseColor("#990F4B"));
     title.setPadding(0, 0, 0, 25);
     mainLayout.addView(title);
 
