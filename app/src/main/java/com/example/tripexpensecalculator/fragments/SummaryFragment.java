@@ -420,13 +420,13 @@ public class SummaryFragment extends Fragment {
 
     TextView tv = new TextView(getContext());
     tv.setText(text);
-    tv.setPadding(20, 16, 20, 16);
+    tv.setPadding(20, 20, 20, 20);
     tv.setTextSize(13);
     tv.setGravity(android.view.Gravity.CENTER);
 
     LinearLayout.LayoutParams params =
             new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
-    params.setMargins(4, 4, 4, 4);
+    params.setMargins(8, 8, 8, 8);
     tv.setLayoutParams(params);
 
     if (isCategory && !isHeader) {
@@ -440,10 +440,11 @@ public class SummaryFragment extends Fragment {
     if (isHeader) {
         tv.setTypeface(Typeface.DEFAULT_BOLD);
         tv.setTextColor(Color.WHITE);
-        tv.setBackgroundColor(Color.parseColor("#8E24AA")); // purple header
+        tv.setBackgroundResource(R.drawable.bg_table_header_rounded);
     } else {
         tv.setTextColor(Color.BLACK);
-        tv.setBackgroundResource(R.drawable.bg_table_row); // reuse your row bg
+        tv.setBackgroundResource(R.drawable.bg_table_cell_rounded);
+        tv.setElevation(4f);
     }
 
     return tv;
@@ -515,6 +516,7 @@ public class SummaryFragment extends Fragment {
 
             LinearLayout row = new LinearLayout(getContext());
             row.setOrientation(LinearLayout.HORIZONTAL);
+            row.setPadding(4, 4, 4, 4);
 
             row.addView(createTableCell(types.get(i), false, true));
             row.addView(createTableCell("₹" + String.format("%.0f", share), false, false));
