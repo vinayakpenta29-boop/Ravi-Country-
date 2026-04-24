@@ -435,6 +435,7 @@ public class SummaryFragment extends Fragment {
         tv.setMarqueeRepeatLimit(-1); // infinite scroll
         tv.setSelected(true);
         tv.setHorizontallyScrolling(true);
+    }
         
     if (isHeader) {
         tv.setTypeface(Typeface.DEFAULT_BOLD);
@@ -447,7 +448,7 @@ public class SummaryFragment extends Fragment {
 
     return tv;
 }
-}
+
     
     private void showMemberExpensePopup(String memberName) {
 
