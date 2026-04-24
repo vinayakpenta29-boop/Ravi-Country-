@@ -429,6 +429,13 @@ public class SummaryFragment extends Fragment {
     params.setMargins(4, 4, 4, 4);
     tv.setLayoutParams(params);
 
+    if (isCategory && !isHeader) {
+        tv.setSingleLine(true);
+        tv.setEllipsize(android.text.TextUtils.TruncateAt.MARQUEE);
+        tv.setMarqueeRepeatLimit(-1); // infinite scroll
+        tv.setSelected(true);
+        tv.setHorizontallyScrolling(true);
+        
     if (isHeader) {
         tv.setTypeface(Typeface.DEFAULT_BOLD);
         tv.setTextColor(Color.WHITE);
@@ -472,10 +479,10 @@ public class SummaryFragment extends Fragment {
     LinearLayout header = new LinearLayout(getContext());
     header.setOrientation(LinearLayout.HORIZONTAL);
 
-    header.addView(createTableCell("Category", true));
-    header.addView(createTableCell("Share", true));
-    header.addView(createTableCell("Expense", true));
-    header.addView(createTableCell("Paid By", true));
+    header.addView(createTableCell("Category", true, false));
+    header.addView(createTableCell("Share", true, false));
+    header.addView(createTableCell("Expense", true, false));
+    header.addView(createTableCell("Paid By", true, false));
 
     table.addView(header);
 
@@ -508,10 +515,10 @@ public class SummaryFragment extends Fragment {
             LinearLayout row = new LinearLayout(getContext());
             row.setOrientation(LinearLayout.HORIZONTAL);
 
-            row.addView(createTableCell(types.get(i), false));
-            row.addView(createTableCell("₹" + String.format("%.0f", share), false));
-            row.addView(createTableCell("₹" + String.format("%.0f", total), false));
-            row.addView(createTableCell(paidBy, false));
+            row.addView(createTableCell(types.get(i), false, true));
+            row.addView(createTableCell("₹" + String.format("%.0f", share), false, false));
+            row.addView(createTableCell("₹" + String.format("%.0f", total), false, false));
+            row.addView(createTableCell(paidBy, false, false));
 
             table.addView(row);
         }
