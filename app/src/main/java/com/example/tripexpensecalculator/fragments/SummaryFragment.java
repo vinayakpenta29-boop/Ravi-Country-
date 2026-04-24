@@ -435,6 +435,8 @@ public class SummaryFragment extends Fragment {
         tv.setMarqueeRepeatLimit(-1); // infinite scroll
         tv.setSelected(true);
         tv.setHorizontallyScrolling(true);
+        tv.setFocusable(true);
+        tv.setFocusableInTouchMode(true);
     }
         
     if (isHeader) {
