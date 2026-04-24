@@ -531,7 +531,7 @@ public class ExpenseFragment extends Fragment {
     title.setTextSize(22);
     title.setTypeface(Typeface.DEFAULT_BOLD);
     title.setGravity(android.view.Gravity.CENTER);
-    title.setTextColor(Color.BLACK);
+    title.setTextColor(Color.parseColor("#990F4B"));
     title.setPadding(0, 0, 0, 25);
     layout.addView(title);
 
@@ -557,8 +557,10 @@ public class ExpenseFragment extends Fragment {
 
     TextView paidByTv = new TextView(getContext());
     paidByTv.setText("Paid by : " + paidBy);
-    paidByTv.setTextSize(16);
-    paidByTv.setTextColor(Color.DKGRAY);
+    paidByTv.setTextSize(18);
+    paidByTv.setTypeface(Typeface.DEFAULT_BOLD);
+    paidByTv.setTextColor(Color.parseColor("#990F4B"));
+    paidByTv.setGravity(android.view.Gravity.CENTER);
     paidByTv.setPadding(0, 20, 0, 20);
     layout.addView(paidByTv);
 
@@ -566,6 +568,7 @@ public class ExpenseFragment extends Fragment {
     TextView splitTitle = new TextView(getContext());
     splitTitle.setText("Split Between");
     splitTitle.setTextSize(16);
+    splitTitle.setGravity(android.view.Gravity.CENTER);
     splitTitle.setTypeface(Typeface.DEFAULT_BOLD);
     splitTitle.setTextColor(Color.BLACK);
     splitTitle.setPadding(0, 10, 0, 15);
