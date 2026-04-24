@@ -466,7 +466,7 @@ public class SummaryFragment extends Fragment {
     LinearLayout table = new LinearLayout(getContext());
     table.setOrientation(LinearLayout.VERTICAL);
     table.setBackgroundResource(R.drawable.bg_table_card);
-    table.setPadding(10, 10, 10, 10);
+    table.setPadding(16, 16, 16, 16);
 
     // 🔹 HEADER
     LinearLayout header = new LinearLayout(getContext());
@@ -537,6 +537,7 @@ public class SummaryFragment extends Fragment {
 
     AlertDialog dialog = builder.create();
     dialog.show();
+    dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
     // 🔥 PREMIUM BUTTON STYLE
     dialog.getButton(AlertDialog.BUTTON_POSITIVE)
