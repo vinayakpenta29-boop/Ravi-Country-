@@ -416,7 +416,7 @@ public class SummaryFragment extends Fragment {
     return tv;
 }
 
-    private TextView createTableCell(String text, boolean isHeader) {
+    private TextView createTableCell(String text, boolean isHeader, boolean isCategory) {
 
     TextView tv = new TextView(getContext());
     tv.setText(text);
