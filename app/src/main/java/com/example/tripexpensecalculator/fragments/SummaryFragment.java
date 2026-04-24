@@ -458,7 +458,7 @@ public class SummaryFragment extends Fragment {
     LinearLayout mainLayout = new LinearLayout(getContext());
     mainLayout.setOrientation(LinearLayout.VERTICAL);
     mainLayout.setPadding(40, 40, 40, 40);
-    mainLayout.setBackgroundResource(R.drawable.bg_premium_dialog);
+    mainLayout.setBackgroundResource(R.drawable.bg_table_card);
 
     // 🔹 TITLE
     TextView title = new TextView(getContext());
@@ -473,7 +473,7 @@ public class SummaryFragment extends Fragment {
     // 🔹 TABLE CONTAINER (CARD)
     LinearLayout table = new LinearLayout(getContext());
     table.setOrientation(LinearLayout.VERTICAL);
-    table.setBackgroundResource(R.drawable.bg_table_card);
+    table.setBackgroundResource(R.drawable.bg_premium_dialog);
     table.setPadding(16, 16, 16, 16);
 
     // 🔹 HEADER
