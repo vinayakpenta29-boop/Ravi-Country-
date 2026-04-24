@@ -447,7 +447,7 @@ public class SummaryFragment extends Fragment {
 
     return tv;
 }
-    
+}
     
     private void showMemberExpensePopup(String memberName) {
 
