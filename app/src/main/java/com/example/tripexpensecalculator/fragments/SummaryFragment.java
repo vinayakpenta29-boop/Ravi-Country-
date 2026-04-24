@@ -417,26 +417,26 @@ public class SummaryFragment extends Fragment {
 }
 
     private TextView createTableCell(String text, boolean isHeader) {
+
     TextView tv = new TextView(getContext());
     tv.setText(text);
-    tv.setPadding(16, 12, 16, 12);
-    tv.setTextSize(14);
+    tv.setPadding(20, 16, 20, 16);
+    tv.setTextSize(13);
     tv.setGravity(android.view.Gravity.CENTER);
-    tv.setBackgroundResource(R.drawable.bg_popup_card);
 
     LinearLayout.LayoutParams params =
             new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
-    params.setMargins(2, 2, 2, 2);
+    params.setMargins(4, 4, 4, 4);
     tv.setLayoutParams(params);
 
     if (isHeader) {
         tv.setTypeface(Typeface.DEFAULT_BOLD);
-        tv.setTextColor(Color.parseColor("#FFFFFF"));
+        tv.setTextColor(Color.WHITE);
+        tv.setBackgroundColor(Color.parseColor("#8E24AA")); // purple header
     } else {
         tv.setTextColor(Color.BLACK);
+        tv.setBackgroundResource(R.drawable.bg_table_row); // reuse your row bg
     }
-
-    tv.setBackgroundColor(Color.TRANSPARENT);
 
     return tv;
 }
@@ -446,36 +446,36 @@ public class SummaryFragment extends Fragment {
 
     AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
 
+    // 🔥 ROOT CONTAINER (CARD STYLE)
     LinearLayout mainLayout = new LinearLayout(getContext());
     mainLayout.setOrientation(LinearLayout.VERTICAL);
-    mainLayout.setPadding(30, 30, 30, 30);
+    mainLayout.setPadding(40, 40, 40, 40);
+    mainLayout.setBackgroundResource(R.drawable.bg_premium_dialog);
 
-    // 🔹 Title (Name Centered)
+    // 🔹 TITLE
     TextView title = new TextView(getContext());
     title.setText(memberName);
-    title.setTextSize(20);
+    title.setTextSize(22);
     title.setTypeface(loraBoldTypeface);
     title.setGravity(android.view.Gravity.CENTER);
-    title.setTextColor(Color.parseColor("#990F4B"));
-    title.setPadding(0, 0, 0, 20);
-
+    title.setTextColor(Color.BLACK);
+    title.setPadding(0, 0, 0, 25);
     mainLayout.addView(title);
 
-    // 🔹 Table Layout
+    // 🔹 TABLE CONTAINER (CARD)
     LinearLayout table = new LinearLayout(getContext());
     table.setOrientation(LinearLayout.VERTICAL);
-    table.setBackgroundColor(Color.LTGRAY);
+    table.setBackgroundResource(R.drawable.bg_table_card);
+    table.setPadding(10, 10, 10, 10);
 
-    // 🔹 HEADER ROW
+    // 🔹 HEADER
     LinearLayout header = new LinearLayout(getContext());
     header.setOrientation(LinearLayout.HORIZONTAL);
-    header.setBackgroundColor(Color.parseColor("#c01587"));
-    
 
     header.addView(createTableCell("Category", true));
-    header.addView(createTableCell("Split Share", true));
+    header.addView(createTableCell("Share", true));
     header.addView(createTableCell("Expense", true));
-    header.addView(createTableCell("Paid by", true));
+    header.addView(createTableCell("Paid By", true));
 
     table.addView(header);
 
@@ -507,7 +507,6 @@ public class SummaryFragment extends Fragment {
 
             LinearLayout row = new LinearLayout(getContext());
             row.setOrientation(LinearLayout.HORIZONTAL);
-            row.setBackgroundColor(Color.WHITE);
 
             row.addView(createTableCell(types.get(i), false));
             row.addView(createTableCell("₹" + String.format("%.0f", share), false));
@@ -522,18 +521,25 @@ public class SummaryFragment extends Fragment {
         TextView empty = new TextView(getContext());
         empty.setText("No expenses found");
         empty.setGravity(android.view.Gravity.CENTER);
-        empty.setPadding(20, 20, 20, 20);
+        empty.setPadding(20, 30, 20, 30);
         mainLayout.addView(empty);
     } else {
         mainLayout.addView(table);
     }
 
-    // 🔥 Scroll Support
+    // 🔥 SCROLL VIEW
     android.widget.ScrollView scrollView = new android.widget.ScrollView(getContext());
     scrollView.addView(mainLayout);
 
     builder.setView(scrollView);
-    builder.setPositiveButton("OK", null);
-    builder.show();
+
+    builder.setPositiveButton("CLOSE", null);
+
+    AlertDialog dialog = builder.create();
+    dialog.show();
+
+    // 🔥 PREMIUM BUTTON STYLE
+    dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            .setTextColor(Color.parseColor("#FF6F00"));
 }
 }
