@@ -559,7 +559,7 @@ public class ExpenseFragment extends Fragment {
     paidByTv.setText("Paid by : " + paidBy);
     paidByTv.setTextSize(18);
     paidByTv.setTypeface(Typeface.DEFAULT_BOLD);
-    paidByTv.setTextColor(Color.parseColor("#990F4B"));
+    paidByTv.setTextColor(Color.parseColor("#192bc2"));
     paidByTv.setGravity(android.view.Gravity.CENTER);
     paidByTv.setPadding(0, 20, 0, 20);
     layout.addView(paidByTv);
@@ -596,6 +596,7 @@ public class ExpenseFragment extends Fragment {
         chip.setTextSize(13);
         chip.setTextColor(Color.BLACK);
         chip.setPadding(25, 10, 25, 10);
+        chip.setGravity(android.view.Gravity.CENTER);
         chip.setBackgroundResource(R.drawable.bg_chip_member);
 
         LinearLayout.LayoutParams chipParams = new LinearLayout.LayoutParams(
