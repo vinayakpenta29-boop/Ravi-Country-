@@ -474,7 +474,7 @@ public class SummaryFragment extends Fragment {
     LinearLayout table = new LinearLayout(getContext());
     table.setOrientation(LinearLayout.VERTICAL);
     table.setBackgroundResource(R.drawable.bg_premium_dialog);
-    table.setPadding(16, 16, 16, 16);
+    table.setPadding(30, 30, 30, 30);
 
     // 🔹 HEADER
     LinearLayout header = new LinearLayout(getContext());
