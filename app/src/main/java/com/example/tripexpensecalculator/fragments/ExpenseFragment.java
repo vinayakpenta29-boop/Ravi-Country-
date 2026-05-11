@@ -147,13 +147,24 @@ public class ExpenseFragment extends Fragment {
         }
 
         String[] friendNames = friends.keySet().toArray(new String[0]);
+        
+        // 🔥 Add Not Applicable option
+        String[] paidOptions = new String[friendNames.length + 1];
+        paidOptions[0] = "Not applicable";
+        System.arraycopy(friendNames, 0, paidOptions, 1, friendNames.length);
 
         // 🔥 STEP 2: Ask who paid
         new AlertDialog.Builder(requireContext())
                 .setTitle("Who Paid?")
-                .setItems(friendNames, (dialog, which) -> {
+                .setItems(paidOptions, (dialog, which) -> {
 
-                    String selectedFriend = friendNames[which];
+                    String selectedFriend;
+
+                    if (which == 0) {
+                        selectedFriend = "-";
+                    } else {
+                        selectedFriend = paidOptions[which];
+                    }
 
                     // 🔥 STEP: Select people to split with
                     // 🔥 Add "Select All"
@@ -262,7 +273,9 @@ public class ExpenseFragment extends Fragment {
         // 🔥 UPDATE FRIEND PAID AMOUNT
         Map<String, FriendsFragment.FriendTotals> friends = FriendsFragment.getContributions();
 
-        if (friends.containsKey(paidBy)) {
+        // ✅ Skip if Not applicable selected
+        if (!paidBy.equals("-") && friends.containsKey(paidBy)) {
+
             FriendsFragment.FriendTotals totals = friends.get(paidBy);
 
             if (isOnline) {
