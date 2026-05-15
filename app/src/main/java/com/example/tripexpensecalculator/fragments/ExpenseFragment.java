@@ -353,14 +353,27 @@ public class ExpenseFragment extends Fragment {
                                 .setNegativeButton("Cancel", null)
                                 .setPositiveButton("Delete", (d, w) -> {
                                     for (int j = toDelete.size() - 1; j >= 0; j--) {
+
                                         int delIdx = toDelete.get(j);
-                                        expenseTypes.remove(delIdx);
-                                        expenseAmounts.remove(delIdx);
-                                        if (delIdx < expenseSplitBetween.size()) {
-                                            expenseSplitBetween.remove(delIdx);
+
+                                        if (delIdx < expenseTypes.size()) {
+                                           expenseTypes.remove(delIdx);
                                         }
+
+                                        if (delIdx < expenseAmounts.size()) {
+                                           expenseAmounts.remove(delIdx);
+                                        }
+
+                                        if (delIdx < expensePaidBy.size()) {
+                                           expensePaidBy.remove(delIdx);
+                                        }
+
+                                        if (delIdx < expenseSplitBetween.size()) {
+                                           expenseSplitBetween.remove(delIdx);
+                                        }
+
                                         if (delIdx < expenseIsOnline.size()) {
-                                            expenseIsOnline.remove(delIdx);
+                                           expenseIsOnline.remove(delIdx);
                                         }
                                     }
                                     saveExpensesDataForCurrentTrip();
