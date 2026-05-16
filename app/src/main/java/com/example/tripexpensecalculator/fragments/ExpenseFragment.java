@@ -341,47 +341,57 @@ public class ExpenseFragment extends Fragment {
 
             delBtn.setOnClickListener(v -> {
                 List<Integer> toDelete = new ArrayList<>();
+                StringBuilder deleteList = new StringBuilder();
+
                 for (int i = 0; i < checkedItems.length; i++) {
-                    if (checkedItems[i]) toDelete.add(i);
-                }
-                if (!toDelete.isEmpty()) {
-                    for (int idx : toDelete) {
-                        String name = expenseNames[idx];
-                        new AlertDialog.Builder(getContext())
-                                .setTitle("Delete Expense")
-                                .setMessage("Are you sure you want to Delete " + name + "?")
-                                .setNegativeButton("Cancel", null)
-                                .setPositiveButton("Delete", (d, w) -> {
-                                    for (int j = toDelete.size() - 1; j >= 0; j--) {
 
-                                        int delIdx = toDelete.get(j);
+                    if (checkedItems[i]) {
 
-                                        if (delIdx < expenseTypes.size()) {
-                                           expenseTypes.remove(delIdx);
-                                        }
+                        toDelete.add(i);
 
-                                        if (delIdx < expenseAmounts.size()) {
-                                           expenseAmounts.remove(delIdx);
-                                        }
-
-                                        if (delIdx < expensePaidBy.size()) {
-                                           expensePaidBy.remove(delIdx);
-                                        }
-
-                                        if (delIdx < expenseSplitBetween.size()) {
-                                           expenseSplitBetween.remove(delIdx);
-                                        }
-
-                                        if (delIdx < expenseIsOnline.size()) {
-                                           expenseIsOnline.remove(delIdx);
-                                        }
-                                    }
-                                    saveExpensesDataForCurrentTrip();
-                                    refreshExpensesUI();
-                                    Toast.makeText(getContext(), "Expense(s) deleted.", Toast.LENGTH_SHORT).show();
-                                })
-                                .show();
+                        deleteList.append("• ")
+                                .append(expenseNames[i])
+                                .append("\n");
                     }
+                }
+
+                if (!toDelete.isEmpty()) {
+
+                    new AlertDialog.Builder(getContext())
+                            .setTitle("Delete Selected Expenses")
+                            .setMessage(
+                                    "Are you sure you want to delete these expenses?\n\n"
+                                            + deleteList.toString()
+                            )
+
+                            .setNegativeButton("Cancel", null)
+
+                            .setPositiveButton("Delete", (d, w) -> {
+
+                                // DELETE FROM LAST INDEX
+                                for (int j = toDelete.size() - 1; j >= 0; j--) {
+
+                                    int delIdx = toDelete.get(j);
+
+                                    expenseTypes.remove(delIdx);
+                                    expenseAmounts.remove(delIdx);
+                                    expensePaidBy.remove(delIdx);
+                                    expenseSplitBetween.remove(delIdx);
+                                    expenseIsOnline.remove(delIdx);
+                                }
+
+                                saveExpensesDataForCurrentTrip();
+                                refreshExpensesUI();
+
+                                Toast.makeText(
+                                        getContext(),
+                                        "Selected expenses deleted.",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+                            })
+
+                            .show();
+
                     dialog.dismiss();
                 }
             });
