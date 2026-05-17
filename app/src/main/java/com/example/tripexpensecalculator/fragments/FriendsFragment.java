@@ -367,7 +367,7 @@ public class FriendsFragment extends Fragment {
 
                 LinearLayout cardBox = new LinearLayout(getContext());
                 cardBox.setOrientation(LinearLayout.VERTICAL);
-                cardBox.setBackgroundResource(R.drawable.bg_table_header_rounded);
+                cardBox.setBackgroundResource(R.drawable.bg_table_header_rounded_wb);
                 cardBox.setPadding(20, 28, 20, 28);
 
                 LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
